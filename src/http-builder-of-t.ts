@@ -1,19 +1,23 @@
 import { HttpBuilder } from './http-builder';
-import { HttpResponseOfT } from './http-response-of-t';
+import { HttpResponse } from './http-response';
+import { SendPromise } from './send-promise';
 
 export class HttpBuilderOfT<T> {
     constructor(public inner: HttpBuilder, public handler: (response: Response) => Promise<T>) {
     }
-
-    async send() {
-        let response = await this.inner.send();
-
-        let data = await this.handler(response.rawResponse);
-
-        return new HttpResponseOfT(response.rawResponse, data);
+    
+    send() {
+        let responsePromise = this.inner.send();
+        
+        return asSendPromise(responsePromise, () => responsePromise.then(response => this.handler(response.rawResponse)));
     }
 
-    receive() {
-        return this.send().then(x => x.data);
+    transfer() {
+        return this.send().thenReceive();
     }
 }
+
+function asSendPromise<T>(responsePromise: Promise<HttpResponse>, thenReceive: () => Promise<T>): SendPromise<T> {
+    (responsePromise as SendPromise<T>).thenReceive = thenReceive;
+    return responsePromise as SendPromise<T>;
+  }

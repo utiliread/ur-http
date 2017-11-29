@@ -1,9 +1,9 @@
 import { HttpBuilder } from './http-builder';
-import { HttpResponseOfT } from './http-response-of-t';
+import { SendPromise } from './send-promise';
 export declare class HttpBuilderOfT<T> {
     inner: HttpBuilder;
     handler: (response: Response) => Promise<T>;
     constructor(inner: HttpBuilder, handler: (response: Response) => Promise<T>);
-    send(): Promise<HttpResponseOfT<T>>;
-    receive(): Promise<T>;
+    send(): SendPromise<T>;
+    transfer(): Promise<T>;
 }

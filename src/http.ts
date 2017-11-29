@@ -1,27 +1,28 @@
 import { HttpBuilder } from './http-builder';
+import { QueryString } from './query-string';
 
 export class Http {
-    static request(method: string, url: string) {
-        return new HttpBuilder(method, url);
+    static request(method: string, url: string, params?: any) {
+        return new HttpBuilder(method, url + QueryString.serialize(params));
     }
 
-    static post(url: string) {
-        return new HttpBuilder('POST', url);
+    static post(url: string, params?: any) {
+        return Http.request('POST', url, params);
     }
 
-    static get(url: string) {
-        return new HttpBuilder('GET', url);
+    static get(url: string, params?: any) {
+        return Http.request('GET', url, params);
     }
 
-    static put(url: string) {
-        return new HttpBuilder('PUT', url);
+    static put(url: string, params?: any) {
+        return Http.request('PUT', url, params);
     }
 
-    static patch(url: string) {
-        return new HttpBuilder('PATCH', url);
+    static patch(url: string, params?: any) {
+        return Http.request('PATCH', url, params);
     }
 
-    static delete(url: string) {
-        return new HttpBuilder('DELETE', url);
+    static delete(url: string, params?: any) {
+        return Http.request('DELETE', url, params);
     }
 }
