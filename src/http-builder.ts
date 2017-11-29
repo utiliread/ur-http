@@ -1,5 +1,3 @@
-import { duration, utc } from 'moment';
-
 import { HttpBuilderOfT } from './http-builder-of-t';
 import { HttpClient } from 'aurelia-fetch-client';
 import { HttpResponse } from './http-response';
@@ -40,17 +38,11 @@ export class HttpBuilder {
             this.message.headers.set('Content-Type', this.message.contentType);
         }
 
-        let tic = utc();
-
         let response = await this.client.fetch(this.message.url, {
             method: this.message.method,
             body: this.message.content,
             headers: this.message.headers
         });
-
-        var elapsed = duration(utc().diff(tic));
-
-        console.log(`Received ${response.status} on ${response.url} in ${elapsed.asMilliseconds()}ms`);
 
         return new HttpResponse(response);
     }

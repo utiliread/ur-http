@@ -33,7 +33,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-import { duration, utc } from 'moment';
 import { HttpBuilderOfT } from './http-builder-of-t';
 import { HttpClient } from 'aurelia-fetch-client';
 import { HttpResponse } from './http-response';
@@ -56,14 +55,13 @@ var HttpBuilder = /** @class */ (function () {
     };
     HttpBuilder.prototype.send = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var tic, response, elapsed;
+            var response;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         if (this.message.contentType) {
                             this.message.headers.set('Content-Type', this.message.contentType);
                         }
-                        tic = utc();
                         return [4 /*yield*/, this.client.fetch(this.message.url, {
                                 method: this.message.method,
                                 body: this.message.content,
@@ -71,8 +69,6 @@ var HttpBuilder = /** @class */ (function () {
                             })];
                     case 1:
                         response = _a.sent();
-                        elapsed = duration(utc().diff(tic));
-                        console.log("Received " + response.status + " on " + response.url + " in " + elapsed.asMilliseconds() + "ms");
                         return [2 /*return*/, new HttpResponse(response)];
                 }
             });
