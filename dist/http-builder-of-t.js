@@ -8,9 +8,6 @@ var HttpBuilderOfT = /** @class */ (function () {
         var responsePromise = this.inner.send();
         return asSendPromise(responsePromise, function () { return responsePromise.then(function (response) { return _this.handler(response.rawResponse); }); });
     };
-    HttpBuilderOfT.prototype.transfer = function () {
-        return this.send().thenReceive();
-    };
     return HttpBuilderOfT;
 }());
 export { HttpBuilderOfT };

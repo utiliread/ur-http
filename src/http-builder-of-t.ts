@@ -11,13 +11,9 @@ export class HttpBuilderOfT<T> {
         
         return asSendPromise(responsePromise, () => responsePromise.then(response => this.handler(response.rawResponse)));
     }
-
-    transfer() {
-        return this.send().thenReceive();
-    }
 }
 
 function asSendPromise<T>(responsePromise: Promise<HttpResponse>, thenReceive: () => Promise<T>): SendPromise<T> {
     (responsePromise as SendPromise<T>).thenReceive = thenReceive;
     return responsePromise as SendPromise<T>;
-  }
+}
