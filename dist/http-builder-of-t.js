@@ -33,59 +33,28 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-import { duration, utc } from 'moment';
-import { HttpClient } from 'aurelia-fetch-client';
 import { HttpResponseOfT } from './http-response-of-t';
 var HttpBuilderOfT = /** @class */ (function () {
     function HttpBuilderOfT(inner, handler) {
         this.inner = inner;
         this.handler = handler;
     }
-    HttpBuilderOfT.prototype.send = function (method) {
+    HttpBuilderOfT.prototype.send = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var message, tic, response, elapsed, data;
+            var response, data;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0:
-                        message = this.inner.message;
-                        if (message.contentType) {
-                            message.headers.set('Content-Type', message.contentType);
-                        }
-                        tic = utc();
-                        return [4 /*yield*/, HttpBuilderOfT.client.fetch(message.url, {
-                                method: method,
-                                body: message.content,
-                                headers: message.headers
-                            })];
+                    case 0: return [4 /*yield*/, this.inner.send()];
                     case 1:
                         response = _a.sent();
-                        elapsed = duration(utc().diff(tic));
-                        console.log("Received " + response.status + " on " + response.url + " in " + elapsed.asMilliseconds() + "ms");
-                        return [4 /*yield*/, this.handler(response)];
+                        return [4 /*yield*/, this.handler(response.rawResponse)];
                     case 2:
                         data = _a.sent();
-                        return [2 /*return*/, new HttpResponseOfT(response, data)];
+                        return [2 /*return*/, new HttpResponseOfT(response.rawResponse, data)];
                 }
             });
         });
     };
-    // Verb Extensions
-    HttpBuilderOfT.prototype.post = function () {
-        return this.send('POST');
-    };
-    HttpBuilderOfT.prototype.get = function () {
-        return this.send('GET');
-    };
-    HttpBuilderOfT.prototype.put = function () {
-        return this.send('PUT');
-    };
-    HttpBuilderOfT.prototype.patch = function () {
-        return this.send('PATCH');
-    };
-    HttpBuilderOfT.prototype.delete = function () {
-        return this.send('DELETE');
-    };
-    HttpBuilderOfT.client = new HttpClient();
     return HttpBuilderOfT;
 }());
 export { HttpBuilderOfT };
