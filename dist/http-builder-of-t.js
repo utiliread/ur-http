@@ -33,7 +33,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+import { duration, utc } from 'moment';
 import { HttpClient } from 'aurelia-fetch-client';
+import { HttpResponseOfT } from './http-response-of-t';
 var HttpBuilderOfT = /** @class */ (function () {
     function HttpBuilderOfT(inner, handler) {
         this.inner = inner;
@@ -41,7 +43,7 @@ var HttpBuilderOfT = /** @class */ (function () {
     }
     HttpBuilderOfT.prototype.send = function (method) {
         return __awaiter(this, void 0, void 0, function () {
-            var message, response, result;
+            var message, tic, response, elapsed, data;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -49,6 +51,7 @@ var HttpBuilderOfT = /** @class */ (function () {
                         if (message.contentType) {
                             message.headers.set('Content-Type', message.contentType);
                         }
+                        tic = utc();
                         return [4 /*yield*/, HttpBuilderOfT.client.fetch(message.url, {
                                 method: method,
                                 body: message.content,
@@ -56,10 +59,12 @@ var HttpBuilderOfT = /** @class */ (function () {
                             })];
                     case 1:
                         response = _a.sent();
+                        elapsed = duration(utc().diff(tic));
+                        console.log("Received " + response.status + " on " + response.url + " in " + elapsed.asMilliseconds() + "ms");
                         return [4 /*yield*/, this.handler(response)];
                     case 2:
-                        result = _a.sent();
-                        return [2 /*return*/, result];
+                        data = _a.sent();
+                        return [2 /*return*/, new HttpResponseOfT(response, data)];
                 }
             });
         });

@@ -7,8 +7,8 @@ export declare class HttpBuilder {
         headers: Headers;
     };
     constructor(url: string);
-    sendContent(content: any, contentType?: string): this;
-    withHandler<T>(handler: (response: Response) => Promise<T>): HttpBuilderOfT<T>;
+    private sendContent(content, contentType?);
+    private withHandler<T>(handler);
     sendForm(content: FormData, contentType?: string): this;
     sendJson(content: any): this;
     addHeader(name: string, value: string): this;

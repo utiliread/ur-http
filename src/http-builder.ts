@@ -15,13 +15,13 @@ export class HttpBuilder {
         };
     }
 
-    sendContent(content: any, contentType?: string) {
+    private sendContent(content: any, contentType?: string) {
         this.message.content = content;
         this.message.contentType = contentType;
         return this;
     }
 
-    withHandler<T>(handler: (response: Response) => Promise<T>) {
+    private withHandler<T>(handler: (response: Response) => Promise<T>) {
         return new HttpBuilderOfT<T>(this, handler);
     }
 

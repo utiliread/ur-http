@@ -1,19 +1,23 @@
+import { duration, utc } from 'moment';
+
 import { HttpBuilder } from './http-builder';
 import { HttpClient } from 'aurelia-fetch-client';
-import { HttpResponse } from './http-response';
+import { HttpResponseOfT } from './http-response-of-t';
 
 export class HttpBuilderOfT<T> {
     private static client = new HttpClient();
-    
+
     constructor(public inner: HttpBuilder, public handler: (response: Response) => Promise<T>) {
     }
 
-    async send(method: string) {
+    private async send(method: string) {
         let message = this.inner.message;
 
         if (message.contentType) {
             message.headers.set('Content-Type', message.contentType);
         }
+
+        let tic = utc();
 
         let response = await HttpBuilderOfT.client.fetch(message.url, {
             method: method,
@@ -21,9 +25,13 @@ export class HttpBuilderOfT<T> {
             headers: message.headers
         });
 
-        let result = await this.handler(response);
+        var elapsed = duration(utc().diff(tic));
 
-        return result;
+        console.log(`Received ${response.status} on ${response.url} in ${elapsed.asMilliseconds()}ms`);
+
+        let data = await this.handler(response);
+
+        return new HttpResponseOfT(response, data);
     }
 
     // Verb Extensions
