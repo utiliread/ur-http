@@ -73,6 +73,11 @@ export class HttpBuilder {
 
     expectJson<T>(factory?: (object: any) => T) {
         this.message.headers.set('Accept', 'application/json');
-        return this.useHandler(response => response.json().then(x => factory ? factory(x) : <T>x));
+        return this.useHandler(response => {
+            if (response.status === 204) {
+                return Promise.resolve(null);
+            }
+            return response.json().then(x => factory ? factory(x) : <T>x);
+        });
     }
 }

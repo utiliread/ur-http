@@ -93,7 +93,12 @@ var HttpBuilder = /** @class */ (function () {
     // Expect Extensions
     HttpBuilder.prototype.expectJson = function (factory) {
         this.message.headers.set('Accept', 'application/json');
-        return this.useHandler(function (response) { return response.json().then(function (x) { return factory ? factory(x) : x; }); });
+        return this.useHandler(function (response) {
+            if (response.status === 204) {
+                return Promise.resolve(null);
+            }
+            return response.json().then(function (x) { return factory ? factory(x) : x; });
+        });
     };
     HttpBuilder.client = new HttpClient();
     return HttpBuilder;

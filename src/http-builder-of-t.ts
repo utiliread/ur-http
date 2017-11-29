@@ -3,7 +3,7 @@ import { HttpResponse } from './http-response';
 import { SendPromise } from './send-promise';
 
 export class HttpBuilderOfT<T> {
-    constructor(public inner: HttpBuilder, public handler: (response: Response) => Promise<T>) {
+    constructor(private inner: HttpBuilder, private handler: (response: Response) => Promise<T>) {
     }
     
     send() {

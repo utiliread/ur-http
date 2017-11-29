@@ -19,5 +19,5 @@ export declare class HttpBuilder {
     withForm(content: FormData, contentType?: string): this;
     withJson(content: any): this;
     addHeader(name: string, value: string): this;
-    expectJson<T>(factory?: (object: any) => T): HttpBuilderOfT<T>;
+    expectJson<T>(factory?: (object: any) => T): HttpBuilderOfT<T | null>;
 }
