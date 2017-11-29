@@ -5,4 +5,5 @@ export declare class HttpBuilderOfT<T> {
     handler: (response: Response) => Promise<T>;
     constructor(inner: HttpBuilder, handler: (response: Response) => Promise<T>);
     send(): Promise<HttpResponseOfT<T>>;
+    receive(): Promise<T>;
 }

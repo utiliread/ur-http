@@ -12,4 +12,8 @@ export class HttpBuilderOfT<T> {
 
         return new HttpResponseOfT(response.rawResponse, data);
     }
+
+    receive() {
+        return this.send().then(x => x.data);
+    }
 }

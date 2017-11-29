@@ -55,6 +55,9 @@ var HttpBuilderOfT = /** @class */ (function () {
             });
         });
     };
+    HttpBuilderOfT.prototype.receive = function () {
+        return this.send().then(function (x) { return x.data; });
+    };
     return HttpBuilderOfT;
 }());
 export { HttpBuilderOfT };
