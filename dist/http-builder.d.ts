@@ -12,11 +12,12 @@ export declare class HttpBuilder {
     };
     client: HttpClient;
     constructor(method: string, url: string);
-    private sendContent(content, contentType?);
-    private withHandler<T>(handler);
+    private withContent(content, contentType?);
+    private useHandler<T>(handler);
+    using(client: HttpClient): this;
     send(): Promise<HttpResponse>;
-    sendForm(content: FormData, contentType?: string): this;
-    sendJson(content: any): this;
+    withForm(content: FormData, contentType?: string): this;
+    withJson(content: any): this;
     addHeader(name: string, value: string): this;
-    expectJson<T>(factory?: (object: any) => T): HttpBuilderOfT<any>;
+    expectJson<T>(factory?: (object: any) => T): HttpBuilderOfT<T>;
 }

@@ -13,7 +13,7 @@ export class HttpBuilder {
         headers: Headers;
     };
 
-    client = HttpBuilder.client;
+    client = HttpBuilder.client; // Default client
     
     constructor(method: string, url: string) {
         this.message = {
@@ -23,14 +23,19 @@ export class HttpBuilder {
         };
     }
 
-    private sendContent(content: any, contentType?: string) {
+    private withContent(content: any, contentType?: string) {
         this.message.content = content;
         this.message.contentType = contentType;
         return this;
     }
 
-    private withHandler<T>(handler: (response: Response) => Promise<T>) {
+    private useHandler<T>(handler: (response: Response) => Promise<T>) {
         return new HttpBuilderOfT<T>(this, handler);
+    }
+
+    using(client: HttpClient) {
+        this.client = client;
+        return this;
     }
 
     async send() {
@@ -47,14 +52,14 @@ export class HttpBuilder {
         return new HttpResponse(response);
     }
 
-    // Send Extensions
+    // Content Extensions
 
-    sendForm(content: FormData, contentType?: string) {
-        return this.sendContent(content, contentType);
+    withForm(content: FormData, contentType?: string) {
+        return this.withContent(content, contentType);
     }
 
-    sendJson(content: any) {
-        return this.sendContent(JSON.stringify(content), 'application/json');
+    withJson(content: any) {
+        return this.withContent(JSON.stringify(content), 'application/json');
     }
 
     // Modifier Extensions
@@ -68,6 +73,6 @@ export class HttpBuilder {
 
     expectJson<T>(factory?: (object: any) => T) {
         this.message.headers.set('Accept', 'application/json');
-        return this.withHandler(response => response.json().then(x => factory ? factory(x) : x));
+        return this.useHandler(response => response.json().then(x => factory ? factory(x) : <T>x));
     }
 }

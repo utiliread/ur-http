@@ -38,20 +38,24 @@ import { HttpClient } from 'aurelia-fetch-client';
 import { HttpResponse } from './http-response';
 var HttpBuilder = /** @class */ (function () {
     function HttpBuilder(method, url) {
-        this.client = HttpBuilder.client;
+        this.client = HttpBuilder.client; // Default client
         this.message = {
             method: method,
             url: url,
             headers: new Headers()
         };
     }
-    HttpBuilder.prototype.sendContent = function (content, contentType) {
+    HttpBuilder.prototype.withContent = function (content, contentType) {
         this.message.content = content;
         this.message.contentType = contentType;
         return this;
     };
-    HttpBuilder.prototype.withHandler = function (handler) {
+    HttpBuilder.prototype.useHandler = function (handler) {
         return new HttpBuilderOfT(this, handler);
+    };
+    HttpBuilder.prototype.using = function (client) {
+        this.client = client;
+        return this;
     };
     HttpBuilder.prototype.send = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -74,12 +78,12 @@ var HttpBuilder = /** @class */ (function () {
             });
         });
     };
-    // Send Extensions
-    HttpBuilder.prototype.sendForm = function (content, contentType) {
-        return this.sendContent(content, contentType);
+    // Content Extensions
+    HttpBuilder.prototype.withForm = function (content, contentType) {
+        return this.withContent(content, contentType);
     };
-    HttpBuilder.prototype.sendJson = function (content) {
-        return this.sendContent(JSON.stringify(content), 'application/json');
+    HttpBuilder.prototype.withJson = function (content) {
+        return this.withContent(JSON.stringify(content), 'application/json');
     };
     // Modifier Extensions
     HttpBuilder.prototype.addHeader = function (name, value) {
@@ -89,7 +93,7 @@ var HttpBuilder = /** @class */ (function () {
     // Expect Extensions
     HttpBuilder.prototype.expectJson = function (factory) {
         this.message.headers.set('Accept', 'application/json');
-        return this.withHandler(function (response) { return response.json().then(function (x) { return factory ? factory(x) : x; }); });
+        return this.useHandler(function (response) { return response.json().then(function (x) { return factory ? factory(x) : x; }); });
     };
     HttpBuilder.client = new HttpClient();
     return HttpBuilder;
