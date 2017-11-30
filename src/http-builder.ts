@@ -1,9 +1,8 @@
 import { HttpBuilderOfT } from './http-builder-of-t';
-import { HttpClient } from 'aurelia-fetch-client';
 import { HttpResponse } from './http-response';
 
 export class HttpBuilder {
-    private static client = new HttpClient();
+    static fetch = fetch;
     
     message: {
         method: string;
@@ -13,7 +12,7 @@ export class HttpBuilder {
         headers: Headers;
     };
 
-    client = HttpBuilder.client; // Default client
+    fetch = HttpBuilder.fetch; // Default fetch
     
     constructor(method: string, url: string) {
         this.message = {
@@ -33,8 +32,8 @@ export class HttpBuilder {
         return new HttpBuilderOfT<T>(this, handler);
     }
 
-    using(client: HttpClient) {
-        this.client = client;
+    using(fetch: (input: RequestInfo) => Promise<Response>) {
+        this.fetch = fetch;
         return this;
     }
 
@@ -43,7 +42,7 @@ export class HttpBuilder {
             this.message.headers.set('Content-Type', this.message.contentType);
         }
 
-        let response = await this.client.fetch(this.message.url, {
+        let response = await this.fetch(this.message.url, {
             method: this.message.method,
             body: this.message.content,
             headers: this.message.headers

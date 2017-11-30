@@ -1,8 +1,7 @@
 import { HttpBuilderOfT } from './http-builder-of-t';
-import { HttpClient } from 'aurelia-fetch-client';
 import { HttpResponse } from './http-response';
 export declare class HttpBuilder {
-    private static client;
+    static fetch: typeof fetch;
     message: {
         method: string;
         url: string;
@@ -10,11 +9,11 @@ export declare class HttpBuilder {
         contentType?: string;
         headers: Headers;
     };
-    client: HttpClient;
+    fetch: typeof fetch;
     constructor(method: string, url: string);
     private withContent(content, contentType?);
     private useHandler<T>(handler);
-    using(client: HttpClient): this;
+    using(fetch: (input: RequestInfo) => Promise<Response>): this;
     send(): Promise<HttpResponse>;
     withForm(content: FormData, contentType?: string): this;
     withJson(content: any): this;

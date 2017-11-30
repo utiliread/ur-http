@@ -34,11 +34,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 import { HttpBuilderOfT } from './http-builder-of-t';
-import { HttpClient } from 'aurelia-fetch-client';
 import { HttpResponse } from './http-response';
 var HttpBuilder = /** @class */ (function () {
     function HttpBuilder(method, url) {
-        this.client = HttpBuilder.client; // Default client
+        this.fetch = HttpBuilder.fetch; // Default fetch
         this.message = {
             method: method,
             url: url,
@@ -53,8 +52,8 @@ var HttpBuilder = /** @class */ (function () {
     HttpBuilder.prototype.useHandler = function (handler) {
         return new HttpBuilderOfT(this, handler);
     };
-    HttpBuilder.prototype.using = function (client) {
-        this.client = client;
+    HttpBuilder.prototype.using = function (fetch) {
+        this.fetch = fetch;
         return this;
     };
     HttpBuilder.prototype.send = function () {
@@ -66,7 +65,7 @@ var HttpBuilder = /** @class */ (function () {
                         if (this.message.contentType) {
                             this.message.headers.set('Content-Type', this.message.contentType);
                         }
-                        return [4 /*yield*/, this.client.fetch(this.message.url, {
+                        return [4 /*yield*/, this.fetch(this.message.url, {
                                 method: this.message.method,
                                 body: this.message.content,
                                 headers: this.message.headers
@@ -100,7 +99,7 @@ var HttpBuilder = /** @class */ (function () {
             return response.json().then(function (x) { return factory ? factory(x) : x; });
         });
     };
-    HttpBuilder.client = new HttpClient();
+    HttpBuilder.fetch = fetch;
     return HttpBuilder;
 }());
 export { HttpBuilder };
