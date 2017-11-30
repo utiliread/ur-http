@@ -14,7 +14,7 @@ export declare class HttpBuilder {
     private withContent(content, contentType?);
     private useHandler<T>(handler);
     using(fetch: (input: RequestInfo) => Promise<Response>): this;
-    send(): Promise<HttpResponse>;
+    send(abortSignal?: any): Promise<HttpResponse>;
     withForm(content: FormData, contentType?: string): this;
     withJson(content: any): this;
     addHeader(name: string, value: string): this;

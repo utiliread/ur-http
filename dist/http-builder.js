@@ -56,7 +56,7 @@ var HttpBuilder = /** @class */ (function () {
         this.fetch = fetch;
         return this;
     };
-    HttpBuilder.prototype.send = function () {
+    HttpBuilder.prototype.send = function (abortSignal) {
         return __awaiter(this, void 0, void 0, function () {
             var response;
             return __generator(this, function (_a) {
@@ -68,7 +68,8 @@ var HttpBuilder = /** @class */ (function () {
                         return [4 /*yield*/, this.fetch(this.message.url, {
                                 method: this.message.method,
                                 body: this.message.content,
-                                headers: this.message.headers
+                                headers: this.message.headers,
+                                signal: abortSignal
                             })];
                     case 1:
                         response = _a.sent();

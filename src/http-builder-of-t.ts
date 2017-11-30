@@ -6,8 +6,8 @@ export class HttpBuilderOfT<T> {
     constructor(private inner: HttpBuilder, private handler: (response: Response) => Promise<T>) {
     }
     
-    send() {
-        let responsePromise = this.inner.send();
+    send(abortSignal?: any) {
+        let responsePromise = this.inner.send(abortSignal);
         
         return asSendPromise(responsePromise, () => responsePromise.then(response => this.handler(response.rawResponse)));
     }

@@ -3,9 +3,9 @@ var HttpBuilderOfT = /** @class */ (function () {
         this.inner = inner;
         this.handler = handler;
     }
-    HttpBuilderOfT.prototype.send = function () {
+    HttpBuilderOfT.prototype.send = function (abortSignal) {
         var _this = this;
-        var responsePromise = this.inner.send();
+        var responsePromise = this.inner.send(abortSignal);
         return asSendPromise(responsePromise, function () { return responsePromise.then(function (response) { return _this.handler(response.rawResponse); }); });
     };
     return HttpBuilderOfT;

@@ -37,15 +37,17 @@ export class HttpBuilder {
         return this;
     }
 
-    async send() {
+    async send(abortSignal?: any) {
         if (this.message.contentType) {
             this.message.headers.set('Content-Type', this.message.contentType);
         }
 
-        let response = await this.fetch(this.message.url, {
+        // Cast to any to allow for the signal property
+        let response = await this.fetch(this.message.url, <any>{
             method: this.message.method,
             body: this.message.content,
-            headers: this.message.headers
+            headers: this.message.headers,
+            signal: abortSignal
         });
 
         return new HttpResponse(response);
