@@ -22,13 +22,13 @@ export class HttpBuilder {
         };
     }
 
-    private useHandler<T>(handler: (response: Response) => Promise<T>) {
-        return new HttpBuilderOfT<T>(this, handler);
-    }
-
     using(fetch: (input: RequestInfo) => Promise<Response>) {
         this.fetch = fetch;
         return this;
+    }
+
+    private useHandler<T>(handler: (response: Response) => Promise<T>) {
+        return new HttpBuilderOfT<T>(this, handler);
     }
 
     async send(abortSignal?: any) {
