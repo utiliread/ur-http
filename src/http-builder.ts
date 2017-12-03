@@ -7,9 +7,9 @@ export class HttpBuilder {
     message: {
         method: string;
         url: string;
+        headers: Headers;
         content?: any;
         contentType?: string;
-        headers: Headers;
     };
 
     fetch = HttpBuilder.fetch; // Default fetch
@@ -20,12 +20,6 @@ export class HttpBuilder {
             url: url,
             headers: new Headers()
         };
-    }
-
-    private withContent(content: any, contentType?: string) {
-        this.message.content = content;
-        this.message.contentType = contentType;
-        return this;
     }
 
     private useHandler<T>(handler: (response: Response) => Promise<T>) {
@@ -55,12 +49,16 @@ export class HttpBuilder {
 
     // Content Extensions
 
-    withForm(content: FormData, contentType?: string) {
-        return this.withContent(content, contentType);
+    withForm(content: FormData) {
+        this.message.content = content;
+        this.message.contentType = undefined;
+        return this;
     }
 
     withJson(content: any) {
-        return this.withContent(JSON.stringify(content), 'application/json');
+        this.message.content = JSON.stringify(content);
+        this.message.contentType = 'application/json';
+        return this;
     }
 
     // Modifier Extensions

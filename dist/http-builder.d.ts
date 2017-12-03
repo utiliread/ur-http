@@ -5,17 +5,16 @@ export declare class HttpBuilder {
     message: {
         method: string;
         url: string;
+        headers: Headers;
         content?: any;
         contentType?: string;
-        headers: Headers;
     };
     fetch: typeof fetch;
     constructor(method: string, url: string);
-    private withContent(content, contentType?);
     private useHandler<T>(handler);
     using(fetch: (input: RequestInfo) => Promise<Response>): this;
     send(abortSignal?: any): Promise<HttpResponse>;
-    withForm(content: FormData, contentType?: string): this;
+    withForm(content: FormData): this;
     withJson(content: any): this;
     addHeader(name: string, value: string): this;
     expectJson<T>(factory?: (object: any) => T): HttpBuilderOfT<T | null>;

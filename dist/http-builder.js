@@ -44,11 +44,6 @@ var HttpBuilder = /** @class */ (function () {
             headers: new Headers()
         };
     }
-    HttpBuilder.prototype.withContent = function (content, contentType) {
-        this.message.content = content;
-        this.message.contentType = contentType;
-        return this;
-    };
     HttpBuilder.prototype.useHandler = function (handler) {
         return new HttpBuilderOfT(this, handler);
     };
@@ -79,11 +74,15 @@ var HttpBuilder = /** @class */ (function () {
         });
     };
     // Content Extensions
-    HttpBuilder.prototype.withForm = function (content, contentType) {
-        return this.withContent(content, contentType);
+    HttpBuilder.prototype.withForm = function (content) {
+        this.message.content = content;
+        this.message.contentType = undefined;
+        return this;
     };
     HttpBuilder.prototype.withJson = function (content) {
-        return this.withContent(JSON.stringify(content), 'application/json');
+        this.message.content = JSON.stringify(content);
+        this.message.contentType = 'application/json';
+        return this;
     };
     // Modifier Extensions
     HttpBuilder.prototype.addHeader = function (name, value) {
