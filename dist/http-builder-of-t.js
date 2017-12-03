@@ -1,3 +1,4 @@
+import { HttpResponseOfT } from './http-response-of-t';
 var HttpBuilderOfT = /** @class */ (function () {
     function HttpBuilderOfT(inner, handler) {
         this.inner = inner;
@@ -5,8 +6,8 @@ var HttpBuilderOfT = /** @class */ (function () {
     }
     HttpBuilderOfT.prototype.send = function (abortSignal) {
         var _this = this;
-        var responsePromise = this.inner.send(abortSignal);
-        return asSendPromise(responsePromise, function () { return responsePromise.then(function (response) { return _this.handler(response.rawResponse); }); });
+        var responsePromise = this.inner.send(abortSignal).then(function (x) { return new HttpResponseOfT(x.rawResponse, _this.handler); });
+        return asSendPromise(responsePromise, function () { return responsePromise.then(function (response) { return response.receive(); }); });
     };
     return HttpBuilderOfT;
 }());

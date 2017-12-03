@@ -1,5 +1,6 @@
 import { HttpBuilder } from './http-builder';
 import { HttpResponse } from './http-response';
+import { HttpResponseOfT } from './http-response-of-t';
 import { SendPromise } from './send-promise';
 
 export class HttpBuilderOfT<T> {
@@ -7,9 +8,9 @@ export class HttpBuilderOfT<T> {
     }
     
     send(abortSignal?: any) {
-        let responsePromise = this.inner.send(abortSignal);
+        let responsePromise = this.inner.send(abortSignal).then(x => new HttpResponseOfT<T>(x.rawResponse, this.handler));
         
-        return asSendPromise(responsePromise, () => responsePromise.then(response => this.handler(response.rawResponse)));
+        return asSendPromise(responsePromise, () => responsePromise.then(response => response.receive()));
     }
 }
 
