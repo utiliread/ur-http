@@ -2,7 +2,7 @@ import { HttpBuilderOfT } from './http-builder-of-t';
 import { HttpResponse } from './http-response';
 
 export class HttpBuilder {
-    static fetch = fetch;
+    static defaultFetch = fetch;
     
     message: {
         method: string;
@@ -12,7 +12,7 @@ export class HttpBuilder {
         contentType?: string;
     };
 
-    fetch = HttpBuilder.fetch; // Default fetch
+    fetch = HttpBuilder.defaultFetch;
     
     constructor(method: string, url: string) {
         this.message = {

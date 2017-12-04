@@ -12,6 +12,10 @@ export class HttpBuilderOfT<T> {
         
         return asSendPromise(responsePromise, () => responsePromise.then(response => response.receive()));
     }
+
+    transfer(abortSignal?: any) {
+        return this.send(abortSignal).thenReceive();
+    }
 }
 
 function asSendPromise<T>(responsePromise: Promise<HttpResponse>, thenReceive: () => Promise<T>): SendPromise<T> {

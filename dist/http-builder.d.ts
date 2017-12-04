@@ -1,7 +1,7 @@
 import { HttpBuilderOfT } from './http-builder-of-t';
 import { HttpResponse } from './http-response';
 export declare class HttpBuilder {
-    static fetch: typeof fetch;
+    static defaultFetch: typeof fetch;
     message: {
         method: string;
         url: string;
@@ -11,8 +11,8 @@ export declare class HttpBuilder {
     };
     fetch: typeof fetch;
     constructor(method: string, url: string);
-    private useHandler<T>(handler);
     using(fetch: (input: RequestInfo) => Promise<Response>): this;
+    private useHandler<T>(handler);
     send(abortSignal?: any): Promise<HttpResponse>;
     withForm(content: FormData): this;
     withJson(content: any): this;

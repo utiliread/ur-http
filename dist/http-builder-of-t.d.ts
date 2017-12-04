@@ -5,4 +5,5 @@ export declare class HttpBuilderOfT<T> {
     private handler;
     constructor(inner: HttpBuilder, handler: (response: Response) => Promise<T>);
     send(abortSignal?: any): SendPromise<T>;
+    transfer(abortSignal?: any): Promise<T>;
 }

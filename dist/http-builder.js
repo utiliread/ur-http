@@ -37,19 +37,19 @@ import { HttpBuilderOfT } from './http-builder-of-t';
 import { HttpResponse } from './http-response';
 var HttpBuilder = /** @class */ (function () {
     function HttpBuilder(method, url) {
-        this.fetch = HttpBuilder.fetch; // Default fetch
+        this.fetch = HttpBuilder.defaultFetch;
         this.message = {
             method: method,
             url: url,
             headers: new Headers()
         };
     }
-    HttpBuilder.prototype.useHandler = function (handler) {
-        return new HttpBuilderOfT(this, handler);
-    };
     HttpBuilder.prototype.using = function (fetch) {
         this.fetch = fetch;
         return this;
+    };
+    HttpBuilder.prototype.useHandler = function (handler) {
+        return new HttpBuilderOfT(this, handler);
     };
     HttpBuilder.prototype.send = function (abortSignal) {
         return __awaiter(this, void 0, void 0, function () {
@@ -99,7 +99,7 @@ var HttpBuilder = /** @class */ (function () {
             return response.json().then(function (x) { return factory ? factory(x) : x; });
         });
     };
-    HttpBuilder.fetch = fetch;
+    HttpBuilder.defaultFetch = fetch;
     return HttpBuilder;
 }());
 export { HttpBuilder };
