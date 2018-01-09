@@ -1,8 +1,8 @@
 import { PaginationResult, paginationFactory } from './pagination';
-import { deserialize, deserializeArray } from 'ur-json';
 
 import { HttpBuilderOfT } from './http-builder-of-t';
 import { HttpResponse } from './http-response';
+import { deserialize } from 'ur-json';
 import { isEmptyTypeCtor } from './utils';
 
 export class HttpBuilder {
@@ -94,25 +94,31 @@ export class HttpBuilder {
         });
     }
 
-    expectJsonArray<T>(itemTypeCtor: { new (): T }) {
+    expectJsonArray<T>(itemTypeCtorOrFactory: { new (): T } | ((item: any) => T)) {
         this.message.headers.set('Accept', 'application/json');
         return this.useHandler(response => {
             if (response.status === 204) {
                 return Promise.resolve(null);
             }
             
-            return response.json().then(x => deserializeArray(itemTypeCtor, x));
+            return response.json().then((x: any[]) => {
+                const itemFactory = isEmptyTypeCtor(itemTypeCtorOrFactory)
+                    ? (x: any) => deserialize(itemTypeCtorOrFactory, x)
+                    : itemTypeCtorOrFactory;
+
+                return x.map(itemFactory);
+            });
         });
     }
 
-    expectJsonPaginationResult<T>(itemTypeCtor: { new (): T }) {
+    expectJsonPaginationResult<T>(itemTypeCtorOrFactory: { new (): T } | ((item: any) => T)) {
         this.message.headers.set('Accept', 'application/json');
         return this.useHandler(response => {
             if (response.status === 204) {
                 return Promise.resolve(null);
             }
             
-            return response.json().then(x => paginationFactory(itemTypeCtor, x));
+            return response.json().then(x => paginationFactory(itemTypeCtorOrFactory, x));
         });
     }
 }

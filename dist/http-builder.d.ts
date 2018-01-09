@@ -21,10 +21,10 @@ export declare class HttpBuilder {
     expectJson<T>(typeCtorOrFactory?: {
         new (): T;
     } | ((object: any) => T)): HttpBuilderOfT<T | null | undefined>;
-    expectJsonArray<T>(itemTypeCtor: {
+    expectJsonArray<T>(itemTypeCtorOrFactory: {
         new (): T;
-    }): HttpBuilderOfT<(T | null | undefined)[] | null>;
-    expectJsonPaginationResult<T>(itemTypeCtor: {
+    } | ((item: any) => T)): HttpBuilderOfT<(T | null | undefined)[] | null>;
+    expectJsonPaginationResult<T>(itemTypeCtorOrFactory: {
         new (): T;
-    }): HttpBuilderOfT<PaginationResult<T> | null>;
+    } | ((item: any) => T)): HttpBuilderOfT<PaginationResult<T> | null>;
 }

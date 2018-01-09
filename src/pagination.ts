@@ -16,10 +16,10 @@ export interface PaginationResult<T> {
     data: T[];
 }
 
-export function paginationFactory<T>(itemTypeOrFactory: { new (): T } | ((item: any) => T), source: any): PaginationResult<T> {
-    const itemFactory = isEmptyTypeCtor(itemTypeOrFactory)
-        ? (x: any) => deserialize(itemTypeOrFactory, x)
-        : itemTypeOrFactory;
+export function paginationFactory<T>(itemTypeCtorOrFactory: { new (): T } | ((item: any) => T), source: PaginationResult<any>): PaginationResult<T> {
+    const itemFactory = isEmptyTypeCtor(itemTypeCtorOrFactory)
+        ? (x: any) => deserialize(itemTypeCtorOrFactory, x)
+        : itemTypeCtorOrFactory;
         
     return extend(source, {
         data: source.data.map(itemFactory)
