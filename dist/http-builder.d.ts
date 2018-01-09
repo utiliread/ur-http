@@ -1,3 +1,4 @@
+import { PaginationResult } from './pagination';
 import { HttpBuilderOfT } from './http-builder-of-t';
 import { HttpResponse } from './http-response';
 export declare class HttpBuilder {
@@ -23,4 +24,7 @@ export declare class HttpBuilder {
     expectJsonArray<T>(itemTypeCtor: {
         new (): T;
     }): HttpBuilderOfT<(T | null | undefined)[] | null>;
+    expectJsonPaginationResult<T>(itemTypeCtor: {
+        new (): T;
+    }): HttpBuilderOfT<PaginationResult<T> | null>;
 }

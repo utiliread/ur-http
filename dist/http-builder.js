@@ -1,3 +1,4 @@
+import { paginationFactory } from './pagination';
 import { deserialize, deserializeArray } from 'ur-json';
 import { HttpBuilderOfT } from './http-builder-of-t';
 import { HttpResponse } from './http-response';
@@ -72,6 +73,15 @@ export class HttpBuilder {
                 return Promise.resolve(null);
             }
             return response.json().then(x => deserializeArray(itemTypeCtor, x));
+        });
+    }
+    expectJsonPaginationResult(itemTypeCtor) {
+        this.message.headers.set('Accept', 'application/json');
+        return this.useHandler(response => {
+            if (response.status === 204) {
+                return Promise.resolve(null);
+            }
+            return response.json().then(x => paginationFactory(itemTypeCtor, x));
         });
     }
 }
