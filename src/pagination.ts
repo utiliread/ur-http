@@ -1,6 +1,6 @@
 import { deserialize } from 'ur-json';
 import { extend } from 'lodash-es';
-import { isClass } from './utils';
+import { isEmptyTypeCtor } from './utils';
 
 export interface Page {
     number: number;
@@ -17,7 +17,7 @@ export interface PaginationResult<T> {
 }
 
 export function paginationFactory<T>(itemTypeOrFactory: { new (): T } | ((item: any) => T), source: any): PaginationResult<T> {
-    const itemFactory = isClass(itemTypeOrFactory)
+    const itemFactory = isEmptyTypeCtor(itemTypeOrFactory)
         ? (x: any) => deserialize(itemTypeOrFactory, x)
         : itemTypeOrFactory;
         

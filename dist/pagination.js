@@ -1,8 +1,8 @@
 import { deserialize } from 'ur-json';
 import { extend } from 'lodash-es';
-import { isClass } from './utils';
+import { isEmptyTypeCtor } from './utils';
 export function paginationFactory(itemTypeOrFactory, source) {
-    const itemFactory = isClass(itemTypeOrFactory)
+    const itemFactory = isEmptyTypeCtor(itemTypeOrFactory)
         ? (x) => deserialize(itemTypeOrFactory, x)
         : itemTypeOrFactory;
     return extend(source, {

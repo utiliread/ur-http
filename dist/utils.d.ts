@@ -1,5 +1,3 @@
-export declare function isClass<T>(itemTypeOrFactory: {
-    new (): T;
-} | ((item: any) => T)): itemTypeOrFactory is {
+export declare function isEmptyTypeCtor<T>(typeCtor: Function): typeCtor is {
     new (): T;
 };
