@@ -20,4 +20,7 @@ export declare class HttpBuilder {
     expectJson<T>(typeCtorOrFactory?: {
         new (): T;
     } | ((object: any) => T)): HttpBuilderOfT<T | null | undefined>;
+    expectJsonArray<T>(itemTypeCtor: {
+        new (): T;
+    }): HttpBuilderOfT<(T | null | undefined)[] | null>;
 }

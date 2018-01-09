@@ -1,6 +1,7 @@
+import { deserialize, deserializeArray } from 'ur-json';
+
 import { HttpBuilderOfT } from './http-builder-of-t';
 import { HttpResponse } from './http-response';
-import { deserialize } from 'ur-json';
 import { isEmptyTypeCtor } from './utils';
 
 export class HttpBuilder {
@@ -89,6 +90,17 @@ export class HttpBuilder {
                 
                 return factory(x);
             });
+        });
+    }
+
+    expectJsonArray<T>(itemTypeCtor: { new (): T }) {
+        this.message.headers.set('Accept', 'application/json');
+        return this.useHandler(response => {
+            if (response.status === 204) {
+                return Promise.resolve(null);
+            }
+            
+            return response.json().then(x => deserializeArray(itemTypeCtor, x));
         });
     }
 }
