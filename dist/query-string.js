@@ -1,16 +1,14 @@
 import { isMoment } from 'moment';
-var QueryString = /** @class */ (function () {
-    function QueryString() {
-    }
-    QueryString.serialize = function (params) {
+export class QueryString {
+    static serialize(params) {
         if (!params) {
             return '';
         }
         return '?' + this._serializeQueryString(params);
-    };
-    QueryString.getParameter = function (name) {
-        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)");
-        var match = regex.exec(window.location.href);
+    }
+    static getParameter(name) {
+        let regex = new RegExp(`[?&]${name}(=([^&#]*)|&|#|$)`);
+        let match = regex.exec(window.location.href);
         if (match) {
             if (match[1].length > 0) {
                 return decodeURIComponent(match[2]);
@@ -19,17 +17,17 @@ var QueryString = /** @class */ (function () {
                 return null;
             }
         }
-    };
-    QueryString._serializeQueryString = function (source, prefix) {
-        var parts = [];
-        for (var propertyName in source) {
+    }
+    static _serializeQueryString(source, prefix) {
+        let parts = [];
+        for (let propertyName in source) {
             if (source.hasOwnProperty(propertyName)) {
-                var key = prefix != null
+                let key = prefix != null
                     ? prefix + (Array.isArray(source)
                         ? '[' + propertyName + ']'
                         : '.' + propertyName)
                     : propertyName;
-                var value = source[propertyName];
+                let value = source[propertyName];
                 if (value !== undefined) {
                     if (isMoment(value)) {
                         parts.push(encodeURIComponent(key) + '=' + value.toISOString());
@@ -44,7 +42,5 @@ var QueryString = /** @class */ (function () {
             }
         }
         return parts.join('&');
-    };
-    return QueryString;
-}());
-export { QueryString };
+    }
+}

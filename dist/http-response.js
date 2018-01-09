@@ -1,7 +1,5 @@
-var HttpResponse = /** @class */ (function () {
-    function HttpResponse(rawResponse) {
+export class HttpResponse {
+    constructor(rawResponse) {
         this.rawResponse = rawResponse;
     }
-    return HttpResponse;
-}());
-export { HttpResponse };
+}
