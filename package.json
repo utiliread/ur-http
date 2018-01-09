@@ -1,18 +1,20 @@
 {
-    "name": "ur-http",
-    "version": "1.0.0",
-    "main": "dist/index.js",
-    "types": "dist/index.d.ts",
-    "scripts": {
-      "build": "tsc",
-      "clean": "rimraf dist"
-    },
-    "devDependencies": {
-      "rimraf": "^2.6.2",
-      "typescript": "^2.6.2"
-    },
-    "dependencies": {
-      "moment": "^2.19.2"
-    }
+  "name": "ur-http",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf dist"
+  },
+  "devDependencies": {
+    "@types/lodash-es": "^4.17.0",
+    "rimraf": "^2.6.2",
+    "typescript": "^2.6.2"
+  },
+  "dependencies": {
+    "lodash-es": "^4.17.4",
+    "moment": "^2.20.1",
+    "ur-json": "^1.0.0"
   }
-  
+}

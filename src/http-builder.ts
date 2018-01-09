@@ -1,5 +1,7 @@
 import { HttpBuilderOfT } from './http-builder-of-t';
 import { HttpResponse } from './http-response';
+import { deserialize } from 'ur-json';
+import { isClass } from './utils';
 
 export class HttpBuilder {
     static defaultFetch = fetch;
@@ -70,13 +72,23 @@ export class HttpBuilder {
 
     // Expect Extensions
 
-    expectJson<T>(factory?: (object: any) => T) {
+    expectJson<T>(typeOrFactory?: { new (): T } | ((object: any) => T)) {
         this.message.headers.set('Accept', 'application/json');
         return this.useHandler(response => {
             if (response.status === 204) {
                 return Promise.resolve(null);
             }
-            return response.json().then(x => factory ? factory(x) : <T>x);
+            
+            return response.json().then(x => {
+                if (!typeOrFactory) {
+                    return <T>x;
+                }
+                const factory = isClass(typeOrFactory)
+                    ? (x: any) => deserialize(typeOrFactory, x)
+                    : typeOrFactory;
+                
+                return factory(x);
+            });
         });
     }
 }
