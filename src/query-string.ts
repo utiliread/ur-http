@@ -1,4 +1,4 @@
-import { isMoment } from 'moment';
+import { DateTime } from 'luxon';
 
 export class QueryString {
     static serialize(params: any) {
@@ -34,16 +34,14 @@ export class QueryString {
                     : propertyName;
                 let value = source[propertyName];
 
-                if (value !== undefined) {
-                    if (isMoment(value)) {
-                        parts.push(encodeURIComponent(key) + '=' + value.toISOString())
-                    }
-                    else if (typeof value === 'object') {
-                        parts.push(this._serializeQueryString(value, key));
-                    }
-                    else if (value) {
-                        parts.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
-                    }
+                if (value instanceof DateTime) {
+                    parts.push(encodeURIComponent(key) + '=' + value.toISO())
+                }
+                else if (typeof value === 'object') {
+                    parts.push(this._serializeQueryString(value, key));
+                }
+                else if (value) {
+                    parts.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
                 }
             }
         }

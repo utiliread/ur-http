@@ -8,11 +8,12 @@
     "clean": "rimraf dist"
   },
   "devDependencies": {
+    "@types/luxon": "^0.2.2",
     "rimraf": "^2.6.2",
     "typescript": "^2.6.2"
   },
   "dependencies": {
-    "moment": "^2.20.1",
+    "luxon": "^0.2.12",
     "ur-json": "^1.1.0"
   }
 }
