@@ -1,5 +1,4 @@
 import { deserialize } from 'ur-json';
-import { extend } from 'lodash-es';
 import { isEmptyTypeCtor } from './utils';
 
 export interface Page {
@@ -16,12 +15,17 @@ export interface PaginationResult<T> {
     data: T[];
 }
 
-export function paginationFactory<T>(itemTypeCtorOrFactory: { new (): T } | ((item: any) => T), source: PaginationResult<any>): PaginationResult<T> {
+export function paginationFactory<T>(itemTypeCtorOrFactory: { new (): T } | ((item: any) => T), source: PaginationResult<any>): PaginationResult<T | null> {
     const itemFactory = isEmptyTypeCtor(itemTypeCtorOrFactory)
         ? (x: any) => deserialize(itemTypeCtorOrFactory, x)
         : itemTypeCtorOrFactory;
-        
-    return extend(source, {
+    
+    return {
+        meta: {
+            pageCount: source.meta.pageCount,
+            pageSize: source.meta.pageSize,
+            totalItems: source.meta.totalItems
+        },
         data: source.data.map(itemFactory)
-    });
+    };
 }

@@ -20,11 +20,11 @@ export declare class HttpBuilder {
     addHeader(name: string, value: string): this;
     expectJson<T>(typeCtorOrFactory?: {
         new (): T;
-    } | ((object: any) => T)): HttpBuilderOfT<T | null | undefined>;
+    } | ((object: any) => T)): HttpBuilderOfT<T | null>;
     expectJsonArray<T>(itemTypeCtorOrFactory: {
         new (): T;
-    } | ((item: any) => T)): HttpBuilderOfT<(T | null | undefined)[] | null>;
+    } | ((item: any) => T)): HttpBuilderOfT<(T | null)[] | null>;
     expectJsonPaginationResult<T>(itemTypeCtorOrFactory: {
         new (): T;
-    } | ((item: any) => T)): HttpBuilderOfT<PaginationResult<T> | null>;
+    } | ((item: any) => T)): HttpBuilderOfT<PaginationResult<T | null> | null>;
 }

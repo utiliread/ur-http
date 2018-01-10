@@ -8,13 +8,11 @@
     "clean": "rimraf dist"
   },
   "devDependencies": {
-    "@types/lodash-es": "^4.17.0",
     "rimraf": "^2.6.2",
     "typescript": "^2.6.2"
   },
   "dependencies": {
-    "lodash-es": "^4.17.4",
     "moment": "^2.20.1",
-    "ur-json": "^1.0.0"
+    "ur-json": "^1.1.0"
   }
 }
