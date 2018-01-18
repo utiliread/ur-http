@@ -1,6 +1,6 @@
 {
   "name": "ur-http",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "main": "dist/commonjs.js",
   "module": "dist/es.js",
   "types": "dist/index.d.ts",
