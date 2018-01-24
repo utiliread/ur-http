@@ -6,7 +6,7 @@ import { deserialize } from 'ur-json';
 import { isEmptyTypeCtor } from './utils';
 
 export class HttpBuilder {
-    static defaultFetch = fetch;
+    static defaultFetch = self.fetch.bind(self);
     
     message: {
         method: string;
