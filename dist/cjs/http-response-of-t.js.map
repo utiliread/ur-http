@@ -1,0 +1,1 @@
+{"version":3,"file":"http-response-of-t.js","sourceRoot":"","sources":["../../src/http-response-of-t.ts"],"names":[],"mappings":";;AAAA,mDAA+C;AAE/C,qBAAgC,SAAQ,4BAAY;IAChD,YAAY,WAAqB,EAAU,OAA2C;QAClF,KAAK,CAAC,WAAW,CAAC,CAAC;QADoB,YAAO,GAAP,OAAO,CAAoC;IAEtF,CAAC;IAED,OAAO;QACH,MAAM,CAAC,IAAI,CAAC,OAAO,CAAC,IAAI,CAAC,WAAW,CAAC,CAAC;IAC1C,CAAC;CACJ;AARD,0CAQC"}
