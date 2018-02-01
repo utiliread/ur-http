@@ -1,11 +1,11 @@
 import { modelBind, serialize } from 'ur-json';
 
+import { Http } from './http';
 import { HttpBuilderOfT } from './http-builder-of-t';
 import { HttpResponse } from './http-response';
 import { PaginationResult } from './pagination';
 
 export class HttpBuilder {
-    static defaultFetch = self.fetch.bind(self);
     
     message: {
         method: string;
@@ -15,7 +15,7 @@ export class HttpBuilder {
         contentType?: string;
     };
 
-    fetch = HttpBuilder.defaultFetch;
+    fetch = Http.defaults.fetch;
     
     constructor(method: string, url: string) {
         this.message = {

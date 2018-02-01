@@ -1,11 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const ur_json_1 = require("ur-json");
+const http_1 = require("./http");
 const http_builder_of_t_1 = require("./http-builder-of-t");
 const http_response_1 = require("./http-response");
 class HttpBuilder {
     constructor(method, url) {
-        this.fetch = HttpBuilder.defaultFetch;
+        this.fetch = http_1.Http.defaults.fetch;
         this.message = {
             method: method,
             url: url,
@@ -106,7 +107,6 @@ class HttpBuilder {
         });
     }
 }
-HttpBuilder.defaultFetch = self.fetch.bind(self);
 exports.HttpBuilder = HttpBuilder;
 function getJsonModelFactory(typeCtorOrFactory) {
     if (!typeCtorOrFactory) {

@@ -23,4 +23,7 @@ export class Http {
         return Http.request('DELETE', url, params);
     }
 }
+Http.defaults = {
+    fetch: self.fetch.bind(self)
+};
 //# sourceMappingURL=http.js.map

@@ -1,7 +1,6 @@
 import { HttpBuilderOfT } from './http-builder-of-t';
 import { HttpResponse } from './http-response';
 export declare class HttpBuilder {
-    static defaultFetch: any;
     message: {
         method: string;
         url: string;

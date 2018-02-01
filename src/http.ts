@@ -2,6 +2,10 @@ import { HttpBuilder } from './http-builder';
 import { QueryString } from './query-string';
 
 export class Http {
+    static defaults = {
+        fetch: self.fetch.bind(self)
+    }
+
     static request(method: string, url: string, params?: any) {
         return new HttpBuilder(method, url + QueryString.serialize(params));
     }

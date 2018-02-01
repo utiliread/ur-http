@@ -1,9 +1,10 @@
 import { modelBind, serialize } from 'ur-json';
+import { Http } from './http';
 import { HttpBuilderOfT } from './http-builder-of-t';
 import { HttpResponse } from './http-response';
 export class HttpBuilder {
     constructor(method, url) {
-        this.fetch = HttpBuilder.defaultFetch;
+        this.fetch = Http.defaults.fetch;
         this.message = {
             method: method,
             url: url,
@@ -104,7 +105,6 @@ export class HttpBuilder {
         });
     }
 }
-HttpBuilder.defaultFetch = self.fetch.bind(self);
 function getJsonModelFactory(typeCtorOrFactory) {
     if (!typeCtorOrFactory) {
         return (x) => x;

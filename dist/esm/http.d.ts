@@ -1,5 +1,8 @@
 import { HttpBuilder } from './http-builder';
 export declare class Http {
+    static defaults: {
+        fetch: any;
+    };
     static request(method: string, url: string, params?: any): HttpBuilder;
     static head(url: string, params?: any): HttpBuilder;
     static post(url: string, params?: any): HttpBuilder;
