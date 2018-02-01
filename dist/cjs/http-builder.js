@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const ur_json_1 = require("ur-json");
 const http_builder_of_t_1 = require("./http-builder-of-t");
 const http_response_1 = require("./http-response");
-const ur_json_1 = require("ur-json");
 class HttpBuilder {
     constructor(method, url) {
         this.fetch = HttpBuilder.defaultFetch;
@@ -39,7 +39,7 @@ class HttpBuilder {
         return this;
     }
     withJson(content) {
-        this.message.content = JSON.stringify(content);
+        this.message.content = ur_json_1.serialize(content);
         this.message.contentType = 'application/json';
         return this;
     }

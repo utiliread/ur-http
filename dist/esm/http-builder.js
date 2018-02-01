@@ -1,6 +1,6 @@
+import { modelBind, serialize } from 'ur-json';
 import { HttpBuilderOfT } from './http-builder-of-t';
 import { HttpResponse } from './http-response';
-import { modelBind } from 'ur-json';
 export class HttpBuilder {
     constructor(method, url) {
         this.fetch = HttpBuilder.defaultFetch;
@@ -37,7 +37,7 @@ export class HttpBuilder {
         return this;
     }
     withJson(content) {
-        this.message.content = JSON.stringify(content);
+        this.message.content = serialize(content);
         this.message.contentType = 'application/json';
         return this;
     }
