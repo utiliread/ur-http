@@ -11,10 +11,10 @@
   "devDependencies": {
     "@types/luxon": "^0.2.4",
     "rimraf": "^2.6.2",
-    "typescript": "^2.6.2"
+    "typescript": "^2.7.1"
   },
   "dependencies": {
     "luxon": "^0.4.0",
-    "ur-json": "^1.2.1"
+    "ur-json": "^1.3.0"
   }
 }
