@@ -21,4 +21,12 @@ export class HttpResponse {
     
     constructor(public rawResponse: Response) {
     }
+
+    ensureSuccessfulStatusCode() {
+        if (!this.isSuccessful) {
+            throw new Error('The response was not successful');
+        }
+
+        return this;
+    }
 }

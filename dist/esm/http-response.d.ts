@@ -6,4 +6,5 @@ export declare class HttpResponse {
     readonly isClientError: boolean;
     readonly isServerError: boolean;
     constructor(rawResponse: Response);
+    ensureSuccessfulStatusCode(): this;
 }
