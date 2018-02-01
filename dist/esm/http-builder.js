@@ -1,8 +1,6 @@
-import { paginationFactory } from './pagination';
 import { HttpBuilderOfT } from './http-builder-of-t';
 import { HttpResponse } from './http-response';
-import { deserialize } from 'ur-json';
-import { isEmptyTypeCtor } from './utils';
+import { modelBind } from 'ur-json';
 export class HttpBuilder {
     constructor(method, url) {
         this.fetch = HttpBuilder.defaultFetch;
@@ -71,15 +69,7 @@ export class HttpBuilder {
             if (response.status === 204) {
                 return Promise.resolve(null);
             }
-            return response.json().then(x => {
-                if (!typeCtorOrFactory) {
-                    return x;
-                }
-                const factory = isEmptyTypeCtor(typeCtorOrFactory)
-                    ? (x) => deserialize(typeCtorOrFactory, x)
-                    : typeCtorOrFactory;
-                return factory(x);
-            });
+            return response.json().then(x => getJsonModelFactory(typeCtorOrFactory)(x));
         });
     }
     expectJsonArray(itemTypeCtorOrFactory) {
@@ -89,9 +79,7 @@ export class HttpBuilder {
                 return Promise.resolve(null);
             }
             return response.json().then((x) => {
-                const itemFactory = isEmptyTypeCtor(itemTypeCtorOrFactory)
-                    ? (x) => deserialize(itemTypeCtorOrFactory, x)
-                    : itemTypeCtorOrFactory;
+                const itemFactory = getJsonModelFactory(itemTypeCtorOrFactory);
                 return x.map(itemFactory);
             });
         });
@@ -102,9 +90,33 @@ export class HttpBuilder {
             if (response.status === 204) {
                 return Promise.resolve(null);
             }
-            return response.json().then(x => paginationFactory(itemTypeCtorOrFactory, x));
+            return response.json().then((x) => {
+                const itemFactory = getJsonModelFactory(itemTypeCtorOrFactory);
+                return {
+                    meta: {
+                        pageCount: x.meta.pageCount,
+                        pageSize: x.meta.pageSize,
+                        totalItems: x.meta.totalItems
+                    },
+                    data: x.data.map(itemFactory)
+                };
+            });
         });
     }
 }
 HttpBuilder.defaultFetch = self.fetch.bind(self);
+function getJsonModelFactory(typeCtorOrFactory) {
+    if (!typeCtorOrFactory) {
+        return (x) => x;
+    }
+    if (isZeroArgumentFunction(typeCtorOrFactory)) {
+        // It cannot be a factory function if it takes no arguments,
+        // so it must be a (zero argument) type (constructor)
+        return (x) => modelBind(typeCtorOrFactory, x);
+    }
+    return typeCtorOrFactory;
+}
+function isZeroArgumentFunction(typeCtor) {
+    return typeCtor.length === 0;
+}
 //# sourceMappingURL=http-builder.js.map

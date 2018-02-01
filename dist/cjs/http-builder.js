@@ -1,10 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const pagination_1 = require("./pagination");
 const http_builder_of_t_1 = require("./http-builder-of-t");
 const http_response_1 = require("./http-response");
 const ur_json_1 = require("ur-json");
-const utils_1 = require("./utils");
 class HttpBuilder {
     constructor(method, url) {
         this.fetch = HttpBuilder.defaultFetch;
@@ -73,15 +71,7 @@ class HttpBuilder {
             if (response.status === 204) {
                 return Promise.resolve(null);
             }
-            return response.json().then(x => {
-                if (!typeCtorOrFactory) {
-                    return x;
-                }
-                const factory = utils_1.isEmptyTypeCtor(typeCtorOrFactory)
-                    ? (x) => ur_json_1.deserialize(typeCtorOrFactory, x)
-                    : typeCtorOrFactory;
-                return factory(x);
-            });
+            return response.json().then(x => getJsonModelFactory(typeCtorOrFactory)(x));
         });
     }
     expectJsonArray(itemTypeCtorOrFactory) {
@@ -91,9 +81,7 @@ class HttpBuilder {
                 return Promise.resolve(null);
             }
             return response.json().then((x) => {
-                const itemFactory = utils_1.isEmptyTypeCtor(itemTypeCtorOrFactory)
-                    ? (x) => ur_json_1.deserialize(itemTypeCtorOrFactory, x)
-                    : itemTypeCtorOrFactory;
+                const itemFactory = getJsonModelFactory(itemTypeCtorOrFactory);
                 return x.map(itemFactory);
             });
         });
@@ -104,10 +92,34 @@ class HttpBuilder {
             if (response.status === 204) {
                 return Promise.resolve(null);
             }
-            return response.json().then(x => pagination_1.paginationFactory(itemTypeCtorOrFactory, x));
+            return response.json().then((x) => {
+                const itemFactory = getJsonModelFactory(itemTypeCtorOrFactory);
+                return {
+                    meta: {
+                        pageCount: x.meta.pageCount,
+                        pageSize: x.meta.pageSize,
+                        totalItems: x.meta.totalItems
+                    },
+                    data: x.data.map(itemFactory)
+                };
+            });
         });
     }
 }
 HttpBuilder.defaultFetch = self.fetch.bind(self);
 exports.HttpBuilder = HttpBuilder;
+function getJsonModelFactory(typeCtorOrFactory) {
+    if (!typeCtorOrFactory) {
+        return (x) => x;
+    }
+    if (isZeroArgumentFunction(typeCtorOrFactory)) {
+        // It cannot be a factory function if it takes no arguments,
+        // so it must be a (zero argument) type (constructor)
+        return (x) => ur_json_1.modelBind(typeCtorOrFactory, x);
+    }
+    return typeCtorOrFactory;
+}
+function isZeroArgumentFunction(typeCtor) {
+    return typeCtor.length === 0;
+}
 //# sourceMappingURL=http-builder.js.map

@@ -1,9 +1,7 @@
-import { PaginationResult, paginationFactory } from './pagination';
-
 import { HttpBuilderOfT } from './http-builder-of-t';
 import { HttpResponse } from './http-response';
-import { deserialize } from 'ur-json';
-import { isEmptyTypeCtor } from './utils';
+import { PaginationResult } from './pagination';
+import { modelBind } from 'ur-json';
 
 export class HttpBuilder {
     static defaultFetch = self.fetch.bind(self);
@@ -101,16 +99,7 @@ export class HttpBuilder {
                 return Promise.resolve(null);
             }
             
-            return response.json().then(x => {
-                if (!typeCtorOrFactory) {
-                    return <T>x;
-                }
-                const factory = isEmptyTypeCtor(typeCtorOrFactory)
-                    ? (x: any) => deserialize(typeCtorOrFactory, x)
-                    : typeCtorOrFactory;
-                
-                return factory(x);
-            });
+            return response.json().then(x => getJsonModelFactory(typeCtorOrFactory)(x));
         });
     }
 
@@ -122,9 +111,7 @@ export class HttpBuilder {
             }
             
             return response.json().then((x: any[]) => {
-                const itemFactory = isEmptyTypeCtor(itemTypeCtorOrFactory)
-                    ? (x: any) => deserialize(itemTypeCtorOrFactory, x)
-                    : itemTypeCtorOrFactory;
+                const itemFactory = getJsonModelFactory(itemTypeCtorOrFactory);
 
                 return x.map(itemFactory);
             });
@@ -138,7 +125,36 @@ export class HttpBuilder {
                 return Promise.resolve(null);
             }
             
-            return response.json().then(x => paginationFactory(itemTypeCtorOrFactory, x));
+            return response.json().then((x: PaginationResult<any>) => {
+                const itemFactory = getJsonModelFactory(itemTypeCtorOrFactory);
+                
+                return {
+                    meta: {
+                        pageCount: x.meta.pageCount,
+                        pageSize: x.meta.pageSize,
+                        totalItems: x.meta.totalItems
+                    },
+                    data: x.data.map(itemFactory)
+                };
+            });
         });
     }
+}
+
+function getJsonModelFactory<T>(typeCtorOrFactory: { new (): T } | ((object: any) => T) | undefined) {
+    if (!typeCtorOrFactory) {
+        return (x: any) => <T>x;
+    }
+    
+    if (isZeroArgumentFunction(typeCtorOrFactory)) {
+        // It cannot be a factory function if it takes no arguments,
+        // so it must be a (zero argument) type (constructor)
+        return (x: any) => modelBind(typeCtorOrFactory, x);
+    }
+
+    return typeCtorOrFactory;
+}
+
+function isZeroArgumentFunction<T>(typeCtor: Function): typeCtor is { new (): T } {
+    return typeCtor.length === 0;
 }

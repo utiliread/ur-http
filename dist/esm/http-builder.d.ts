@@ -1,4 +1,3 @@
-import { PaginationResult } from './pagination';
 import { HttpBuilderOfT } from './http-builder-of-t';
 import { HttpResponse } from './http-response';
 export declare class HttpBuilder {
@@ -22,11 +21,18 @@ export declare class HttpBuilder {
     expectBinary(): HttpBuilderOfT<ArrayBuffer | null>;
     expectJson<T>(typeCtorOrFactory?: {
         new (): T;
-    } | ((object: any) => T)): HttpBuilderOfT<T | null>;
+    } | ((object: any) => T)): HttpBuilderOfT<T | null | undefined>;
     expectJsonArray<T>(itemTypeCtorOrFactory: {
         new (): T;
-    } | ((item: any) => T)): HttpBuilderOfT<(T | null)[] | null>;
+    } | ((item: any) => T)): HttpBuilderOfT<(T | null | undefined)[] | null>;
     expectJsonPaginationResult<T>(itemTypeCtorOrFactory: {
         new (): T;
-    } | ((item: any) => T)): HttpBuilderOfT<PaginationResult<T | null> | null>;
+    } | ((item: any) => T)): HttpBuilderOfT<{
+        meta: {
+            pageCount: number;
+            pageSize: number;
+            totalItems: number;
+        };
+        data: (T | null | undefined)[];
+    } | null>;
 }
