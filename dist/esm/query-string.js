@@ -1,4 +1,3 @@
-import { DateTime } from 'luxon';
 export class QueryString {
     static serialize(params) {
         if (!params) {
@@ -28,11 +27,13 @@ export class QueryString {
                         : '.' + propertyName)
                     : propertyName;
                 let value = source[propertyName];
-                if (value instanceof DateTime) {
-                    parts.push(encodeURIComponent(key) + '=' + value.toISO());
-                }
-                else if (typeof value === 'object') {
-                    parts.push(this._serializeQueryString(value, key));
+                if (typeof value === 'object') {
+                    if (Object.getPrototypeOf(value).toISO) {
+                        parts.push(encodeURIComponent(key) + '=' + value.toISO());
+                    }
+                    else {
+                        parts.push(this._serializeQueryString(value, key));
+                    }
                 }
                 else if (value) {
                     parts.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));

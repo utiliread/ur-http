@@ -9,12 +9,10 @@
     "clean": "rimraf dist"
   },
   "devDependencies": {
-    "@types/luxon": "^0.2.4",
     "rimraf": "^2.6.2",
-    "typescript": "^2.7.1"
+    "typescript": "^2.7.2"
   },
   "dependencies": {
-    "luxon": "^0.4.0",
     "ur-json": "^1.4.1"
   }
 }
