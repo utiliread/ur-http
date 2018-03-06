@@ -1,11 +1,25 @@
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 import { HttpResponse } from './http-response';
-export class HttpResponseOfT extends HttpResponse {
-    constructor(rawResponse, handler) {
-        super(rawResponse);
-        this.handler = handler;
+var HttpResponseOfT = /** @class */ (function (_super) {
+    __extends(HttpResponseOfT, _super);
+    function HttpResponseOfT(rawResponse, handler) {
+        var _this = _super.call(this, rawResponse) || this;
+        _this.handler = handler;
+        return _this;
     }
-    receive() {
+    HttpResponseOfT.prototype.receive = function () {
         return this.handler(this.rawResponse);
-    }
-}
+    };
+    return HttpResponseOfT;
+}(HttpResponse));
+export { HttpResponseOfT };
 //# sourceMappingURL=http-response-of-t.js.map

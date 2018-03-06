@@ -1,14 +1,16 @@
 import { DateTime } from 'luxon';
-export class QueryString {
-    static serialize(params) {
+var QueryString = /** @class */ (function () {
+    function QueryString() {
+    }
+    QueryString.serialize = function (params) {
         if (!params) {
             return '';
         }
         return '?' + this._serializeQueryString(params);
-    }
-    static getParameter(name) {
-        let regex = new RegExp(`[?&]${name}(=([^&#]*)|&|#|$)`);
-        let match = regex.exec(window.location.href);
+    };
+    QueryString.getParameter = function (name) {
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)");
+        var match = regex.exec(window.location.href);
         if (match) {
             if (match[1].length > 0) {
                 return decodeURIComponent(match[2]);
@@ -17,17 +19,17 @@ export class QueryString {
                 return null;
             }
         }
-    }
-    static _serializeQueryString(source, prefix) {
-        let parts = [];
-        for (let propertyName in source) {
+    };
+    QueryString._serializeQueryString = function (source, prefix) {
+        var parts = [];
+        for (var propertyName in source) {
             if (source.hasOwnProperty(propertyName)) {
-                let key = prefix != null
+                var key = prefix != null
                     ? prefix + (Array.isArray(source)
                         ? '[' + propertyName + ']'
                         : '.' + propertyName)
                     : propertyName;
-                let value = source[propertyName];
+                var value = source[propertyName];
                 if (value instanceof DateTime) {
                     parts.push(encodeURIComponent(key) + '=' + value.toISO());
                 }
@@ -40,6 +42,8 @@ export class QueryString {
             }
         }
         return parts.join('&');
-    }
-}
+    };
+    return QueryString;
+}());
+export { QueryString };
 //# sourceMappingURL=query-string.js.map

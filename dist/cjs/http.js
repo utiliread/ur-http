@@ -1,32 +1,35 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const http_builder_1 = require("./http-builder");
-const query_string_1 = require("./query-string");
-class Http {
-    static request(method, url, params) {
+var http_builder_1 = require("./http-builder");
+var query_string_1 = require("./query-string");
+var Http = /** @class */ (function () {
+    function Http() {
+    }
+    Http.request = function (method, url, params) {
         return new http_builder_1.HttpBuilder(method, url + query_string_1.QueryString.serialize(params));
-    }
-    static head(url, params) {
+    };
+    Http.head = function (url, params) {
         return Http.request('HEAD', url, params);
-    }
-    static post(url, params) {
+    };
+    Http.post = function (url, params) {
         return Http.request('POST', url, params);
-    }
-    static get(url, params) {
+    };
+    Http.get = function (url, params) {
         return Http.request('GET', url, params);
-    }
-    static put(url, params) {
+    };
+    Http.put = function (url, params) {
         return Http.request('PUT', url, params);
-    }
-    static patch(url, params) {
+    };
+    Http.patch = function (url, params) {
         return Http.request('PATCH', url, params);
-    }
-    static delete(url, params) {
+    };
+    Http.delete = function (url, params) {
         return Http.request('DELETE', url, params);
-    }
-}
-Http.defaults = {
-    fetch: window.fetch ? window.fetch.bind(window) : undefined
-};
+    };
+    Http.defaults = {
+        fetch: window.fetch ? window.fetch.bind(window) : undefined
+    };
+    return Http;
+}());
 exports.Http = Http;
 //# sourceMappingURL=http.js.map
