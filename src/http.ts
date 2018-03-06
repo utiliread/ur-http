@@ -3,7 +3,7 @@ import { QueryString } from './query-string';
 
 export class Http {
     static defaults = {
-        fetch: self.fetch.bind(self)
+        fetch: window.fetch ? window.fetch.bind(window) : undefined
     }
 
     static request(method: string, url: string, params?: any) {

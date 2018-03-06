@@ -26,7 +26,7 @@ class Http {
     }
 }
 Http.defaults = {
-    fetch: self.fetch.bind(self)
+    fetch: window.fetch ? window.fetch.bind(window) : undefined
 };
 exports.Http = Http;
 //# sourceMappingURL=http.js.map

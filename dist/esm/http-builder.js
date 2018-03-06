@@ -19,6 +19,9 @@ export class HttpBuilder {
         return new HttpBuilderOfT(this, handler);
     }
     async send(abortSignal) {
+        if (!this.fetch) {
+            throw Error('fetch() is not propery configured');
+        }
         if (this.message.contentType) {
             this.message.headers.set('Content-Type', this.message.contentType);
         }
