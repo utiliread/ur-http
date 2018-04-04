@@ -53,6 +53,12 @@ export class HttpBuilder {
 
     // Content Extensions
 
+    with(content: any, contentType?: string) {
+        this.message.content = content;
+        this.message.contentType = contentType;
+        return this;
+    }
+
     withForm(content: FormData) {
         this.message.content = content;
         this.message.contentType = undefined;
