@@ -9,15 +9,15 @@
     "clean": "rimraf dist"
   },
   "devDependencies": {
-    "@types/luxon": "^0.2.5",
-    "luxon": "^0.5.3",
+    "@types/luxon": "^0.5.0",
+    "luxon": "^1.0.0",
     "rimraf": "^2.6.2",
-    "typescript": "^2.7.2"
+    "typescript": "^2.8.1"
   },
   "peerDependencies": {
-    "luxon": "^0.5.3"
+    "luxon": "^1.0.0"
   },
   "dependencies": {
-    "ur-json": "^1.4.1"
+    "ur-json": "^1.4.2"
   }
 }

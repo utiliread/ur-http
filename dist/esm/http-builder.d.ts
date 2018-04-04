@@ -13,6 +13,7 @@ export declare class HttpBuilder {
     using(fetch: (input: RequestInfo) => Promise<Response>): this;
     private useHandler<T>(handler);
     send(abortSignal?: any): Promise<HttpResponse>;
+    with(content: any, contentType?: string): this;
     withForm(content: FormData): this;
     withJson(content: any): this;
     addHeader(name: string, value: string): this;

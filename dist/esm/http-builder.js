@@ -79,6 +79,11 @@ var HttpBuilder = /** @class */ (function () {
         });
     };
     // Content Extensions
+    HttpBuilder.prototype.with = function (content, contentType) {
+        this.message.content = content;
+        this.message.contentType = contentType;
+        return this;
+    };
     HttpBuilder.prototype.withForm = function (content) {
         this.message.content = content;
         this.message.contentType = undefined;
