@@ -2,8 +2,16 @@ import { HttpBuilder } from './http-builder';
 import { QueryString } from './query-string';
 
 export class Http {
+    static defaults = {
+        fetch: window.fetch ? window.fetch.bind(window) : undefined
+    }
+
     static request(method: string, url: string, params?: any) {
         return new HttpBuilder(method, url + QueryString.serialize(params));
+    }
+
+    static head(url: string, params?: any) {
+        return Http.request('HEAD', url, params);
     }
 
     static post(url: string, params?: any) {

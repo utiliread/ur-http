@@ -1,21 +1,13 @@
 {
     "compilerOptions": {
-        "target": "esnext",
+        "target": "es5",
         "module": "esnext",
         "moduleResolution": "node",
         "declaration": true,
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
+        "sourceMap": true,
         "strict": true,
         "rootDir": "src",
-        "outDir": "dist",
-        "lib": [
-            "es2017",
-            "dom"
-        ]
-    },
-    "exclude": [
-        "node_modules",
-        "dist"
-    ]
+        "outDir": "dist/esm",
+        "lib": [ "es2017", "dom" ]
+    }
 }

@@ -1,22 +1,23 @@
 {
   "name": "ur-http",
-  "version": "1.5.2",
-  "main": "dist/commonjs.js",
-  "module": "dist/es.js",
-  "types": "dist/index.d.ts",
+  "version": "1.7.4",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
   "scripts": {
-    "build": "rollup -c",
+    "build": "tsc && tsc -p tsconfig.cjs.json && rimraf dist/cjs/**/*.d.ts",
     "clean": "rimraf dist"
   },
   "devDependencies": {
-    "@types/luxon": "^0.2.3",
+    "@types/luxon": "^0.2.5",
+    "luxon": "^0.5.3",
     "rimraf": "^2.6.2",
-    "rollup": "^0.54.1",
-    "rollup-plugin-typescript2": "^0.10.0",
-    "typescript": "^2.6.2"
+    "typescript": "^2.7.2"
+  },
+  "peerDependencies": {
+    "luxon": "^0.5.3"
   },
   "dependencies": {
-    "luxon": "^0.3.1",
-    "ur-json": "^1.2.1"
+    "ur-json": "^1.4.1"
   }
 }
