@@ -18,6 +18,6 @@
     "luxon": "^1.0.0"
   },
   "dependencies": {
-    "ur-json": "^1.4.2"
+    "ur-json": "^1.5.0"
   }
 }

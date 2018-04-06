@@ -21,10 +21,10 @@ export declare class HttpBuilder {
     expectBinary(): HttpBuilderOfT<ArrayBuffer | null>;
     expectJson<T>(typeCtorOrFactory?: {
         new (): T;
-    } | ((object: any) => T)): HttpBuilderOfT<T | null | undefined>;
+    } | ((object: any) => T)): HttpBuilderOfT<T | null>;
     expectJsonArray<T>(itemTypeCtorOrFactory: {
         new (): T;
-    } | ((item: any) => T)): HttpBuilderOfT<(T | null | undefined)[] | null>;
+    } | ((item: any) => T)): HttpBuilderOfT<(T | null)[] | null>;
     expectJsonPaginationResult<T>(itemTypeCtorOrFactory: {
         new (): T;
     } | ((item: any) => T)): HttpBuilderOfT<{
@@ -33,6 +33,6 @@ export declare class HttpBuilder {
             pageSize: number;
             totalItems: number;
         };
-        data: (T | null | undefined)[];
+        data: (T | null)[];
     } | null>;
 }

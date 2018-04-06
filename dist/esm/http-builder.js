@@ -166,7 +166,14 @@ function getJsonModelFactory(typeCtorOrFactory) {
     if (isZeroArgumentFunction(typeCtorOrFactory)) {
         // It cannot be a factory function if it takes no arguments,
         // so it must be a (zero argument) type (constructor)
-        return function (x) { return modelBind(typeCtorOrFactory, x); };
+        return function (x) {
+            var bound = modelBind(typeCtorOrFactory, x);
+            // The server cannot produce the undefined result
+            if (bound === undefined) {
+                throw Error("The model factory created a undefined result");
+            }
+            return bound;
+        };
     }
     return typeCtorOrFactory;
 }
