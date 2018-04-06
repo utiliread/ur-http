@@ -1,13 +1,11 @@
 import { Fetch, Http } from './http';
+import { HttpResponse, HttpResponseOfT } from './http-response';
 import { modelBind, serialize } from 'ur-json';
 
-import { HttpBuilderOfT } from './http-builder-of-t';
-import { HttpResponse } from './http-response';
 import { PaginationResult } from './pagination';
 
 export class HttpBuilder {
     message: Message;
-
     fetch: Fetch | undefined;
     
     constructor(message: Message, fetch: Fetch | undefined) {
@@ -141,12 +139,47 @@ export class HttpBuilder {
     }
 }
 
+export class HttpBuilderOfT<T> extends HttpBuilder {
+    constructor(private inner: HttpBuilder, private handler: (response: Response) => Promise<T>) {
+        super(inner.message, inner.fetch);
+    }
+
+    allowEmptyResponse() {
+        return this.useHandler(response => {
+            if (response.status === 204) {
+                return Promise.resolve(null);
+            }
+
+            return this.handler(response);
+        });
+    }
+    
+    send(abortSignal?: any) {
+        const responsePromise = this.inner.send(abortSignal).then(x => new HttpResponseOfT<T>(x.rawResponse, this.handler));
+        
+        return asSendPromise(responsePromise, () => responsePromise.then(response => response.receive()));
+    }
+
+    transfer(abortSignal?: any) {
+        return this.send(abortSignal).thenReceive();
+    }
+}
+
 export interface Message {
     method: string;
     url: string;
     headers: Headers;
     content?: any;
     contentType?: string;
+}
+
+export interface SendPromise<T> extends Promise<HttpResponseOfT<T>> {
+    thenReceive(): Promise<T>;
+}
+
+function asSendPromise<T>(responsePromise: Promise<HttpResponse>, thenReceive: () => Promise<T>): SendPromise<T> {
+    (responsePromise as SendPromise<T>).thenReceive = thenReceive;
+    return responsePromise as SendPromise<T>;
 }
 
 function getJsonNullableModelFactory<T>(typeCtorOrFactory: { new (): T } | ((object: any) => T) | undefined) {

@@ -1,6 +1,5 @@
 import { Fetch } from './http';
-import { HttpBuilderOfT } from './http-builder-of-t';
-import { HttpResponse } from './http-response';
+import { HttpResponse, HttpResponseOfT } from './http-response';
 export declare class HttpBuilder {
     message: Message;
     fetch: Fetch | undefined;
@@ -35,10 +34,21 @@ export declare class HttpBuilder {
         data: T[];
     }>;
 }
+export declare class HttpBuilderOfT<T> extends HttpBuilder {
+    private inner;
+    private handler;
+    constructor(inner: HttpBuilder, handler: (response: Response) => Promise<T>);
+    allowEmptyResponse(): HttpBuilderOfT<T | null>;
+    send(abortSignal?: any): SendPromise<T>;
+    transfer(abortSignal?: any): Promise<T>;
+}
 export interface Message {
     method: string;
     url: string;
     headers: Headers;
     content?: any;
     contentType?: string;
+}
+export interface SendPromise<T> extends Promise<HttpResponseOfT<T>> {
+    thenReceive(): Promise<T>;
 }

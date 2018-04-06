@@ -1,3 +1,13 @@
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -34,9 +44,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 import { Http } from './http';
+import { HttpResponse, HttpResponseOfT } from './http-response';
 import { modelBind, serialize } from 'ur-json';
-import { HttpBuilderOfT } from './http-builder-of-t';
-import { HttpResponse } from './http-response';
 var HttpBuilder = /** @class */ (function () {
     function HttpBuilder(message, fetch) {
         this.message = message;
@@ -156,6 +165,38 @@ var HttpBuilder = /** @class */ (function () {
     return HttpBuilder;
 }());
 export { HttpBuilder };
+var HttpBuilderOfT = /** @class */ (function (_super) {
+    __extends(HttpBuilderOfT, _super);
+    function HttpBuilderOfT(inner, handler) {
+        var _this = _super.call(this, inner.message, inner.fetch) || this;
+        _this.inner = inner;
+        _this.handler = handler;
+        return _this;
+    }
+    HttpBuilderOfT.prototype.allowEmptyResponse = function () {
+        var _this = this;
+        return this.useHandler(function (response) {
+            if (response.status === 204) {
+                return Promise.resolve(null);
+            }
+            return _this.handler(response);
+        });
+    };
+    HttpBuilderOfT.prototype.send = function (abortSignal) {
+        var _this = this;
+        var responsePromise = this.inner.send(abortSignal).then(function (x) { return new HttpResponseOfT(x.rawResponse, _this.handler); });
+        return asSendPromise(responsePromise, function () { return responsePromise.then(function (response) { return response.receive(); }); });
+    };
+    HttpBuilderOfT.prototype.transfer = function (abortSignal) {
+        return this.send(abortSignal).thenReceive();
+    };
+    return HttpBuilderOfT;
+}(HttpBuilder));
+export { HttpBuilderOfT };
+function asSendPromise(responsePromise, thenReceive) {
+    responsePromise.thenReceive = thenReceive;
+    return responsePromise;
+}
 function getJsonNullableModelFactory(typeCtorOrFactory) {
     if (!typeCtorOrFactory) {
         return function (x) { return x; };
