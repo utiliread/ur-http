@@ -1,30 +1,29 @@
+import { Fetch } from './http';
 import { HttpBuilderOfT } from './http-builder-of-t';
 import { HttpResponse } from './http-response';
 export declare class HttpBuilder {
-    message: {
-        method: string;
-        url: string;
-        headers: Headers;
-        content?: any;
-        contentType?: string;
-    };
-    fetch: any;
-    constructor(method: string, url: string);
-    using(fetch: (input: RequestInfo) => Promise<Response>): this;
-    private useHandler<T>(handler);
+    message: Message;
+    fetch: Fetch | undefined;
+    constructor(message: Message, fetch: Fetch | undefined);
+    static create(method: string, url: string): HttpBuilder;
+    using(fetch: Fetch): this;
+    protected useHandler<T>(handler: (response: Response) => Promise<T>): HttpBuilderOfT<T>;
     send(abortSignal?: any): Promise<HttpResponse>;
     with(content: any, contentType?: string): this;
     withForm(content: FormData): this;
     withJson(content: any): this;
     addHeader(name: string, value: string): this;
-    expectString(): HttpBuilderOfT<string | null>;
-    expectBinary(): HttpBuilderOfT<ArrayBuffer | null>;
+    expectString(): HttpBuilderOfT<string>;
+    expectBinary(): HttpBuilderOfT<ArrayBuffer>;
     expectJson<T>(typeCtorOrFactory?: {
         new (): T;
-    } | ((object: any) => T)): HttpBuilderOfT<T | null>;
+    } | ((object: any) => T)): HttpBuilderOfT<T>;
     expectJsonArray<T>(itemTypeCtorOrFactory: {
         new (): T;
-    } | ((item: any) => T)): HttpBuilderOfT<(T | null)[] | null>;
+    } | ((item: any) => T)): HttpBuilderOfT<T[]>;
+    expectJsonNullableArray<T>(itemTypeCtorOrFactory: {
+        new (): T;
+    } | ((item: any) => T)): HttpBuilderOfT<(T | null)[]>;
     expectJsonPaginationResult<T>(itemTypeCtorOrFactory: {
         new (): T;
     } | ((item: any) => T)): HttpBuilderOfT<{
@@ -33,6 +32,13 @@ export declare class HttpBuilder {
             pageSize: number;
             totalItems: number;
         };
-        data: (T | null)[];
-    } | null>;
+        data: T[];
+    }>;
+}
+export interface Message {
+    method: string;
+    url: string;
+    headers: Headers;
+    content?: any;
+    contentType?: string;
 }

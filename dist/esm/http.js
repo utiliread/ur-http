@@ -4,7 +4,7 @@ var Http = /** @class */ (function () {
     function Http() {
     }
     Http.request = function (method, url, params) {
-        return new HttpBuilder(method, url + QueryString.serialize(params));
+        return HttpBuilder.create(method, url + QueryString.serialize(params));
     };
     Http.head = function (url, params) {
         return Http.request('HEAD', url, params);

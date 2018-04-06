@@ -1,36 +1,34 @@
+import { Fetch, Http } from './http';
 import { modelBind, serialize } from 'ur-json';
 
-import { Http } from './http';
 import { HttpBuilderOfT } from './http-builder-of-t';
 import { HttpResponse } from './http-response';
 import { PaginationResult } from './pagination';
 
 export class HttpBuilder {
-    
-    message: {
-        method: string;
-        url: string;
-        headers: Headers;
-        content?: any;
-        contentType?: string;
-    };
+    message: Message;
 
-    fetch = Http.defaults.fetch;
+    fetch: Fetch | undefined;
     
-    constructor(method: string, url: string) {
-        this.message = {
+    constructor(message: Message, fetch: Fetch | undefined) {
+        this.message = message;
+        this.fetch = fetch;
+    }
+
+    static create(method: string, url: string) {
+        return new HttpBuilder({
             method: method,
             url: url,
             headers: new Headers()
-        };
+        }, Http.defaults.fetch);
     }
 
-    using(fetch: (input: RequestInfo) => Promise<Response>) {
+    using(fetch: Fetch) {
         this.fetch = fetch;
         return this;
     }
 
-    private useHandler<T>(handler: (response: Response) => Promise<T>) {
+    protected useHandler<T>(handler: (response: Response) => Promise<T>) {
         return new HttpBuilderOfT<T>(this, handler);
     }
 
@@ -85,20 +83,12 @@ export class HttpBuilder {
 
     expectString() {
         return this.useHandler(response => {
-            if (response.status === 204) {
-                return Promise.resolve(null);
-            }
-
             return response.text();
         });
     }
 
     expectBinary() {
         return this.useHandler(response => {
-            if (response.status === 204) {
-                return Promise.resolve(null);
-            }
-
             return response.arrayBuffer();
         });
     }
@@ -106,10 +96,6 @@ export class HttpBuilder {
     expectJson<T>(typeCtorOrFactory?: { new (): T } | ((object: any) => T)) {
         this.message.headers.set('Accept', 'application/json');
         return this.useHandler(response => {
-            if (response.status === 204) {
-                return Promise.resolve(null);
-            }
-            
             return response.json().then(x => getJsonModelFactory(typeCtorOrFactory)(x));
         });
     }
@@ -117,12 +103,19 @@ export class HttpBuilder {
     expectJsonArray<T>(itemTypeCtorOrFactory: { new (): T } | ((item: any) => T)) {
         this.message.headers.set('Accept', 'application/json');
         return this.useHandler(response => {
-            if (response.status === 204) {
-                return Promise.resolve(null);
-            }
-            
             return response.json().then((x: any[]) => {
                 const itemFactory = getJsonModelFactory(itemTypeCtorOrFactory);
+
+                return x.map(itemFactory);
+            });
+        });
+    }
+
+    expectJsonNullableArray<T>(itemTypeCtorOrFactory: { new (): T } | ((item: any) => T)) {
+        this.message.headers.set('Accept', 'application/json');
+        return this.useHandler(response => {
+            return response.json().then((x: any[]) => {
+                const itemFactory = getJsonNullableModelFactory(itemTypeCtorOrFactory);
 
                 return x.map(itemFactory);
             });
@@ -132,10 +125,6 @@ export class HttpBuilder {
     expectJsonPaginationResult<T>(itemTypeCtorOrFactory: { new (): T } | ((item: any) => T)) {
         this.message.headers.set('Accept', 'application/json');
         return this.useHandler(response => {
-            if (response.status === 204) {
-                return Promise.resolve(null);
-            }
-            
             return response.json().then((x: PaginationResult<any>) => {
                 const itemFactory = getJsonModelFactory(itemTypeCtorOrFactory);
                 
@@ -152,7 +141,15 @@ export class HttpBuilder {
     }
 }
 
-function getJsonModelFactory<T>(typeCtorOrFactory: { new (): T } | ((object: any) => T) | undefined) {
+export interface Message {
+    method: string;
+    url: string;
+    headers: Headers;
+    content?: any;
+    contentType?: string;
+}
+
+function getJsonNullableModelFactory<T>(typeCtorOrFactory: { new (): T } | ((object: any) => T) | undefined) {
     if (!typeCtorOrFactory) {
         return (x: any) => <T>x;
     }
@@ -173,6 +170,20 @@ function getJsonModelFactory<T>(typeCtorOrFactory: { new (): T } | ((object: any
     }
 
     return typeCtorOrFactory;
+}
+
+function getJsonModelFactory<T>(typeCtorOrFactory: { new (): T } | ((object: any) => T) | undefined) {
+    const factory = getJsonNullableModelFactory(typeCtorOrFactory);
+    
+    return (x: any) => {
+        const result = factory(x);
+
+        if (result === null) {
+            throw Error("The model factory created a null result");
+        }
+
+        return result;
+    };
 }
 
 function isZeroArgumentFunction<T>(typeCtor: Function): typeCtor is { new (): T } {

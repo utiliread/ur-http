@@ -33,19 +33,22 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-import { modelBind, serialize } from 'ur-json';
 import { Http } from './http';
+import { modelBind, serialize } from 'ur-json';
 import { HttpBuilderOfT } from './http-builder-of-t';
 import { HttpResponse } from './http-response';
 var HttpBuilder = /** @class */ (function () {
-    function HttpBuilder(method, url) {
-        this.fetch = Http.defaults.fetch;
-        this.message = {
+    function HttpBuilder(message, fetch) {
+        this.message = message;
+        this.fetch = fetch;
+    }
+    HttpBuilder.create = function (method, url) {
+        return new HttpBuilder({
             method: method,
             url: url,
             headers: new Headers()
-        };
-    }
+        }, Http.defaults.fetch);
+    };
     HttpBuilder.prototype.using = function (fetch) {
         this.fetch = fetch;
         return this;
@@ -102,37 +105,34 @@ var HttpBuilder = /** @class */ (function () {
     // Expect Extensions
     HttpBuilder.prototype.expectString = function () {
         return this.useHandler(function (response) {
-            if (response.status === 204) {
-                return Promise.resolve(null);
-            }
             return response.text();
         });
     };
     HttpBuilder.prototype.expectBinary = function () {
         return this.useHandler(function (response) {
-            if (response.status === 204) {
-                return Promise.resolve(null);
-            }
             return response.arrayBuffer();
         });
     };
     HttpBuilder.prototype.expectJson = function (typeCtorOrFactory) {
         this.message.headers.set('Accept', 'application/json');
         return this.useHandler(function (response) {
-            if (response.status === 204) {
-                return Promise.resolve(null);
-            }
             return response.json().then(function (x) { return getJsonModelFactory(typeCtorOrFactory)(x); });
         });
     };
     HttpBuilder.prototype.expectJsonArray = function (itemTypeCtorOrFactory) {
         this.message.headers.set('Accept', 'application/json');
         return this.useHandler(function (response) {
-            if (response.status === 204) {
-                return Promise.resolve(null);
-            }
             return response.json().then(function (x) {
                 var itemFactory = getJsonModelFactory(itemTypeCtorOrFactory);
+                return x.map(itemFactory);
+            });
+        });
+    };
+    HttpBuilder.prototype.expectJsonNullableArray = function (itemTypeCtorOrFactory) {
+        this.message.headers.set('Accept', 'application/json');
+        return this.useHandler(function (response) {
+            return response.json().then(function (x) {
+                var itemFactory = getJsonNullableModelFactory(itemTypeCtorOrFactory);
                 return x.map(itemFactory);
             });
         });
@@ -140,9 +140,6 @@ var HttpBuilder = /** @class */ (function () {
     HttpBuilder.prototype.expectJsonPaginationResult = function (itemTypeCtorOrFactory) {
         this.message.headers.set('Accept', 'application/json');
         return this.useHandler(function (response) {
-            if (response.status === 204) {
-                return Promise.resolve(null);
-            }
             return response.json().then(function (x) {
                 var itemFactory = getJsonModelFactory(itemTypeCtorOrFactory);
                 return {
@@ -159,7 +156,7 @@ var HttpBuilder = /** @class */ (function () {
     return HttpBuilder;
 }());
 export { HttpBuilder };
-function getJsonModelFactory(typeCtorOrFactory) {
+function getJsonNullableModelFactory(typeCtorOrFactory) {
     if (!typeCtorOrFactory) {
         return function (x) { return x; };
     }
@@ -176,6 +173,16 @@ function getJsonModelFactory(typeCtorOrFactory) {
         };
     }
     return typeCtorOrFactory;
+}
+function getJsonModelFactory(typeCtorOrFactory) {
+    var factory = getJsonNullableModelFactory(typeCtorOrFactory);
+    return function (x) {
+        var result = factory(x);
+        if (result === null) {
+            throw Error("The model factory created a null result");
+        }
+        return result;
+    };
 }
 function isZeroArgumentFunction(typeCtor) {
     return typeCtor.length === 0;
