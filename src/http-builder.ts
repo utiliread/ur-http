@@ -16,6 +16,7 @@ export class HttpBuilder {
     };
 
     fetch = Http.defaults.fetch;
+    ensureSuccessStatusCode = true;
     
     constructor(method: string, url: string) {
         this.message = {

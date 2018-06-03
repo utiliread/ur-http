@@ -13,9 +13,9 @@ export class HttpBuilderOfT<T> {
         return asSendPromise(responsePromise, () => responsePromise.then(response => response.receive()));
     }
 
-    transfer(abortSignal?: any, ensureSuccessStatusCode?: boolean) {
+    transfer(abortSignal?: any) {
         return this.send(abortSignal).then(response => {
-            if (ensureSuccessStatusCode !== false) {
+            if (this.inner.ensureSuccessStatusCode) {
                 response.ensureSuccessfulStatusCode();
             }
             return response.receive();

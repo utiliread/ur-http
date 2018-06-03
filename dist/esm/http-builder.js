@@ -40,6 +40,7 @@ import { HttpResponse } from './http-response';
 var HttpBuilder = /** @class */ (function () {
     function HttpBuilder(method, url) {
         this.fetch = Http.defaults.fetch;
+        this.ensureSuccessStatusCode = true;
         this.message = {
             method: method,
             url: url,

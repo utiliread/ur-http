@@ -9,6 +9,7 @@ export declare class HttpBuilder {
         contentType?: string;
     };
     fetch: any;
+    ensureSuccessStatusCode: boolean;
     constructor(method: string, url: string);
     using(fetch: (input: RequestInfo) => Promise<Response>): this;
     private useHandler<T>(handler);

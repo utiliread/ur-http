@@ -42,6 +42,7 @@ var http_response_1 = require("./http-response");
 var HttpBuilder = /** @class */ (function () {
     function HttpBuilder(method, url) {
         this.fetch = http_1.Http.defaults.fetch;
+        this.ensureSuccessStatusCode = true;
         this.message = {
             method: method,
             url: url,
