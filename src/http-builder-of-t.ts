@@ -13,8 +13,13 @@ export class HttpBuilderOfT<T> {
         return asSendPromise(responsePromise, () => responsePromise.then(response => response.receive()));
     }
 
-    transfer(abortSignal?: any) {
-        return this.send(abortSignal).thenReceive();
+    transfer(ensureSuccessStatusCode?: boolean, abortSignal?: any) {
+        return this.send(abortSignal).then(response => {
+            if (ensureSuccessStatusCode !== false) {
+                response.ensureSuccessfulStatusCode();
+            }
+            return response.receive();
+        });
     }
 }
 
