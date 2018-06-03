@@ -11,7 +11,7 @@ var HttpBuilderOfT = /** @class */ (function () {
         var responsePromise = this.inner.send(abortSignal).then(function (x) { return new http_response_of_t_1.HttpResponseOfT(x.rawResponse, _this.handler); });
         return asSendPromise(responsePromise, function () { return responsePromise.then(function (response) { return response.receive(); }); });
     };
-    HttpBuilderOfT.prototype.transfer = function (ensureSuccessStatusCode, abortSignal) {
+    HttpBuilderOfT.prototype.transfer = function (abortSignal, ensureSuccessStatusCode) {
         return this.send(abortSignal).then(function (response) {
             if (ensureSuccessStatusCode !== false) {
                 response.ensureSuccessfulStatusCode();
