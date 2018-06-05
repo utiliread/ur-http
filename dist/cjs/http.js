@@ -6,7 +6,7 @@ var Http = /** @class */ (function () {
     function Http() {
     }
     Http.request = function (method, url, params) {
-        return new http_builder_1.HttpBuilder(method, url + query_string_1.QueryString.serialize(params));
+        return http_builder_1.HttpBuilder.create(method, url + query_string_1.QueryString.serialize(params));
     };
     Http.head = function (url, params) {
         return Http.request('HEAD', url, params);

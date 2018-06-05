@@ -1,13 +1,17 @@
 import { HttpBuilder } from './http-builder';
 import { QueryString } from './query-string';
 
+export type Fetch = (input: RequestInfo, init?: RequestInit) => Promise<Response>;
+
 export class Http {
-    static defaults = {
+    static defaults: {
+        fetch: Fetch | undefined
+    } = {
         fetch: window.fetch ? window.fetch.bind(window) : undefined
     }
 
     static request(method: string, url: string, params?: any) {
-        return new HttpBuilder(method, url + QueryString.serialize(params));
+        return HttpBuilder.create(method, url + QueryString.serialize(params));
     }
 
     static head(url: string, params?: any) {

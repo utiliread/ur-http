@@ -8,3 +8,8 @@ export declare class HttpResponse {
     constructor(rawResponse: Response);
     ensureSuccessfulStatusCode(): this;
 }
+export declare class HttpResponseOfT<T> extends HttpResponse {
+    private handler;
+    constructor(rawResponse: Response, handler: (response: Response) => Promise<T>);
+    receive(): Promise<T>;
+}

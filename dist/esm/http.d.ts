@@ -1,7 +1,8 @@
 import { HttpBuilder } from './http-builder';
+export declare type Fetch = (input: RequestInfo, init?: RequestInit) => Promise<Response>;
 export declare class Http {
     static defaults: {
-        fetch: any;
+        fetch: Fetch | undefined;
     };
     static request(method: string, url: string, params?: any): HttpBuilder;
     static head(url: string, params?: any): HttpBuilder;
