@@ -9,8 +9,8 @@ export class QueryString {
     }
 
     static getParameter(name: string) {
-        let regex = new RegExp(`[?&]${name}(=([^&#]*)|&|#|$)`);
-        let match = regex.exec(window.location.href);
+        const regex = /[?&]${name}(=([^&#]*)|&|#|$)/;
+        const match = regex.exec(window.location.href);
         if (match) {
             if (match[1].length > 0) {
                 return decodeURIComponent(match[2]);
@@ -22,27 +22,27 @@ export class QueryString {
     }
 
     private static _serializeQueryString(source: any, prefix?: string) {
-        let parts: string[] = [];
-        for (let propertyName in source) {
+        const parts: string[] = [];
+        for (const propertyName in source) {
             if (source.hasOwnProperty(propertyName)) {
-                let key = prefix != null
+                const key = prefix != null
                     ? prefix + (
                         Array.isArray(source)
-                            ? '[' + propertyName + ']'
-                            : '.' + propertyName
+                            ? '[' + encodeURIComponent(propertyName) + ']'
+                            : '.' + encodeURIComponent(propertyName)
                     )
-                    : propertyName;
-                let value = source[propertyName];
+                    : encodeURIComponent(propertyName);
+                const value = source[propertyName];
 
                 if (value instanceof DateTime) {
-                    parts.push(encodeURIComponent(key) + '=' + value.toISO());
+                    parts.push(key + '=' + value.toISO());
                 }
                 else if (value) {
                     if (typeof value === 'object') {
                         parts.push(this._serializeQueryString(value, key));
                     }
                     else {
-                        parts.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+                        parts.push(key + '=' + encodeURIComponent(value));
                     }
                 }
             }

@@ -11,7 +11,7 @@ var QueryString = /** @class */ (function () {
         return '?' + this._serializeQueryString(params);
     };
     QueryString.getParameter = function (name) {
-        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)");
+        var regex = /[?&]${name}(=([^&#]*)|&|#|$)/;
         var match = regex.exec(window.location.href);
         if (match) {
             if (match[1].length > 0) {
@@ -28,19 +28,19 @@ var QueryString = /** @class */ (function () {
             if (source.hasOwnProperty(propertyName)) {
                 var key = prefix != null
                     ? prefix + (Array.isArray(source)
-                        ? '[' + propertyName + ']'
-                        : '.' + propertyName)
-                    : propertyName;
+                        ? '[' + encodeURIComponent(propertyName) + ']'
+                        : '.' + encodeURIComponent(propertyName))
+                    : encodeURIComponent(propertyName);
                 var value = source[propertyName];
                 if (value instanceof luxon_1.DateTime) {
-                    parts.push(encodeURIComponent(key) + '=' + value.toISO());
+                    parts.push(key + '=' + value.toISO());
                 }
                 else if (value) {
                     if (typeof value === 'object') {
                         parts.push(this._serializeQueryString(value, key));
                     }
                     else {
-                        parts.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+                        parts.push(key + '=' + encodeURIComponent(value));
                     }
                 }
             }
