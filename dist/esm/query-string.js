@@ -33,11 +33,13 @@ var QueryString = /** @class */ (function () {
                 if (value instanceof DateTime) {
                     parts.push(encodeURIComponent(key) + '=' + value.toISO());
                 }
-                else if (typeof value === 'object') {
-                    parts.push(this._serializeQueryString(value, key));
-                }
                 else if (value) {
-                    parts.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+                    if (typeof value === 'object') {
+                        parts.push(this._serializeQueryString(value, key));
+                    }
+                    else {
+                        parts.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+                    }
                 }
             }
         }
