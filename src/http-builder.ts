@@ -5,12 +5,9 @@ import { modelBind, serialize } from 'ur-json';
 import { PaginationResult, InfinitePaginationResult } from './pagination';
 
 export class HttpBuilder {
-    message: Message;
-    fetch: Fetch | undefined;
+    ensureSuccessStatusCode = true;
     
-    constructor(message: Message, fetch: Fetch | undefined) {
-        this.message = message;
-        this.fetch = fetch;
+    constructor(public message: Message, public fetch: Fetch | undefined) {
     }
 
     static create(method: string, url: string) {
@@ -178,7 +175,12 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
     }
 
     transfer(abortSignal?: any) {
-        return this.send(abortSignal).thenReceive();
+        return this.send(abortSignal).then(response => {
+            if (this.inner.ensureSuccessStatusCode) {
+                response.ensureSuccessfulStatusCode();
+            }
+            return response.receive();
+        });
     }
 }
 
