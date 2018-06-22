@@ -3,6 +3,7 @@ import { HttpResponse, HttpResponseOfT } from './http-response';
 export declare class HttpBuilder {
     message: Message;
     fetch: Fetch | undefined;
+    ensureSuccessStatusCode: boolean;
     constructor(message: Message, fetch: Fetch | undefined);
     static create(method: string, url: string): HttpBuilder;
     using(fetch: Fetch): this;

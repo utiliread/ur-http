@@ -50,6 +50,7 @@ var HttpBuilder = /** @class */ (function () {
     function HttpBuilder(message, fetch) {
         this.message = message;
         this.fetch = fetch;
+        this.ensureSuccessStatusCode = true;
     }
     HttpBuilder.create = function (method, url) {
         return new HttpBuilder({
@@ -203,7 +204,13 @@ var HttpBuilderOfT = /** @class */ (function (_super) {
         return asSendPromise(responsePromise, function () { return responsePromise.then(function (response) { return response.receive(); }); });
     };
     HttpBuilderOfT.prototype.transfer = function (abortSignal) {
-        return this.send(abortSignal).thenReceive();
+        var _this = this;
+        return this.send(abortSignal).then(function (response) {
+            if (_this.inner.ensureSuccessStatusCode) {
+                response.ensureSuccessfulStatusCode();
+            }
+            return response.receive();
+        });
     };
     return HttpBuilderOfT;
 }(HttpBuilder));
