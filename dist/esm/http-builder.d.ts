@@ -33,6 +33,15 @@ export declare class HttpBuilder {
         };
         data: T[];
     }>;
+    expectJsonInfinitePaginationResult<T>(itemTypeCtorOrFactory: {
+        new (): T;
+    } | ((item: any) => T)): HttpBuilderOfT<{
+        meta: {
+            pageSize: number;
+            continuationToken: string;
+        };
+        data: T[];
+    }>;
 }
 export declare class HttpBuilderOfT<T> extends HttpBuilder {
     private inner;

@@ -2,7 +2,7 @@ import { Fetch, Http } from './http';
 import { HttpResponse, HttpResponseOfT } from './http-response';
 import { modelBind, serialize } from 'ur-json';
 
-import { PaginationResult } from './pagination';
+import { PaginationResult, InfinitePaginationResult } from './pagination';
 
 export class HttpBuilder {
     message: Message;
@@ -131,6 +131,23 @@ export class HttpBuilder {
                         pageCount: x.meta.pageCount,
                         pageSize: x.meta.pageSize,
                         totalItems: x.meta.totalItems
+                    },
+                    data: x.data.map(itemFactory)
+                };
+            });
+        });
+    }
+
+    expectJsonInfinitePaginationResult<T>(itemTypeCtorOrFactory: { new (): T } | ((item: any) => T)) {
+        this.message.headers.set('Accept', 'application/json');
+        return this.useHandler(response => {
+            return response.json().then((x: InfinitePaginationResult<any>) => {
+                const itemFactory = getJsonModelFactory(itemTypeCtorOrFactory);
+                
+                return {
+                    meta: {
+                        pageSize: x.meta.pageSize,
+                        continuationToken: x.meta.continuationToken
                     },
                     data: x.data.map(itemFactory)
                 };

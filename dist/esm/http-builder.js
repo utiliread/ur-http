@@ -162,6 +162,21 @@ var HttpBuilder = /** @class */ (function () {
             });
         });
     };
+    HttpBuilder.prototype.expectJsonInfinitePaginationResult = function (itemTypeCtorOrFactory) {
+        this.message.headers.set('Accept', 'application/json');
+        return this.useHandler(function (response) {
+            return response.json().then(function (x) {
+                var itemFactory = getJsonModelFactory(itemTypeCtorOrFactory);
+                return {
+                    meta: {
+                        pageSize: x.meta.pageSize,
+                        continuationToken: x.meta.continuationToken
+                    },
+                    data: x.data.map(itemFactory)
+                };
+            });
+        });
+    };
     return HttpBuilder;
 }());
 export { HttpBuilder };
