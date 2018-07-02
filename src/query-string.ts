@@ -37,7 +37,7 @@ export class QueryString {
                 if (value instanceof DateTime) {
                     parts.push(key + '=' + value.toISO());
                 }
-                else if (value) {
+                else if (value !== null && value !== undefined) {
                     if (typeof value === 'object') {
                         parts.push(this._serializeQueryString(value, key));
                     }
