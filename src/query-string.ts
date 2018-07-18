@@ -9,7 +9,7 @@ export class QueryString {
     }
 
     static getParameter(name: string) {
-        const regex = /[?&]${name}(=([^&#]*)|&|#|$)/;
+        const regex = new RegExp(`[?&]${name}(=([^&#]*)|&|#|$)`);
         const match = regex.exec(window.location.href);
         if (match) {
             if (match[1].length > 0) {

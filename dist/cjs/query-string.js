@@ -11,7 +11,7 @@ var QueryString = /** @class */ (function () {
         return '?' + this._serializeQueryString(params);
     };
     QueryString.getParameter = function (name) {
-        var regex = /[?&]${name}(=([^&#]*)|&|#|$)/;
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)");
         var match = regex.exec(window.location.href);
         if (match) {
             if (match[1].length > 0) {
