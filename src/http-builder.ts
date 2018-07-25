@@ -4,7 +4,7 @@ import { InfinitePaginationResult, PaginationResult } from './pagination';
 import { modelBind, serialize } from 'ur-json';
 
 export class HttpBuilder {
-    _ensureSuccessStatusCode = true;
+    private _ensureSuccessStatusCode = true;
     
     constructor(public message: Message, public fetch: Fetch | undefined) {
     }
@@ -36,18 +36,26 @@ export class HttpBuilder {
         }
 
         // Cast to any to allow for the signal property
-        let response = await this.fetch(this.message.url, <any>{
+        const fetchResponse = await this.fetch(this.message.url, <any>{
             method: this.message.method,
             body: this.message.content,
             headers: this.message.headers,
             signal: abortSignal
         });
 
-        return new HttpResponse(response);
+        const httpResponse = new HttpResponse(fetchResponse);
+
+        if (this._ensureSuccessStatusCode) {
+            httpResponse.ensureSuccessfulStatusCode();
+        }
+
+        return httpResponse;
     }
 
     ensureSuccessStatusCode(ensureSuccessStatusCode?: boolean) {
         this._ensureSuccessStatusCode = ensureSuccessStatusCode === false ? false : true;
+
+        return this;
     }
 
     // Content Extensions
@@ -161,6 +169,12 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
         super(inner.message, inner.fetch);
     }
 
+    ensureSuccessStatusCode(ensureSuccessStatusCode?: boolean) {
+        super.ensureSuccessStatusCode(ensureSuccessStatusCode);
+
+        return this;
+    }
+
     allowEmptyResponse() {
         return this.useHandler(response => {
             if (response.status === 204) {
@@ -172,15 +186,7 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
     }
     
     send(abortSignal?: any) {
-        const responsePromise = this.inner.send(abortSignal)
-            .then(x => new HttpResponseOfT<T>(x.rawResponse, this.handler))
-            .then(response => {
-                if (this.inner.ensureSuccessStatusCode) {
-                    response.ensureSuccessfulStatusCode();
-                }
-
-                return response;
-            });
+        const responsePromise = this.inner.send(abortSignal).then(x => new HttpResponseOfT<T>(x.rawResponse, this.handler));
         
         return asSendPromise(responsePromise, () => responsePromise.then(response => response.receive()));
     }

@@ -3,13 +3,13 @@ import { HttpResponse, HttpResponseOfT } from './http-response';
 export declare class HttpBuilder {
     message: Message;
     fetch: Fetch | undefined;
-    _ensureSuccessStatusCode: boolean;
+    private _ensureSuccessStatusCode;
     constructor(message: Message, fetch: Fetch | undefined);
     static create(method: string, url: string): HttpBuilder;
     using(fetch: Fetch): this;
     protected useHandler<T>(handler: (response: Response) => Promise<T>): HttpBuilderOfT<T>;
     send(abortSignal?: any): Promise<HttpResponse>;
-    ensureSuccessStatusCode(ensureSuccessStatusCode?: boolean): void;
+    ensureSuccessStatusCode(ensureSuccessStatusCode?: boolean): this;
     with(content: any, contentType?: string): this;
     withForm(content: FormData): this;
     withJson(content: any): this;
@@ -49,6 +49,7 @@ export declare class HttpBuilderOfT<T> extends HttpBuilder {
     private inner;
     private handler;
     constructor(inner: HttpBuilder, handler: (response: Response) => Promise<T>);
+    ensureSuccessStatusCode(ensureSuccessStatusCode?: boolean): this;
     allowEmptyResponse(): HttpBuilderOfT<T | null>;
     send(abortSignal?: any): SendPromise<T>;
     transfer(abortSignal?: any): Promise<T>;

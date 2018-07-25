@@ -70,7 +70,7 @@ var HttpBuilder = /** @class */ (function () {
     };
     HttpBuilder.prototype.send = function (abortSignal) {
         return __awaiter(this, void 0, void 0, function () {
-            var response;
+            var fetchResponse, httpResponse;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -87,14 +87,19 @@ var HttpBuilder = /** @class */ (function () {
                                 signal: abortSignal
                             })];
                     case 1:
-                        response = _a.sent();
-                        return [2 /*return*/, new http_response_1.HttpResponse(response)];
+                        fetchResponse = _a.sent();
+                        httpResponse = new http_response_1.HttpResponse(fetchResponse);
+                        if (this._ensureSuccessStatusCode) {
+                            httpResponse.ensureSuccessfulStatusCode();
+                        }
+                        return [2 /*return*/, httpResponse];
                 }
             });
         });
     };
     HttpBuilder.prototype.ensureSuccessStatusCode = function (ensureSuccessStatusCode) {
         this._ensureSuccessStatusCode = ensureSuccessStatusCode === false ? false : true;
+        return this;
     };
     // Content Extensions
     HttpBuilder.prototype.with = function (content, contentType) {
@@ -194,6 +199,10 @@ var HttpBuilderOfT = /** @class */ (function (_super) {
         _this.handler = handler;
         return _this;
     }
+    HttpBuilderOfT.prototype.ensureSuccessStatusCode = function (ensureSuccessStatusCode) {
+        _super.prototype.ensureSuccessStatusCode.call(this, ensureSuccessStatusCode);
+        return this;
+    };
     HttpBuilderOfT.prototype.allowEmptyResponse = function () {
         var _this = this;
         return this.useHandler(function (response) {
@@ -205,14 +214,7 @@ var HttpBuilderOfT = /** @class */ (function (_super) {
     };
     HttpBuilderOfT.prototype.send = function (abortSignal) {
         var _this = this;
-        var responsePromise = this.inner.send(abortSignal)
-            .then(function (x) { return new http_response_1.HttpResponseOfT(x.rawResponse, _this.handler); })
-            .then(function (response) {
-            if (_this.inner.ensureSuccessStatusCode) {
-                response.ensureSuccessfulStatusCode();
-            }
-            return response;
-        });
+        var responsePromise = this.inner.send(abortSignal).then(function (x) { return new http_response_1.HttpResponseOfT(x.rawResponse, _this.handler); });
         return asSendPromise(responsePromise, function () { return responsePromise.then(function (response) { return response.receive(); }); });
     };
     HttpBuilderOfT.prototype.transfer = function (abortSignal) {
