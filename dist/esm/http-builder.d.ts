@@ -3,12 +3,13 @@ import { HttpResponse, HttpResponseOfT } from './http-response';
 export declare class HttpBuilder {
     message: Message;
     fetch: Fetch | undefined;
-    ensureSuccessStatusCode: boolean;
+    _ensureSuccessStatusCode: boolean;
     constructor(message: Message, fetch: Fetch | undefined);
     static create(method: string, url: string): HttpBuilder;
     using(fetch: Fetch): this;
     protected useHandler<T>(handler: (response: Response) => Promise<T>): HttpBuilderOfT<T>;
     send(abortSignal?: any): Promise<HttpResponse>;
+    ensureSuccessStatusCode(ensureSuccessStatusCode?: boolean): void;
     with(content: any, contentType?: string): this;
     withForm(content: FormData): this;
     withJson(content: any): this;

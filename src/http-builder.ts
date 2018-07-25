@@ -1,11 +1,10 @@
 import { Fetch, Http } from './http';
 import { HttpResponse, HttpResponseOfT } from './http-response';
+import { InfinitePaginationResult, PaginationResult } from './pagination';
 import { modelBind, serialize } from 'ur-json';
 
-import { PaginationResult, InfinitePaginationResult } from './pagination';
-
 export class HttpBuilder {
-    ensureSuccessStatusCode = true;
+    _ensureSuccessStatusCode = true;
     
     constructor(public message: Message, public fetch: Fetch | undefined) {
     }
@@ -45,6 +44,10 @@ export class HttpBuilder {
         });
 
         return new HttpResponse(response);
+    }
+
+    ensureSuccessStatusCode(ensureSuccessStatusCode?: boolean) {
+        this._ensureSuccessStatusCode = ensureSuccessStatusCode === false ? false : true;
     }
 
     // Content Extensions
@@ -169,18 +172,21 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
     }
     
     send(abortSignal?: any) {
-        const responsePromise = this.inner.send(abortSignal).then(x => new HttpResponseOfT<T>(x.rawResponse, this.handler));
+        const responsePromise = this.inner.send(abortSignal)
+            .then(x => new HttpResponseOfT<T>(x.rawResponse, this.handler))
+            .then(response => {
+                if (this.inner.ensureSuccessStatusCode) {
+                    response.ensureSuccessfulStatusCode();
+                }
+
+                return response;
+            });
         
         return asSendPromise(responsePromise, () => responsePromise.then(response => response.receive()));
     }
 
     transfer(abortSignal?: any) {
-        return this.send(abortSignal).then(response => {
-            if (this.inner.ensureSuccessStatusCode) {
-                response.ensureSuccessfulStatusCode();
-            }
-            return response.receive();
-        });
+        return this.send(abortSignal).then(response => response.receive());
     }
 }
 

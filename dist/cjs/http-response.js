@@ -10,6 +10,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
+var http_error_1 = require("./http-error");
 var HttpResponse = /** @class */ (function () {
     function HttpResponse(rawResponse) {
         this.rawResponse = rawResponse;
@@ -51,7 +52,7 @@ var HttpResponse = /** @class */ (function () {
     });
     HttpResponse.prototype.ensureSuccessfulStatusCode = function () {
         if (!this.isSuccessful) {
-            throw new Error('The response was not successful');
+            throw new http_error_1.HttpError(this.rawResponse.status);
         }
         return this;
     };

@@ -50,7 +50,7 @@ var HttpBuilder = /** @class */ (function () {
     function HttpBuilder(message, fetch) {
         this.message = message;
         this.fetch = fetch;
-        this.ensureSuccessStatusCode = true;
+        this._ensureSuccessStatusCode = true;
     }
     HttpBuilder.create = function (method, url) {
         return new HttpBuilder({
@@ -90,6 +90,9 @@ var HttpBuilder = /** @class */ (function () {
                 }
             });
         });
+    };
+    HttpBuilder.prototype.ensureSuccessStatusCode = function (ensureSuccessStatusCode) {
+        this._ensureSuccessStatusCode = ensureSuccessStatusCode === false ? false : true;
     };
     // Content Extensions
     HttpBuilder.prototype.with = function (content, contentType) {
@@ -200,17 +203,18 @@ var HttpBuilderOfT = /** @class */ (function (_super) {
     };
     HttpBuilderOfT.prototype.send = function (abortSignal) {
         var _this = this;
-        var responsePromise = this.inner.send(abortSignal).then(function (x) { return new HttpResponseOfT(x.rawResponse, _this.handler); });
-        return asSendPromise(responsePromise, function () { return responsePromise.then(function (response) { return response.receive(); }); });
-    };
-    HttpBuilderOfT.prototype.transfer = function (abortSignal) {
-        var _this = this;
-        return this.send(abortSignal).then(function (response) {
+        var responsePromise = this.inner.send(abortSignal)
+            .then(function (x) { return new HttpResponseOfT(x.rawResponse, _this.handler); })
+            .then(function (response) {
             if (_this.inner.ensureSuccessStatusCode) {
                 response.ensureSuccessfulStatusCode();
             }
-            return response.receive();
+            return response;
         });
+        return asSendPromise(responsePromise, function () { return responsePromise.then(function (response) { return response.receive(); }); });
+    };
+    HttpBuilderOfT.prototype.transfer = function (abortSignal) {
+        return this.send(abortSignal).then(function (response) { return response.receive(); });
     };
     return HttpBuilderOfT;
 }(HttpBuilder));

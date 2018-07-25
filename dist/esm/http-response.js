@@ -8,6 +8,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+import { HttpError } from "./http-error";
 var HttpResponse = /** @class */ (function () {
     function HttpResponse(rawResponse) {
         this.rawResponse = rawResponse;
@@ -49,7 +50,7 @@ var HttpResponse = /** @class */ (function () {
     });
     HttpResponse.prototype.ensureSuccessfulStatusCode = function () {
         if (!this.isSuccessful) {
-            throw new Error('The response was not successful');
+            throw new HttpError(this.rawResponse.status);
         }
         return this;
     };

@@ -1,3 +1,5 @@
+import { HttpError } from "./http-error";
+
 export class HttpResponse {
     get isInformational() {
         return this.rawResponse.status >= 100 && this.rawResponse.status < 200;
@@ -24,7 +26,7 @@ export class HttpResponse {
 
     ensureSuccessfulStatusCode() {
         if (!this.isSuccessful) {
-            throw new Error('The response was not successful');
+            throw new HttpError(this.rawResponse.status);
         }
 
         return this;
