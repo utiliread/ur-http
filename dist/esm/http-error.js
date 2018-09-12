@@ -11,9 +11,12 @@ var __extends = (this && this.__extends) || (function () {
 var HttpError = /** @class */ (function (_super) {
     __extends(HttpError, _super);
     function HttpError(statusCode) {
-        var _this = _super.call(this, "The response was not successful indicated by status code " + statusCode) || this;
+        var _this = _super.call(this, "The response was not successful: " + statusCode) || this;
         _this.statusCode = statusCode;
         _this.name = 'HttpError';
+        // Set the prototype explicitly to allow for "... instanceof HttpError",
+        // see https://github.com/Microsoft/TypeScript-wiki/blob/master/Breaking-Changes.md#extending-built-ins-like-error-array-and-map-may-no-longer-work
+        Object.setPrototypeOf(_this, HttpError.prototype);
         return _this;
     }
     return HttpError;
