@@ -1,24 +1,28 @@
 import { HttpError } from "./http-error";
 
 export class HttpResponse {
+    get statusCode() {
+        return this.rawResponse.status;
+    }
+
     get isInformational() {
-        return this.rawResponse.status >= 100 && this.rawResponse.status < 200;
+        return this.statusCode >= 100 && this.statusCode < 200;
     }
 
     get isSuccessful() {
-        return this.rawResponse.status >= 200 && this.rawResponse.status < 300;
+        return this.statusCode >= 200 && this.statusCode < 300;
     }
 
     get isRedirection() {
-        return this.rawResponse.status >= 300 && this.rawResponse.status < 400;
+        return this.statusCode >= 300 && this.statusCode < 400;
     }
 
     get isClientError() {
-        return this.rawResponse.status >= 400 && this.rawResponse.status < 500;
+        return this.statusCode >= 400 && this.statusCode < 500;
     }
 
     get isServerError() {
-        return this.rawResponse.status >= 500 && this.rawResponse.status < 600;
+        return this.statusCode >= 500 && this.statusCode < 600;
     }
     
     constructor(public rawResponse: Response) {
@@ -26,7 +30,7 @@ export class HttpResponse {
 
     ensureSuccessfulStatusCode() {
         if (!this.isSuccessful) {
-            throw new HttpError(this.rawResponse.status);
+            throw new HttpError(this.statusCode);
         }
 
         return this;

@@ -10,4 +10,6 @@ exports.HttpResponseOfT = http_response_1.HttpResponseOfT;
 var http_builder_1 = require("./http-builder");
 exports.HttpBuilder = http_builder_1.HttpBuilder;
 exports.HttpBuilderOfT = http_builder_1.HttpBuilderOfT;
+var http_error_1 = require("./http-error");
+exports.HttpError = http_error_1.HttpError;
 //# sourceMappingURL=index.js.map

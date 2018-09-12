@@ -1,5 +1,6 @@
 export declare class HttpResponse {
     rawResponse: Response;
+    readonly statusCode: number;
     readonly isInformational: boolean;
     readonly isSuccessful: boolean;
     readonly isRedirection: boolean;
