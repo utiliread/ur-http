@@ -11,13 +11,13 @@ export interface PaginationResult<T> {
     data: T[];
 }
 export interface InfinitePage {
-    continuationToken: string;
+    continuationToken?: string;
     size: number;
 }
 export interface InfinitePaginationResult<T> {
     meta: {
         pageSize: number;
-        continuationToken: string;
+        continuationToken: string | null;
     };
     data: T[];
 }

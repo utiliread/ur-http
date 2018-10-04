@@ -40,7 +40,7 @@ export declare class HttpBuilder {
     } | ((item: any) => T)): HttpBuilderOfT<{
         meta: {
             pageSize: number;
-            continuationToken: string;
+            continuationToken: string | null;
         };
         data: T[];
     }>;
