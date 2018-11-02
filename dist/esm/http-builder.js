@@ -51,6 +51,7 @@ var HttpBuilder = /** @class */ (function () {
         this.message = message;
         this.fetch = fetch;
         this._ensureSuccessStatusCode = true;
+        this._onSent = [];
     }
     HttpBuilder.create = function (method, url) {
         return new HttpBuilder({
@@ -63,14 +64,18 @@ var HttpBuilder = /** @class */ (function () {
         this.fetch = fetch;
         return this;
     };
+    HttpBuilder.prototype.onSent = function (callback) {
+        this._onSent.push(callback);
+        return this;
+    };
     HttpBuilder.prototype.useHandler = function (handler) {
         return new HttpBuilderOfT(this, handler);
     };
     HttpBuilder.prototype.send = function (abortSignal) {
         return __awaiter(this, void 0, void 0, function () {
-            var fetchResponse, httpResponse;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var fetchResponse, httpResponse, _i, _a, callback;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
                         if (!this.fetch) {
                             throw Error('fetch() is not propery configured');
@@ -85,12 +90,24 @@ var HttpBuilder = /** @class */ (function () {
                                 signal: abortSignal
                             })];
                     case 1:
-                        fetchResponse = _a.sent();
+                        fetchResponse = _b.sent();
                         httpResponse = new HttpResponse(fetchResponse);
                         if (this._ensureSuccessStatusCode) {
                             httpResponse.ensureSuccessfulStatusCode();
                         }
-                        return [2 /*return*/, httpResponse];
+                        _i = 0, _a = this._onSent;
+                        _b.label = 2;
+                    case 2:
+                        if (!(_i < _a.length)) return [3 /*break*/, 5];
+                        callback = _a[_i];
+                        return [4 /*yield*/, Promise.resolve(callback(httpResponse))];
+                    case 3:
+                        _b.sent();
+                        _b.label = 4;
+                    case 4:
+                        _i++;
+                        return [3 /*break*/, 2];
+                    case 5: return [2 /*return*/, httpResponse];
                 }
             });
         });
@@ -195,6 +212,7 @@ var HttpBuilderOfT = /** @class */ (function (_super) {
         var _this = _super.call(this, inner.message, inner.fetch) || this;
         _this.inner = inner;
         _this.handler = handler;
+        _this._onReceived = [];
         return _this;
     }
     HttpBuilderOfT.prototype.ensureSuccessStatusCode = function (ensureSuccessStatusCode) {
@@ -210,13 +228,43 @@ var HttpBuilderOfT = /** @class */ (function (_super) {
             return _this.handler(response);
         });
     };
+    HttpBuilderOfT.prototype.onReceived = function (callback) {
+        this._onReceived.push(callback);
+        return this;
+    };
     HttpBuilderOfT.prototype.send = function (abortSignal) {
         var _this = this;
         var responsePromise = this.inner.send(abortSignal).then(function (x) { return new HttpResponseOfT(x.rawResponse, _this.handler); });
-        return asSendPromise(responsePromise, function () { return responsePromise.then(function (response) { return response.receive(); }); });
+        return asSendPromise(responsePromise, function () { return responsePromise.then(function (response) { return _this.handleReceive(response); }); });
     };
     HttpBuilderOfT.prototype.transfer = function (abortSignal) {
-        return this.send(abortSignal).then(function (response) { return response.receive(); });
+        var _this = this;
+        return this.send(abortSignal).then(function (response) { return _this.handleReceive(response); });
+    };
+    HttpBuilderOfT.prototype.handleReceive = function (response) {
+        return __awaiter(this, void 0, void 0, function () {
+            var received, _i, _a, callback;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, response.receive()];
+                    case 1:
+                        received = _b.sent();
+                        _i = 0, _a = this._onReceived;
+                        _b.label = 2;
+                    case 2:
+                        if (!(_i < _a.length)) return [3 /*break*/, 5];
+                        callback = _a[_i];
+                        return [4 /*yield*/, Promise.resolve(callback(received))];
+                    case 3:
+                        _b.sent();
+                        _b.label = 4;
+                    case 4:
+                        _i++;
+                        return [3 /*break*/, 2];
+                    case 5: return [2 /*return*/, received];
+                }
+            });
+        });
     };
     return HttpBuilderOfT;
 }(HttpBuilder));

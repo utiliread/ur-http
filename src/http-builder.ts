@@ -5,6 +5,7 @@ import { modelBind, serialize } from 'ur-json';
 
 export class HttpBuilder {
     private _ensureSuccessStatusCode = true;
+    private _onSent: ((response: HttpResponse) => void | Promise<void>)[] = [];
     
     constructor(public message: Message, public fetch: Fetch | undefined) {
     }
@@ -19,6 +20,11 @@ export class HttpBuilder {
 
     using(fetch: Fetch) {
         this.fetch = fetch;
+        return this;
+    }
+
+    onSent(callback: (response: HttpResponse) => void | Promise<void>) {
+        this._onSent.push(callback);
         return this;
     }
 
@@ -47,6 +53,10 @@ export class HttpBuilder {
 
         if (this._ensureSuccessStatusCode) {
             httpResponse.ensureSuccessfulStatusCode();
+        }
+
+        for (const callback of this._onSent) {
+            await Promise.resolve(callback(httpResponse));
         }
 
         return httpResponse;
@@ -165,6 +175,8 @@ export class HttpBuilder {
 }
 
 export class HttpBuilderOfT<T> extends HttpBuilder {
+    private _onReceived: ((received: T) => void | Promise<void>)[] = [];
+
     constructor(private inner: HttpBuilder, private handler: (response: Response) => Promise<T>) {
         super(inner.message, inner.fetch);
     }
@@ -184,15 +196,30 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
             return this.handler(response);
         });
     }
+
+    onReceived(callback: (received: T) => void | Promise<void>) {
+        this._onReceived.push(callback);
+        return this;
+    }
     
     send(abortSignal?: any) {
         const responsePromise = this.inner.send(abortSignal).then(x => new HttpResponseOfT<T>(x.rawResponse, this.handler));
         
-        return asSendPromise(responsePromise, () => responsePromise.then(response => response.receive()));
+        return asSendPromise(responsePromise, () => responsePromise.then(response => this.handleReceive(response)));
     }
 
     transfer(abortSignal?: any) {
-        return this.send(abortSignal).then(response => response.receive());
+        return this.send(abortSignal).then(response => this.handleReceive(response));
+    }
+
+    private async handleReceive(response: HttpResponseOfT<T>) {
+        const received = await response.receive();
+
+        for (const callback of this._onReceived) {
+            await Promise.resolve(callback(received));
+        }
+
+        return received;
     }
 }
 
