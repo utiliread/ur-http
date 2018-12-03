@@ -10,6 +10,14 @@ var QueryString = /** @class */ (function () {
         }
         return '?' + this._serializeQueryString(params);
     };
+    QueryString.append = function (url, params) {
+        if (!params) {
+            return url;
+        }
+        var any = url.indexOf("?") >= 0;
+        var separator = any ? "&" : "?";
+        return separator + this._serializeQueryString(params);
+    };
     QueryString.getParameter = function (name) {
         var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)");
         var match = regex.exec(window.location.href);

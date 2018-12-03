@@ -8,6 +8,16 @@ export class QueryString {
         return '?' + this._serializeQueryString(params);
     }
 
+    static append(url: string, params: any) {
+        if (!params) {
+            return url;
+        }
+        const any = url.indexOf("?") >= 0;
+        const separator = any ? "&" : "?";
+
+        return separator + this._serializeQueryString(params);
+    }
+
     static getParameter(name: string) {
         const regex = new RegExp(`[?&]${name}(=([^&#]*)|&|#|$)`);
         const match = regex.exec(window.location.href);
@@ -37,7 +47,10 @@ export class QueryString {
                 if (value instanceof DateTime) {
                     parts.push(key + '=' + value.toISO());
                 }
-                else if (value !== null && value !== undefined) {
+                else if (value === null) {
+                    parts.push(key);
+                }
+                else if (value !== undefined) {
                     if (typeof value === 'object') {
                         parts.push(this._serializeQueryString(value, key));
                     }
