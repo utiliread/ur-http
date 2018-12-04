@@ -16,7 +16,7 @@ var QueryString = /** @class */ (function () {
         }
         var any = url.indexOf("?") >= 0;
         var separator = any ? "&" : "?";
-        return separator + this._serializeQueryString(params);
+        return url + separator + this._serializeQueryString(params);
     };
     QueryString.getParameter = function (name) {
         var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)");
@@ -43,7 +43,10 @@ var QueryString = /** @class */ (function () {
                 if (value instanceof luxon_1.DateTime) {
                     parts.push(key + '=' + value.toISO());
                 }
-                else if (value !== null && value !== undefined) {
+                else if (value === null) {
+                    parts.push(key);
+                }
+                else if (value !== undefined) {
                     if (typeof value === 'object') {
                         parts.push(this._serializeQueryString(value, key));
                     }
