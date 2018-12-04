@@ -15,7 +15,7 @@ export class QueryString {
         const any = url.indexOf("?") >= 0;
         const separator = any ? "&" : "?";
 
-        return separator + this._serializeQueryString(params);
+        return url + separator + this._serializeQueryString(params);
     }
 
     static getParameter(name: string) {

@@ -57,7 +57,7 @@ export declare class HttpBuilderOfT<T> extends HttpBuilder {
     onReceived(callback: (received: T) => void | Promise<void>): this;
     send(abortSignal?: any): SendPromise<T>;
     transfer(abortSignal?: any): Promise<T>;
-    private handleReceive(response);
+    private handleReceive;
 }
 export interface Message {
     method: string;
