@@ -75,7 +75,7 @@ var HttpBuilder = /** @class */ (function () {
     };
     HttpBuilder.prototype.send = function (abortSignal) {
         return __awaiter(this, void 0, void 0, function () {
-            var fetchResponse, httpResponse, _i, _a, callback;
+            var init, fetchResponse, httpResponse, _i, _a, callback;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -85,12 +85,14 @@ var HttpBuilder = /** @class */ (function () {
                         if (this.message.contentType) {
                             this.message.headers.set('Content-Type', this.message.contentType);
                         }
-                        return [4 /*yield*/, this.fetch(this.message.url, {
-                                method: this.message.method,
-                                body: this.message.content,
-                                headers: this.message.headers,
-                                signal: abortSignal
-                            })];
+                        init = {
+                            method: this.message.method,
+                            body: this.message.content,
+                            headers: this.message.headers,
+                            mode: this.message.mode,
+                            signal: abortSignal
+                        };
+                        return [4 /*yield*/, this.fetch(this.message.url, init)];
                     case 1:
                         fetchResponse = _b.sent();
                         httpResponse = new http_response_1.HttpResponse(fetchResponse);
@@ -116,6 +118,10 @@ var HttpBuilder = /** @class */ (function () {
     };
     HttpBuilder.prototype.ensureSuccessStatusCode = function (ensureSuccessStatusCode) {
         this._ensureSuccessStatusCode = ensureSuccessStatusCode === false ? false : true;
+        return this;
+    };
+    HttpBuilder.prototype.withCorsDisabled = function () {
+        this.message.mode = "no-cors";
         return this;
     };
     // Content Extensions

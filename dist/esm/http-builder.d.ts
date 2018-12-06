@@ -10,8 +10,9 @@ export declare class HttpBuilder {
     using(fetch: Fetch): this;
     onSent(callback: (response: HttpResponse) => void | Promise<void>): this;
     protected useHandler<T>(handler: (response: Response) => Promise<T>): HttpBuilderOfT<T>;
-    send(abortSignal?: any): Promise<HttpResponse>;
+    send(abortSignal?: AbortSignal): Promise<HttpResponse>;
     ensureSuccessStatusCode(ensureSuccessStatusCode?: boolean): this;
+    withCorsDisabled(): this;
     with(content: any, contentType?: string): this;
     withForm(content: FormData): this;
     withJson(content: any): this;
@@ -55,8 +56,8 @@ export declare class HttpBuilderOfT<T> extends HttpBuilder {
     ensureSuccessStatusCode(ensureSuccessStatusCode?: boolean): this;
     allowEmptyResponse(): HttpBuilderOfT<T | null>;
     onReceived(callback: (received: T) => void | Promise<void>): this;
-    send(abortSignal?: any): SendPromise<T>;
-    transfer(abortSignal?: any): Promise<T>;
+    send(abortSignal?: AbortSignal): SendPromise<T>;
+    transfer(abortSignal?: AbortSignal): Promise<T>;
     private handleReceive;
 }
 export interface Message {
@@ -65,6 +66,7 @@ export interface Message {
     headers: Headers;
     content?: any;
     contentType?: string;
+    mode?: RequestMode;
 }
 export interface SendPromise<T> extends Promise<HttpResponseOfT<T>> {
     thenReceive(): Promise<T>;

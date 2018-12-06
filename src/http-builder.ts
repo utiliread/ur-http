@@ -32,7 +32,7 @@ export class HttpBuilder {
         return new HttpBuilderOfT<T>(this, handler);
     }
 
-    async send(abortSignal?: any) {
+    async send(abortSignal?: AbortSignal) {
         if (!this.fetch) {
             throw Error('fetch() is not propery configured');
         }
@@ -41,13 +41,16 @@ export class HttpBuilder {
             this.message.headers.set('Content-Type', this.message.contentType);
         }
 
-        // Cast to any to allow for the signal property
-        const fetchResponse = await this.fetch(this.message.url, <any>{
+        const init: RequestInit = {
             method: this.message.method,
             body: this.message.content,
             headers: this.message.headers,
+            mode: this.message.mode,
             signal: abortSignal
-        });
+        };
+
+        // Cast to any to allow for the signal property
+        const fetchResponse = await this.fetch(this.message.url, init);
 
         const httpResponse = new HttpResponse(fetchResponse);
 
@@ -65,6 +68,11 @@ export class HttpBuilder {
     ensureSuccessStatusCode(ensureSuccessStatusCode?: boolean) {
         this._ensureSuccessStatusCode = ensureSuccessStatusCode === false ? false : true;
 
+        return this;
+    }
+
+    withCorsDisabled() {
+        this.message.mode = "no-cors";
         return this;
     }
 
@@ -202,13 +210,13 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
         return this;
     }
     
-    send(abortSignal?: any) {
+    send(abortSignal?: AbortSignal) {
         const responsePromise = this.inner.send(abortSignal).then(x => new HttpResponseOfT<T>(x.rawResponse, this.handler));
         
         return asSendPromise(responsePromise, () => responsePromise.then(response => this.handleReceive(response)));
     }
 
-    transfer(abortSignal?: any) {
+    transfer(abortSignal?: AbortSignal) {
         return this.send(abortSignal).then(response => this.handleReceive(response));
     }
 
@@ -229,6 +237,7 @@ export interface Message {
     headers: Headers;
     content?: any;
     contentType?: string;
+    mode?: RequestMode;
 }
 
 export interface SendPromise<T> extends Promise<HttpResponseOfT<T>> {
