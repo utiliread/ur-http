@@ -71,8 +71,8 @@ export class HttpBuilder {
         return this;
     }
 
-    withCorsDisabled() {
-        this.message.mode = "no-cors";
+    useCors(mode: RequestMode) {
+        this.message.mode = mode;
         return this;
     }
 

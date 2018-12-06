@@ -12,7 +12,7 @@ export declare class HttpBuilder {
     protected useHandler<T>(handler: (response: Response) => Promise<T>): HttpBuilderOfT<T>;
     send(abortSignal?: AbortSignal): Promise<HttpResponse>;
     ensureSuccessStatusCode(ensureSuccessStatusCode?: boolean): this;
-    withCorsDisabled(): this;
+    useCors(mode: RequestMode): this;
     with(content: any, contentType?: string): this;
     withForm(content: FormData): this;
     withJson(content: any): this;

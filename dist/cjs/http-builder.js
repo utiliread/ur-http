@@ -120,8 +120,8 @@ var HttpBuilder = /** @class */ (function () {
         this._ensureSuccessStatusCode = ensureSuccessStatusCode === false ? false : true;
         return this;
     };
-    HttpBuilder.prototype.withCorsDisabled = function () {
-        this.message.mode = "no-cors";
+    HttpBuilder.prototype.useCors = function (mode) {
+        this.message.mode = mode;
         return this;
     };
     // Content Extensions
