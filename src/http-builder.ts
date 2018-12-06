@@ -34,7 +34,7 @@ export class HttpBuilder {
 
     async send(abortSignal?: AbortSignal) {
         if (!this.fetch) {
-            throw Error('fetch() is not propery configured');
+            throw Error('fetch() is not properly configured');
         }
 
         if (this.message.contentType) {
