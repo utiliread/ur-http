@@ -226,6 +226,10 @@ var HttpBuilderOfT = /** @class */ (function (_super) {
         _this._onReceived = [];
         return _this;
     }
+    HttpBuilderOfT.prototype.onSent = function (callback) {
+        _super.prototype.onSent.call(this, callback);
+        return this;
+    };
     HttpBuilderOfT.prototype.ensureSuccessStatusCode = function (ensureSuccessStatusCode) {
         _super.prototype.ensureSuccessStatusCode.call(this, ensureSuccessStatusCode);
         return this;

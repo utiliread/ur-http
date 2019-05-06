@@ -53,6 +53,7 @@ export declare class HttpBuilderOfT<T> extends HttpBuilder {
     private handler;
     private _onReceived;
     constructor(inner: HttpBuilder, handler: (response: Response) => Promise<T>);
+    onSent(callback: (response: HttpResponse) => void | Promise<void>): this;
     ensureSuccessStatusCode(ensureSuccessStatusCode?: boolean): this;
     allowEmptyResponse(): HttpBuilderOfT<T | null>;
     onReceived(callback: (received: T) => void | Promise<void>): this;

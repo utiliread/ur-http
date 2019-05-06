@@ -189,9 +189,13 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
         super(inner.message, inner.fetch);
     }
 
+    onSent(callback: (response: HttpResponse) => void | Promise<void>) {
+        super.onSent(callback);
+        return this;
+    }
+
     ensureSuccessStatusCode(ensureSuccessStatusCode?: boolean) {
         super.ensureSuccessStatusCode(ensureSuccessStatusCode);
-
         return this;
     }
 
