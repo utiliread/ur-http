@@ -190,12 +190,12 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
     }
 
     onSent(callback: (response: HttpResponse) => void | Promise<void>) {
-        super.onSent(callback);
+        this.inner.onSent(callback);
         return this;
     }
 
     ensureSuccessStatusCode(ensureSuccessStatusCode?: boolean) {
-        super.ensureSuccessStatusCode(ensureSuccessStatusCode);
+        this.inner.ensureSuccessStatusCode(ensureSuccessStatusCode);
         return this;
     }
 

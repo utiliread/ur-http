@@ -225,11 +225,11 @@ var HttpBuilderOfT = /** @class */ (function (_super) {
         return _this;
     }
     HttpBuilderOfT.prototype.onSent = function (callback) {
-        _super.prototype.onSent.call(this, callback);
+        this.inner.onSent(callback);
         return this;
     };
     HttpBuilderOfT.prototype.ensureSuccessStatusCode = function (ensureSuccessStatusCode) {
-        _super.prototype.ensureSuccessStatusCode.call(this, ensureSuccessStatusCode);
+        this.inner.ensureSuccessStatusCode(ensureSuccessStatusCode);
         return this;
     };
     HttpBuilderOfT.prototype.allowEmptyResponse = function () {
