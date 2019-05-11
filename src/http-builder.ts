@@ -183,7 +183,7 @@ export class HttpBuilder {
 }
 
 export class HttpBuilderOfT<T> extends HttpBuilder {
-    private _onReceived: ((received: T) => void | Promise<void>)[] = [];
+    private _onReceived: ((received: T, response?: HttpResponseOfT<T>) => void | Promise<void>)[] = [];
 
     constructor(private inner: HttpBuilder, private handler: (response: Response) => Promise<T>) {
         super(inner.message, inner.fetch);
@@ -209,7 +209,7 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
         });
     }
 
-    onReceived(callback: (received: T) => void | Promise<void>) {
+    onReceived(callback: (received: T, response?: HttpResponseOfT<T>) => void | Promise<void>) {
         this._onReceived.push(callback);
         return this;
     }
@@ -228,7 +228,7 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
         const received = await response.receive();
 
         for (const callback of this._onReceived) {
-            await Promise.resolve(callback(received));
+            await Promise.resolve(callback(received, response));
         }
 
         return received;

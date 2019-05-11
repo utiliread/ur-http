@@ -267,7 +267,7 @@ var HttpBuilderOfT = /** @class */ (function (_super) {
                     case 2:
                         if (!(_i < _a.length)) return [3 /*break*/, 5];
                         callback = _a[_i];
-                        return [4 /*yield*/, Promise.resolve(callback(received))];
+                        return [4 /*yield*/, Promise.resolve(callback(received, response))];
                     case 3:
                         _b.sent();
                         _b.label = 4;

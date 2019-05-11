@@ -56,7 +56,7 @@ export declare class HttpBuilderOfT<T> extends HttpBuilder {
     onSent(callback: (response: HttpResponse) => void | Promise<void>): this;
     ensureSuccessStatusCode(ensureSuccessStatusCode?: boolean): this;
     allowEmptyResponse(): HttpBuilderOfT<T | null>;
-    onReceived(callback: (received: T) => void | Promise<void>): this;
+    onReceived(callback: (received: T, response?: HttpResponseOfT<T>) => void | Promise<void>): this;
     send(abortSignal?: AbortSignal): SendPromise<T>;
     transfer(abortSignal?: AbortSignal): Promise<T>;
     private handleReceive;
