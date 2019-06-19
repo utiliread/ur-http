@@ -51,10 +51,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var http_1 = require("./http");
 var http_response_1 = require("./http-response");
 var ur_json_1 = require("ur-json");
+var timeout_error_1 = require("./timeout-error");
 var HttpBuilder = /** @class */ (function () {
-    function HttpBuilder(message, fetch) {
+    function HttpBuilder(message, fetch, timeout) {
         this.message = message;
         this.fetch = fetch;
+        this.timeout = timeout;
         this._ensureSuccessStatusCode = true;
         this._onSent = [];
     }
@@ -63,7 +65,7 @@ var HttpBuilder = /** @class */ (function () {
             method: method,
             url: url,
             headers: new Headers()
-        }, http_1.Http.defaults.fetch);
+        }, http_1.Http.defaults.fetch, http_1.Http.defaults.timeout);
     };
     HttpBuilder.prototype.using = function (fetch) {
         this.fetch = fetch;
@@ -78,7 +80,8 @@ var HttpBuilder = /** @class */ (function () {
     };
     HttpBuilder.prototype.send = function (abortSignal) {
         return __awaiter(this, void 0, void 0, function () {
-            var init, fetchResponse, httpResponse, _i, _a, callback;
+            var init, fetchResponsePromise, fetchResponse, httpResponse, _i, _a, callback;
+            var _this = this;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -95,32 +98,47 @@ var HttpBuilder = /** @class */ (function () {
                             mode: this.message.mode,
                             signal: abortSignal
                         };
-                        return [4 /*yield*/, this.fetch(this.message.url, init)];
+                        fetchResponsePromise = this.fetch(this.message.url, init);
+                        if (!this.timeout) return [3 /*break*/, 2];
+                        return [4 /*yield*/, Promise.race([
+                                fetchResponsePromise,
+                                new Promise(function (_, reject) { return setTimeout(function () { return reject(new timeout_error_1.TimeoutError()); }, _this.timeout); })
+                            ])];
                     case 1:
                         fetchResponse = _b.sent();
+                        return [3 /*break*/, 4];
+                    case 2: return [4 /*yield*/, fetchResponsePromise];
+                    case 3:
+                        fetchResponse = _b.sent();
+                        _b.label = 4;
+                    case 4:
                         httpResponse = new http_response_1.HttpResponse(fetchResponse);
                         if (this._ensureSuccessStatusCode) {
                             httpResponse.ensureSuccessfulStatusCode();
                         }
                         _i = 0, _a = this._onSent;
-                        _b.label = 2;
-                    case 2:
-                        if (!(_i < _a.length)) return [3 /*break*/, 5];
+                        _b.label = 5;
+                    case 5:
+                        if (!(_i < _a.length)) return [3 /*break*/, 8];
                         callback = _a[_i];
                         return [4 /*yield*/, Promise.resolve(callback(httpResponse))];
-                    case 3:
+                    case 6:
                         _b.sent();
-                        _b.label = 4;
-                    case 4:
+                        _b.label = 7;
+                    case 7:
                         _i++;
-                        return [3 /*break*/, 2];
-                    case 5: return [2 /*return*/, httpResponse];
+                        return [3 /*break*/, 5];
+                    case 8: return [2 /*return*/, httpResponse];
                 }
             });
         });
     };
     HttpBuilder.prototype.ensureSuccessStatusCode = function (ensureSuccessStatusCode) {
         this._ensureSuccessStatusCode = ensureSuccessStatusCode === false ? false : true;
+        return this;
+    };
+    HttpBuilder.prototype.hasTimeout = function (timeout) {
+        this.timeout = timeout;
         return this;
     };
     HttpBuilder.prototype.useCors = function (mode) {
@@ -232,6 +250,10 @@ var HttpBuilderOfT = /** @class */ (function (_super) {
     };
     HttpBuilderOfT.prototype.ensureSuccessStatusCode = function (ensureSuccessStatusCode) {
         this.inner.ensureSuccessStatusCode(ensureSuccessStatusCode);
+        return this;
+    };
+    HttpBuilderOfT.prototype.hasTimeout = function (timeout) {
+        this.inner.timeout = timeout;
         return this;
     };
     HttpBuilderOfT.prototype.allowEmptyResponse = function () {

@@ -3,15 +3,17 @@ import { HttpResponse, HttpResponseOfT } from './http-response';
 export declare class HttpBuilder {
     message: Message;
     fetch: Fetch | undefined;
+    timeout?: number | undefined;
     private _ensureSuccessStatusCode;
     private _onSent;
-    constructor(message: Message, fetch: Fetch | undefined);
+    constructor(message: Message, fetch: Fetch | undefined, timeout?: number | undefined);
     static create(method: string, url: string): HttpBuilder;
     using(fetch: Fetch): this;
     onSent(callback: (response: HttpResponse) => void | Promise<void>): this;
     protected useHandler<T>(handler: (response: Response) => Promise<T>): HttpBuilderOfT<T>;
     send(abortSignal?: AbortSignal): Promise<HttpResponse>;
     ensureSuccessStatusCode(ensureSuccessStatusCode?: boolean): this;
+    hasTimeout(timeout: number): this;
     useCors(mode: RequestMode): this;
     with(content: any, contentType?: string): this;
     withForm(content: FormData): this;
@@ -55,6 +57,7 @@ export declare class HttpBuilderOfT<T> extends HttpBuilder {
     constructor(inner: HttpBuilder, handler: (response: Response) => Promise<T>);
     onSent(callback: (response: HttpResponse) => void | Promise<void>): this;
     ensureSuccessStatusCode(ensureSuccessStatusCode?: boolean): this;
+    hasTimeout(timeout: number): this;
     allowEmptyResponse(): HttpBuilderOfT<T | null>;
     onReceived(callback: (received: T, response: HttpResponseOfT<T>) => void | Promise<void>): this;
     send(abortSignal?: AbortSignal): SendPromise<T>;

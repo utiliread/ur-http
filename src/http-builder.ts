@@ -3,11 +3,13 @@ import { HttpResponse, HttpResponseOfT } from './http-response';
 import { InfinitePaginationResult, PaginationResult } from './pagination';
 import { modelBind, serialize } from 'ur-json';
 
+import { TimeoutError } from './timeout-error';
+
 export class HttpBuilder {
     private _ensureSuccessStatusCode = true;
     private _onSent: ((response: HttpResponse) => void | Promise<void>)[] = [];
     
-    constructor(public message: Message, public fetch: Fetch | undefined) {
+    constructor(public message: Message, public fetch: Fetch | undefined, public timeout?: number) {
     }
 
     static create(method: string, url: string) {
@@ -15,7 +17,7 @@ export class HttpBuilder {
             method: method,
             url: url,
             headers: new Headers()
-        }, Http.defaults.fetch);
+        }, Http.defaults.fetch, Http.defaults.timeout);
     }
 
     using(fetch: Fetch) {
@@ -49,8 +51,18 @@ export class HttpBuilder {
             signal: abortSignal
         };
 
-        // Cast to any to allow for the signal property
-        const fetchResponse = await this.fetch(this.message.url, init);
+        const fetchResponsePromise = this.fetch(this.message.url, init);
+        let fetchResponse: Response;
+
+        if (this.timeout) {
+            fetchResponse = await Promise.race([
+                fetchResponsePromise,
+                new Promise<Response>((_, reject) => setTimeout(() => reject(new TimeoutError()), this.timeout))
+            ]);
+        }
+        else {
+            fetchResponse = await fetchResponsePromise;
+        }
 
         const httpResponse = new HttpResponse(fetchResponse);
 
@@ -68,6 +80,11 @@ export class HttpBuilder {
     ensureSuccessStatusCode(ensureSuccessStatusCode?: boolean) {
         this._ensureSuccessStatusCode = ensureSuccessStatusCode === false ? false : true;
 
+        return this;
+    }
+
+    hasTimeout(timeout: number) {
+        this.timeout = timeout;
         return this;
     }
 
@@ -196,6 +213,11 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
 
     ensureSuccessStatusCode(ensureSuccessStatusCode?: boolean) {
         this.inner.ensureSuccessStatusCode(ensureSuccessStatusCode);
+        return this;
+    }
+
+    hasTimeout(timeout: number) {
+        this.inner.timeout = timeout;
         return this;
     }
 
