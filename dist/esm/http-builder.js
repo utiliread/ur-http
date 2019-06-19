@@ -78,7 +78,7 @@ var HttpBuilder = /** @class */ (function () {
     };
     HttpBuilder.prototype.send = function (abortSignal) {
         return __awaiter(this, void 0, void 0, function () {
-            var init, fetchResponsePromise, fetchResponse, httpResponse, _i, _a, callback;
+            var init, outerController, fetchResponsePromise, fetchResponse, httpResponse, _i, _a, callback;
             var _this = this;
             return __generator(this, function (_b) {
                 switch (_b.label) {
@@ -93,14 +93,25 @@ var HttpBuilder = /** @class */ (function () {
                             method: this.message.method,
                             body: this.message.content,
                             headers: this.message.headers,
-                            mode: this.message.mode,
-                            signal: abortSignal
+                            mode: this.message.mode
                         };
+                        if (abortSignal || this.timeout) {
+                            outerController = new AbortController();
+                            if (abortSignal) {
+                                abortSignal.addEventListener("abort", function () {
+                                    outerController.abort();
+                                });
+                            }
+                            init.signal = outerController.signal;
+                        }
                         fetchResponsePromise = this.fetch(this.message.url, init);
                         if (!this.timeout) return [3 /*break*/, 2];
                         return [4 /*yield*/, Promise.race([
                                 fetchResponsePromise,
-                                new Promise(function (_, reject) { return setTimeout(function () { return reject(new TimeoutError()); }, _this.timeout); })
+                                new Promise(function (_, reject) { return setTimeout(function () {
+                                    outerController.abort();
+                                    reject(new TimeoutError());
+                                }, _this.timeout); })
                             ])];
                     case 1:
                         fetchResponse = _b.sent();

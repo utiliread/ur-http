@@ -47,9 +47,20 @@ export class HttpBuilder {
             method: this.message.method,
             body: this.message.content,
             headers: this.message.headers,
-            mode: this.message.mode,
-            signal: abortSignal
+            mode: this.message.mode
         };
+
+        if (abortSignal || this.timeout) {
+            var outerController = new AbortController();
+
+            if (abortSignal) {
+                abortSignal.addEventListener("abort", () => {
+                    outerController.abort();
+                });
+            }
+
+            init.signal = outerController.signal;
+        }
 
         const fetchResponsePromise = this.fetch(this.message.url, init);
         let fetchResponse: Response;
@@ -57,7 +68,10 @@ export class HttpBuilder {
         if (this.timeout) {
             fetchResponse = await Promise.race([
                 fetchResponsePromise,
-                new Promise<Response>((_, reject) => setTimeout(() => reject(new TimeoutError()), this.timeout))
+                new Promise<Response>((_, reject) => setTimeout(() => {
+                    outerController.abort();
+                    reject(new TimeoutError());
+                }, this.timeout))
             ]);
         }
         else {
