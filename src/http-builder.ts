@@ -3,11 +3,13 @@ import { HttpResponse, HttpResponseOfT } from './http-response';
 import { InfinitePaginationResult, PaginationResult } from './pagination';
 import { modelBind, serialize } from 'ur-json';
 
+import { TimeoutError } from './timeout-error';
+
 export class HttpBuilder {
     private _ensureSuccessStatusCode = true;
     private _onSent: ((response: HttpResponse) => void | Promise<void>)[] = [];
     
-    constructor(public message: Message, public fetch: Fetch | undefined) {
+    constructor(public message: Message, public fetch: Fetch | undefined, public timeout?: number) {
     }
 
     static create(method: string, url: string) {
@@ -15,7 +17,7 @@ export class HttpBuilder {
             method: method,
             url: url,
             headers: new Headers()
-        }, Http.defaults.fetch);
+        }, Http.defaults.fetch, Http.defaults.timeout);
     }
 
     using(fetch: Fetch) {
@@ -45,12 +47,36 @@ export class HttpBuilder {
             method: this.message.method,
             body: this.message.content,
             headers: this.message.headers,
-            mode: this.message.mode,
-            signal: abortSignal
+            mode: this.message.mode
         };
 
-        // Cast to any to allow for the signal property
-        const fetchResponse = await this.fetch(this.message.url, init);
+        if (abortSignal || this.timeout) {
+            var outerController = new AbortController();
+
+            if (abortSignal) {
+                abortSignal.addEventListener("abort", () => {
+                    outerController.abort();
+                });
+            }
+
+            init.signal = outerController.signal;
+        }
+
+        const fetchResponsePromise = this.fetch(this.message.url, init);
+        let fetchResponse: Response;
+
+        if (this.timeout) {
+            fetchResponse = await Promise.race([
+                fetchResponsePromise,
+                new Promise<Response>((_, reject) => setTimeout(() => {
+                    outerController.abort();
+                    reject(new TimeoutError());
+                }, this.timeout))
+            ]);
+        }
+        else {
+            fetchResponse = await fetchResponsePromise;
+        }
 
         const httpResponse = new HttpResponse(fetchResponse);
 
@@ -68,6 +94,11 @@ export class HttpBuilder {
     ensureSuccessStatusCode(ensureSuccessStatusCode?: boolean) {
         this._ensureSuccessStatusCode = ensureSuccessStatusCode === false ? false : true;
 
+        return this;
+    }
+
+    hasTimeout(timeout: number) {
+        this.timeout = timeout;
         return this;
     }
 
@@ -183,7 +214,7 @@ export class HttpBuilder {
 }
 
 export class HttpBuilderOfT<T> extends HttpBuilder {
-    private _onReceived: ((received: T) => void | Promise<void>)[] = [];
+    private _onReceived: ((received: T, response: HttpResponseOfT<T>) => void | Promise<void>)[] = [];
 
     constructor(private inner: HttpBuilder, private handler: (response: Response) => Promise<T>) {
         super(inner.message, inner.fetch);
@@ -199,6 +230,11 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
         return this;
     }
 
+    hasTimeout(timeout: number) {
+        this.inner.timeout = timeout;
+        return this;
+    }
+
     allowEmptyResponse() {
         return this.useHandler(response => {
             if (response.status === 204) {
@@ -209,7 +245,7 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
         });
     }
 
-    onReceived(callback: (received: T) => void | Promise<void>) {
+    onReceived(callback: (received: T, response: HttpResponseOfT<T>) => void | Promise<void>) {
         this._onReceived.push(callback);
         return this;
     }
@@ -228,7 +264,7 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
         const received = await response.receive();
 
         for (const callback of this._onReceived) {
-            await Promise.resolve(callback(received));
+            await Promise.resolve(callback(received, response));
         }
 
         return received;

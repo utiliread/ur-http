@@ -12,4 +12,6 @@ exports.HttpBuilder = http_builder_1.HttpBuilder;
 exports.HttpBuilderOfT = http_builder_1.HttpBuilderOfT;
 var http_error_1 = require("./http-error");
 exports.HttpError = http_error_1.HttpError;
+var timeout_error_1 = require("./timeout-error");
+exports.TimeoutError = timeout_error_1.TimeoutError;
 //# sourceMappingURL=index.js.map

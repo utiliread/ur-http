@@ -5,7 +5,8 @@ export type Fetch = (input: RequestInfo, init?: RequestInit) => Promise<Response
 
 export class Http {
     static defaults: {
-        fetch: Fetch | undefined
+        fetch: Fetch | undefined,
+        timeout?: number
     } = {
         fetch: window.fetch ? window.fetch.bind(window) : undefined
     }
