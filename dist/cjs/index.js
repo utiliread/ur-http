@@ -1,4 +1,7 @@
 "use strict";
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
 Object.defineProperty(exports, "__esModule", { value: true });
 var http_1 = require("./http");
 exports.Http = http_1.Http;
@@ -14,4 +17,5 @@ var http_error_1 = require("./http-error");
 exports.HttpError = http_error_1.HttpError;
 var timeout_error_1 = require("./timeout-error");
 exports.TimeoutError = timeout_error_1.TimeoutError;
+__export(require("./helpers"));
 //# sourceMappingURL=index.js.map
