@@ -1,6 +1,10 @@
 import { HttpError } from "./http-error";
 
 export class HttpResponse {
+    get url() {
+        return this.rawResponse.url;
+    }
+
     get statusCode() {
         return this.rawResponse.status;
     }
