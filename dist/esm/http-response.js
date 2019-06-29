@@ -13,6 +13,13 @@ var HttpResponse = /** @class */ (function () {
     function HttpResponse(rawResponse) {
         this.rawResponse = rawResponse;
     }
+    Object.defineProperty(HttpResponse.prototype, "url", {
+        get: function () {
+            return this.rawResponse.url;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(HttpResponse.prototype, "statusCode", {
         get: function () {
             return this.rawResponse.status;
