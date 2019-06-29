@@ -236,7 +236,11 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
     }
 
     allowEmptyResponse() {
-        return this.useHandler(response => {
+        if (this._onReceived.length) {
+            throw new Error("onReceived() should only be called after allowEmptyResponse()");
+        }
+
+        return new HttpBuilderOfT<T | null>(this.inner, response => {
             if (response.status === 204) {
                 return Promise.resolve(null);
             }

@@ -264,7 +264,10 @@ var HttpBuilderOfT = /** @class */ (function (_super) {
     };
     HttpBuilderOfT.prototype.allowEmptyResponse = function () {
         var _this = this;
-        return this.useHandler(function (response) {
+        if (this._onReceived.length) {
+            throw new Error("onReceived() should only be called after allowEmptyResponse()");
+        }
+        return new HttpBuilderOfT(this.inner, function (response) {
             if (response.status === 204) {
                 return Promise.resolve(null);
             }
