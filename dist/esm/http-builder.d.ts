@@ -9,7 +9,7 @@ export declare class HttpBuilder {
     constructor(message: Message, fetch: Fetch | undefined, timeout?: number | undefined);
     static create(method: string, url: string): HttpBuilder;
     using(fetch: Fetch): this;
-    onSent(callback: (response: HttpResponse) => void | Promise<void>): this;
+    onSent(callback: (response: HttpResponse) => void | Promise<any>): this;
     protected useHandler<T>(handler: (response: Response) => Promise<T>): HttpBuilderOfT<T>;
     send(abortSignal?: AbortSignal): Promise<HttpResponse>;
     ensureSuccessStatusCode(ensureSuccessStatusCode?: boolean): this;
@@ -55,11 +55,11 @@ export declare class HttpBuilderOfT<T> extends HttpBuilder {
     private handler;
     private _onReceived;
     constructor(inner: HttpBuilder, handler: (response: Response) => Promise<T>);
-    onSent(callback: (response: HttpResponse) => void | Promise<void>): this;
+    onSent(callback: (response: HttpResponse) => void | Promise<any>): this;
     ensureSuccessStatusCode(ensureSuccessStatusCode?: boolean): this;
     hasTimeout(timeout: number): this;
     allowEmptyResponse(): HttpBuilderOfT<T | null>;
-    onReceived(callback: (received: T, response: HttpResponseOfT<T>) => void | Promise<void>): this;
+    onReceived(callback: (received: T, response: HttpResponseOfT<T>) => void | Promise<any>): this;
     send(abortSignal?: AbortSignal): SendPromise<T>;
     transfer(abortSignal?: AbortSignal): Promise<T>;
     private handleReceive;

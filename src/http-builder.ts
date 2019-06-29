@@ -7,7 +7,7 @@ import { TimeoutError } from './timeout-error';
 
 export class HttpBuilder {
     private _ensureSuccessStatusCode = true;
-    private _onSent: ((response: HttpResponse) => void | Promise<void>)[] = [];
+    private _onSent: ((response: HttpResponse) => void | Promise<any>)[] = [];
     
     constructor(public message: Message, public fetch: Fetch | undefined, public timeout?: number) {
     }
@@ -25,7 +25,7 @@ export class HttpBuilder {
         return this;
     }
 
-    onSent(callback: (response: HttpResponse) => void | Promise<void>) {
+    onSent(callback: (response: HttpResponse) => void | Promise<any>) {
         this._onSent.push(callback);
         return this;
     }
@@ -214,13 +214,13 @@ export class HttpBuilder {
 }
 
 export class HttpBuilderOfT<T> extends HttpBuilder {
-    private _onReceived: ((received: T, response: HttpResponseOfT<T>) => void | Promise<void>)[] = [];
+    private _onReceived: ((received: T, response: HttpResponseOfT<T>) => void | Promise<any>)[] = [];
 
     constructor(private inner: HttpBuilder, private handler: (response: Response) => Promise<T>) {
         super(inner.message, inner.fetch);
     }
 
-    onSent(callback: (response: HttpResponse) => void | Promise<void>) {
+    onSent(callback: (response: HttpResponse) => void | Promise<any>) {
         this.inner.onSent(callback);
         return this;
     }
@@ -245,7 +245,7 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
         });
     }
 
-    onReceived(callback: (received: T, response: HttpResponseOfT<T>) => void | Promise<void>) {
+    onReceived(callback: (received: T, response: HttpResponseOfT<T>) => void | Promise<any>) {
         this._onReceived.push(callback);
         return this;
     }
