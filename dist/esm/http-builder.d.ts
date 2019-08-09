@@ -1,5 +1,6 @@
 import { Fetch } from './http';
 import { HttpResponse, HttpResponseOfT } from './http-response';
+import { Operation } from 'ur-jsonpatch';
 export declare class HttpBuilder {
     message: Message;
     fetch: Fetch | undefined;
@@ -18,6 +19,7 @@ export declare class HttpBuilder {
     with(content: any, contentType?: string): this;
     withForm(content: FormData): this;
     withJson(content: any): this;
+    withJsonPatch(operations: Operation[]): this;
     addHeader(name: string, value: string): this;
     expectString(): HttpBuilderOfT<string>;
     expectBinary(): HttpBuilderOfT<ArrayBuffer>;
