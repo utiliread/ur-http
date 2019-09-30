@@ -8,6 +8,7 @@ import { TimeoutError } from './timeout-error';
 
 export class HttpBuilder {
     private _ensureSuccessStatusCode = true;
+    private _onSend: ((request: Message) => void | Promise<any>)[] = [];
     private _onSent: ((response: HttpResponse) => void | Promise<any>)[] = [];
 
     constructor(public message: Message, public fetch: Fetch | undefined, public timeout?: number) {
@@ -23,6 +24,11 @@ export class HttpBuilder {
 
     using(fetch: Fetch) {
         this.fetch = fetch;
+        return this;
+    }
+
+    onSend(callback: (request: Message) => void | Promise<any>) {
+        this._onSend.push(callback);
         return this;
     }
 
@@ -42,6 +48,10 @@ export class HttpBuilder {
 
         if (this.message.contentType) {
             this.message.headers.set('Content-Type', this.message.contentType);
+        }
+
+        for (const callback of this._onSend) {
+            await Promise.resolve(callback(this.message));
         }
 
         const init: RequestInit = {
@@ -225,6 +235,11 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
 
     constructor(private inner: HttpBuilder, private handler: (response: Response) => Promise<T>) {
         super(inner.message, inner.fetch);
+    }
+
+    onSend(callback: (request: Message) => void | Promise<any>) {
+        this.inner.onSend(callback);
+        return this;
     }
 
     onSent(callback: (response: HttpResponse) => void | Promise<any>) {

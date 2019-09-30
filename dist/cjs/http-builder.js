@@ -58,6 +58,7 @@ var HttpBuilder = /** @class */ (function () {
         this.fetch = fetch;
         this.timeout = timeout;
         this._ensureSuccessStatusCode = true;
+        this._onSend = [];
         this._onSent = [];
     }
     HttpBuilder.create = function (method, url) {
@@ -71,6 +72,10 @@ var HttpBuilder = /** @class */ (function () {
         this.fetch = fetch;
         return this;
     };
+    HttpBuilder.prototype.onSend = function (callback) {
+        this._onSend.push(callback);
+        return this;
+    };
     HttpBuilder.prototype.onSent = function (callback) {
         this._onSent.push(callback);
         return this;
@@ -80,10 +85,10 @@ var HttpBuilder = /** @class */ (function () {
     };
     HttpBuilder.prototype.send = function (abortSignal) {
         return __awaiter(this, void 0, void 0, function () {
-            var init, outerController, fetchResponsePromise, fetchResponse, httpResponse, _i, _a, callback;
+            var _i, _a, callback, init, outerController, fetchResponsePromise, fetchResponse, httpResponse, _b, _c, callback;
             var _this = this;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            return __generator(this, function (_d) {
+                switch (_d.label) {
                     case 0:
                         if (!this.fetch) {
                             throw Error('fetch() is not properly configured');
@@ -91,6 +96,19 @@ var HttpBuilder = /** @class */ (function () {
                         if (this.message.contentType) {
                             this.message.headers.set('Content-Type', this.message.contentType);
                         }
+                        _i = 0, _a = this._onSend;
+                        _d.label = 1;
+                    case 1:
+                        if (!(_i < _a.length)) return [3 /*break*/, 4];
+                        callback = _a[_i];
+                        return [4 /*yield*/, Promise.resolve(callback(this.message))];
+                    case 2:
+                        _d.sent();
+                        _d.label = 3;
+                    case 3:
+                        _i++;
+                        return [3 /*break*/, 1];
+                    case 4:
                         init = {
                             method: this.message.method,
                             body: this.message.content,
@@ -107,7 +125,7 @@ var HttpBuilder = /** @class */ (function () {
                             init.signal = outerController.signal;
                         }
                         fetchResponsePromise = this.fetch(this.message.url, init);
-                        if (!this.timeout) return [3 /*break*/, 2];
+                        if (!this.timeout) return [3 /*break*/, 6];
                         return [4 /*yield*/, Promise.race([
                                 fetchResponsePromise,
                                 new Promise(function (_, reject) { return setTimeout(function () {
@@ -115,31 +133,31 @@ var HttpBuilder = /** @class */ (function () {
                                     reject(new timeout_error_1.TimeoutError());
                                 }, _this.timeout); })
                             ])];
-                    case 1:
-                        fetchResponse = _b.sent();
-                        return [3 /*break*/, 4];
-                    case 2: return [4 /*yield*/, fetchResponsePromise];
-                    case 3:
-                        fetchResponse = _b.sent();
-                        _b.label = 4;
-                    case 4:
+                    case 5:
+                        fetchResponse = _d.sent();
+                        return [3 /*break*/, 8];
+                    case 6: return [4 /*yield*/, fetchResponsePromise];
+                    case 7:
+                        fetchResponse = _d.sent();
+                        _d.label = 8;
+                    case 8:
                         httpResponse = new http_response_1.HttpResponse(fetchResponse);
                         if (this._ensureSuccessStatusCode) {
                             httpResponse.ensureSuccessfulStatusCode();
                         }
-                        _i = 0, _a = this._onSent;
-                        _b.label = 5;
-                    case 5:
-                        if (!(_i < _a.length)) return [3 /*break*/, 8];
-                        callback = _a[_i];
+                        _b = 0, _c = this._onSent;
+                        _d.label = 9;
+                    case 9:
+                        if (!(_b < _c.length)) return [3 /*break*/, 12];
+                        callback = _c[_b];
                         return [4 /*yield*/, Promise.resolve(callback(httpResponse))];
-                    case 6:
-                        _b.sent();
-                        _b.label = 7;
-                    case 7:
-                        _i++;
-                        return [3 /*break*/, 5];
-                    case 8: return [2 /*return*/, httpResponse];
+                    case 10:
+                        _d.sent();
+                        _d.label = 11;
+                    case 11:
+                        _b++;
+                        return [3 /*break*/, 9];
+                    case 12: return [2 /*return*/, httpResponse];
                 }
             });
         });
@@ -260,6 +278,10 @@ var HttpBuilderOfT = /** @class */ (function (_super) {
         _this._onReceived = [];
         return _this;
     }
+    HttpBuilderOfT.prototype.onSend = function (callback) {
+        this.inner.onSend(callback);
+        return this;
+    };
     HttpBuilderOfT.prototype.onSent = function (callback) {
         this.inner.onSent(callback);
         return this;
