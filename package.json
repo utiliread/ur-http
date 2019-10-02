@@ -1,13 +1,13 @@
 {
   "name": "ur-http",
-  "version": "2.13.0",
+  "version": "2.13.1",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
   "scripts": {
     "build": "tsc && tsc -p tsconfig.cjs.json && rimraf dist/cjs/**/*.d.ts",
     "test": "karma start --single-run --browsers ChromeHeadless karma.config.js",
-      "watch": "karma start --auto-watch --browsers ChromeDebugging karma.config.js",
+    "watch": "karma start --auto-watch --browsers ChromeDebugging karma.config.js",
     "clean": "rimraf dist"
   },
   "devDependencies": {
