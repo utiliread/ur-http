@@ -1,12 +1,16 @@
-import { DateTime } from 'luxon';
+import { DateTime } from "luxon";
 var QueryString = /** @class */ (function () {
     function QueryString() {
     }
     QueryString.serialize = function (params) {
         if (!params) {
-            return '';
+            return "";
         }
-        return '?' + this._serializeQueryString(params);
+        var serialized = this._serializeQueryString(params);
+        if (!serialized.length) {
+            return "";
+        }
+        return "?" + serialized;
     };
     QueryString.append = function (url, params) {
         if (!params) {
@@ -34,27 +38,27 @@ var QueryString = /** @class */ (function () {
             if (source.hasOwnProperty(propertyName)) {
                 var key = prefix != null
                     ? prefix + (Array.isArray(source)
-                        ? '[' + encodeURIComponent(propertyName) + ']'
-                        : '.' + encodeURIComponent(propertyName))
+                        ? "[" + encodeURIComponent(propertyName) + "]"
+                        : "." + encodeURIComponent(propertyName))
                     : encodeURIComponent(propertyName);
                 var value = source[propertyName];
                 if (value instanceof DateTime) {
-                    parts.push(key + '=' + value.toISO());
+                    parts.push(key + "=" + encodeURIComponent(value.toISO()));
                 }
                 else if (value === null) {
                     parts.push(key);
                 }
                 else if (value !== undefined) {
-                    if (typeof value === 'object') {
+                    if (typeof value === "object") {
                         parts.push(this._serializeQueryString(value, key));
                     }
                     else {
-                        parts.push(key + '=' + encodeURIComponent(value));
+                        parts.push(key + "=" + encodeURIComponent(value));
                     }
                 }
             }
         }
-        return parts.join('&');
+        return parts.join("&");
     };
     return QueryString;
 }());

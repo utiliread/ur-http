@@ -1,11 +1,15 @@
-import { DateTime } from 'luxon';
+import { DateTime } from "luxon";
 
 export class QueryString {
     static serialize(params: any) {
         if (!params) {
-            return '';
+            return "";
         }
-        return '?' + this._serializeQueryString(params);
+        const serialized = this._serializeQueryString(params);
+        if (!serialized.length) {
+            return "";
+        }
+        return "?" + serialized;
     }
 
     static append(url: string, params: any) {
@@ -38,29 +42,29 @@ export class QueryString {
                 const key = prefix != null
                     ? prefix + (
                         Array.isArray(source)
-                            ? '[' + encodeURIComponent(propertyName) + ']'
-                            : '.' + encodeURIComponent(propertyName)
+                            ? "[" + encodeURIComponent(propertyName) + "]"
+                            : "." + encodeURIComponent(propertyName)
                     )
                     : encodeURIComponent(propertyName);
                 const value = source[propertyName];
 
                 if (value instanceof DateTime) {
-                    parts.push(key + '=' + value.toISO());
+                    parts.push(key + "=" + encodeURIComponent(value.toISO()));
                 }
                 else if (value === null) {
                     parts.push(key);
                 }
                 else if (value !== undefined) {
-                    if (typeof value === 'object') {
+                    if (typeof value === "object") {
                         parts.push(this._serializeQueryString(value, key));
                     }
                     else {
-                        parts.push(key + '=' + encodeURIComponent(value));
+                        parts.push(key + "=" + encodeURIComponent(value));
                     }
                 }
             }
         }
 
-        return parts.join('&');
+        return parts.join("&");
     }
 }
