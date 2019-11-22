@@ -1,12 +1,12 @@
 export declare class HttpResponse {
     rawResponse: Response;
-    readonly url: string;
-    readonly statusCode: number;
-    readonly isInformational: boolean;
-    readonly isSuccessful: boolean;
-    readonly isRedirection: boolean;
-    readonly isClientError: boolean;
-    readonly isServerError: boolean;
+    get url(): string;
+    get statusCode(): number;
+    get isInformational(): boolean;
+    get isSuccessful(): boolean;
+    get isRedirection(): boolean;
+    get isClientError(): boolean;
+    get isServerError(): boolean;
     constructor(rawResponse: Response);
     ensureSuccessfulStatusCode(): this;
 }

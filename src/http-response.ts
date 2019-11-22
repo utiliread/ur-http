@@ -34,7 +34,7 @@ export class HttpResponse {
 
     ensureSuccessfulStatusCode() {
         if (!this.isSuccessful) {
-            throw new HttpError(this.statusCode);
+            throw new HttpError(this.statusCode, this);
         }
 
         return this;

@@ -67,7 +67,7 @@ var HttpResponse = /** @class */ (function () {
     });
     HttpResponse.prototype.ensureSuccessfulStatusCode = function () {
         if (!this.isSuccessful) {
-            throw new HttpError(this.statusCode);
+            throw new HttpError(this.statusCode, this);
         }
         return this;
     };
