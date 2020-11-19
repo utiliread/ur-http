@@ -108,8 +108,8 @@ export class HttpBuilder {
         return this;
     }
 
-    hasTimeout(timeout: number) {
-        this.timeout = timeout;
+    hasTimeout(timeout: number | null) {
+        this.timeout = timeout || undefined;
         return this;
     }
 
