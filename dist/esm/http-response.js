@@ -2,7 +2,7 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
@@ -20,49 +20,49 @@ var HttpResponse = /** @class */ (function () {
         get: function () {
             return this.rawResponse.url;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(HttpResponse.prototype, "statusCode", {
         get: function () {
             return this.rawResponse.status;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(HttpResponse.prototype, "isInformational", {
         get: function () {
             return this.statusCode >= 100 && this.statusCode < 200;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(HttpResponse.prototype, "isSuccessful", {
         get: function () {
             return this.statusCode >= 200 && this.statusCode < 300;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(HttpResponse.prototype, "isRedirection", {
         get: function () {
             return this.statusCode >= 300 && this.statusCode < 400;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(HttpResponse.prototype, "isClientError", {
         get: function () {
             return this.statusCode >= 400 && this.statusCode < 500;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(HttpResponse.prototype, "isServerError", {
         get: function () {
             return this.statusCode >= 500 && this.statusCode < 600;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     HttpResponse.prototype.ensureSuccessfulStatusCode = function () {

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.QueryString = void 0;
 var luxon_1 = require("luxon");
 var QueryString = /** @class */ (function () {
     function QueryString() {

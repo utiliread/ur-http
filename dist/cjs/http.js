@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Http = void 0;
 var http_builder_1 = require("./http-builder");
 var query_string_1 = require("./query-string");
 var Http = /** @class */ (function () {
