@@ -1,6 +1,6 @@
 export class TimeoutError extends Error {
     constructor() {
-        super("The requiest was not successful");
+        super("Timeout: The request was not successful");
         this.name = 'TimeoutError';
 
         // Set the prototype explicitly to allow for "... instanceof TimeoutError",
