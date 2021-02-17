@@ -17,7 +17,7 @@ exports.TimeoutError = void 0;
 var TimeoutError = /** @class */ (function (_super) {
     __extends(TimeoutError, _super);
     function TimeoutError() {
-        var _this = _super.call(this, "The requiest was not successful") || this;
+        var _this = _super.call(this, "Timeout: The request was not successful") || this;
         _this.name = 'TimeoutError';
         // Set the prototype explicitly to allow for "... instanceof TimeoutError",
         // see https://github.com/Microsoft/TypeScript-wiki/blob/master/Breaking-Changes.md#extending-built-ins-like-error-array-and-map-may-no-longer-work
