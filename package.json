@@ -29,6 +29,7 @@
     "luxon": "^1.21.2"
   },
   "dependencies": {
+    "@msgpack/msgpack": "^2.4.0",
     "ur-json": "^1.5.3",
     "ur-jsonpatch": "^1.1.3"
   }

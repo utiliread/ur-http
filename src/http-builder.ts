@@ -5,6 +5,7 @@ import { modelBind, serialize } from 'ur-json';
 import { Operation } from 'ur-jsonpatch';
 
 import { TimeoutError } from './timeout-error';
+import { decodeArrayStream } from '@msgpack/msgpack';
 
 export class HttpBuilder {
     private _ensureSuccessStatusCode = true;
@@ -226,6 +227,17 @@ export class HttpBuilder {
                     data: x.data.map(itemFactory)
                 };
             });
+        });
+    }
+
+    expectMessagePackArray<T>() {
+        this.message.headers.set('Accept', 'application/x-msgpack');
+        return this.useHandler(async response => {
+            const items: T[] = [];
+            for await (const item of decodeArrayStream(response.body!)) {
+                items.push(<T>item);
+            }
+            return items;
         });
     }
 }
