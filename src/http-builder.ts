@@ -240,6 +240,18 @@ export class HttpBuilder {
             return items;
         });
     }
+
+    streamMessagePackArray<T>() {
+        this.message.headers.set('Accept', 'application/x-msgpack');
+
+        async function* handler(response: Response) {
+            for await (const item of decodeArrayStream(response.body!)) {
+                yield <T>item;
+            }
+        }
+        
+        return this.useHandler(response => Promise.resolve(handler(response)));
+    }
 }
 
 export class HttpBuilderOfT<T> extends HttpBuilder {
