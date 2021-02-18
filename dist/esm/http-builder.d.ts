@@ -53,6 +53,8 @@ export declare class HttpBuilder {
         };
         data: T[];
     }>;
+    expectMessagePackArray<T>(): HttpBuilderOfT<T[]>;
+    streamMessagePackArray<T>(): HttpBuilderOfT<AsyncGenerator<T, void, unknown>>;
 }
 export declare class HttpBuilderOfT<T> extends HttpBuilder {
     private inner;

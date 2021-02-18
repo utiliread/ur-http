@@ -47,10 +47,30 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __asyncValues = (this && this.__asyncValues) || function (o) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var m = o[Symbol.asyncIterator], i;
+    return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
+    function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
+    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
+};
+var __await = (this && this.__await) || function (v) { return this instanceof __await ? (this.v = v, this) : new __await(v); }
+var __asyncGenerator = (this && this.__asyncGenerator) || function (thisArg, _arguments, generator) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var g = generator.apply(thisArg, _arguments || []), i, q = [];
+    return i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i;
+    function verb(n) { if (g[n]) i[n] = function (v) { return new Promise(function (a, b) { q.push([n, v, a, b]) > 1 || resume(n, v); }); }; }
+    function resume(n, v) { try { step(g[n](v)); } catch (e) { settle(q[0][3], e); } }
+    function step(r) { r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r); }
+    function fulfill(value) { resume("next", value); }
+    function reject(value) { resume("throw", value); }
+    function settle(f, v) { if (f(v), q.shift(), q.length) resume(q[0][0], q[0][1]); }
+};
 import { Http } from './http';
 import { HttpResponse, HttpResponseOfT } from './http-response';
 import { modelBind, serialize } from 'ur-json';
 import { TimeoutError } from './timeout-error';
+import { decodeArrayStream } from '@msgpack/msgpack';
 var HttpBuilder = /** @class */ (function () {
     function HttpBuilder(message, fetch, timeout) {
         this.message = message;
@@ -264,6 +284,96 @@ var HttpBuilder = /** @class */ (function () {
                 };
             });
         });
+    };
+    HttpBuilder.prototype.expectMessagePackArray = function () {
+        var _this = this;
+        this.message.headers.set('Accept', 'application/x-msgpack');
+        return this.useHandler(function (response) { return __awaiter(_this, void 0, void 0, function () {
+            var items, _a, _b, item, e_1_1;
+            var e_1, _c;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
+                    case 0:
+                        items = [];
+                        _d.label = 1;
+                    case 1:
+                        _d.trys.push([1, 6, 7, 12]);
+                        _a = __asyncValues(decodeArrayStream(response.body));
+                        _d.label = 2;
+                    case 2: return [4 /*yield*/, _a.next()];
+                    case 3:
+                        if (!(_b = _d.sent(), !_b.done)) return [3 /*break*/, 5];
+                        item = _b.value;
+                        items.push(item);
+                        _d.label = 4;
+                    case 4: return [3 /*break*/, 2];
+                    case 5: return [3 /*break*/, 12];
+                    case 6:
+                        e_1_1 = _d.sent();
+                        e_1 = { error: e_1_1 };
+                        return [3 /*break*/, 12];
+                    case 7:
+                        _d.trys.push([7, , 10, 11]);
+                        if (!(_b && !_b.done && (_c = _a.return))) return [3 /*break*/, 9];
+                        return [4 /*yield*/, _c.call(_a)];
+                    case 8:
+                        _d.sent();
+                        _d.label = 9;
+                    case 9: return [3 /*break*/, 11];
+                    case 10:
+                        if (e_1) throw e_1.error;
+                        return [7 /*endfinally*/];
+                    case 11: return [7 /*endfinally*/];
+                    case 12: return [2 /*return*/, items];
+                }
+            });
+        }); });
+    };
+    HttpBuilder.prototype.streamMessagePackArray = function () {
+        this.message.headers.set('Accept', 'application/x-msgpack');
+        function handler(response) {
+            return __asyncGenerator(this, arguments, function handler_1() {
+                var _a, _b, item, e_2_1;
+                var e_2, _c;
+                return __generator(this, function (_d) {
+                    switch (_d.label) {
+                        case 0:
+                            _d.trys.push([0, 7, 8, 13]);
+                            _a = __asyncValues(decodeArrayStream(response.body));
+                            _d.label = 1;
+                        case 1: return [4 /*yield*/, __await(_a.next())];
+                        case 2:
+                            if (!(_b = _d.sent(), !_b.done)) return [3 /*break*/, 6];
+                            item = _b.value;
+                            return [4 /*yield*/, __await(item)];
+                        case 3: return [4 /*yield*/, _d.sent()];
+                        case 4:
+                            _d.sent();
+                            _d.label = 5;
+                        case 5: return [3 /*break*/, 1];
+                        case 6: return [3 /*break*/, 13];
+                        case 7:
+                            e_2_1 = _d.sent();
+                            e_2 = { error: e_2_1 };
+                            return [3 /*break*/, 13];
+                        case 8:
+                            _d.trys.push([8, , 11, 12]);
+                            if (!(_b && !_b.done && (_c = _a.return))) return [3 /*break*/, 10];
+                            return [4 /*yield*/, __await(_c.call(_a))];
+                        case 9:
+                            _d.sent();
+                            _d.label = 10;
+                        case 10: return [3 /*break*/, 12];
+                        case 11:
+                            if (e_2) throw e_2.error;
+                            return [7 /*endfinally*/];
+                        case 12: return [7 /*endfinally*/];
+                        case 13: return [2 /*return*/];
+                    }
+                });
+            });
+        }
+        return this.useHandler(function (response) { return Promise.resolve(handler(response)); });
     };
     return HttpBuilder;
 }());
