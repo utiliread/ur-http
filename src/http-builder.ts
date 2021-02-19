@@ -1,8 +1,10 @@
 import { Fetch, Http } from './http';
 import { HttpResponse, HttpResponseOfT } from './http-response';
 import { InfinitePaginationResult, PaginationResult } from './pagination';
-import { modelBind, serialize } from 'ur-json';
+import { serialize } from 'ur-json';
 import { Operation } from 'ur-jsonpatch';
+import * as json from "./json";
+import * as msgpack from "./msgpack";
 
 import { TimeoutError } from './timeout-error';
 import { decodeArrayStream } from '@msgpack/msgpack';
@@ -169,7 +171,7 @@ export class HttpBuilder {
     expectJson<T>(typeCtorOrFactory?: { new(): T } | ((object: any) => T)) {
         this.message.headers.set('Accept', 'application/json');
         return this.useHandler(response => {
-            return response.json().then(x => getJsonModelFactory(typeCtorOrFactory)(x));
+            return response.json().then(x => json.getModelFactory(typeCtorOrFactory)(x));
         });
     }
 
@@ -177,8 +179,7 @@ export class HttpBuilder {
         this.message.headers.set('Accept', 'application/json');
         return this.useHandler(response => {
             return response.json().then((x: any[]) => {
-                const itemFactory = getJsonModelFactory(itemTypeCtorOrFactory);
-
+                const itemFactory = json.getModelFactory(itemTypeCtorOrFactory);
                 return x.map(itemFactory);
             });
         });
@@ -188,8 +189,7 @@ export class HttpBuilder {
         this.message.headers.set('Accept', 'application/json');
         return this.useHandler(response => {
             return response.json().then((x: any[]) => {
-                const itemFactory = getJsonNullableModelFactory(itemTypeCtorOrFactory);
-
+                const itemFactory = json.getNullableModelFactory(itemTypeCtorOrFactory);
                 return x.map(itemFactory);
             });
         });
@@ -199,8 +199,7 @@ export class HttpBuilder {
         this.message.headers.set('Accept', 'application/json');
         return this.useHandler(response => {
             return response.json().then((x: PaginationResult<any>) => {
-                const itemFactory = getJsonModelFactory(itemTypeCtorOrFactory);
-
+                const itemFactory = json.getModelFactory(itemTypeCtorOrFactory);
                 return {
                     meta: {
                         pageCount: x.meta.pageCount,
@@ -217,8 +216,7 @@ export class HttpBuilder {
         this.message.headers.set('Accept', 'application/json');
         return this.useHandler(response => {
             return response.json().then((x: InfinitePaginationResult<any>) => {
-                const itemFactory = getJsonModelFactory(itemTypeCtorOrFactory);
-
+                const itemFactory = json.getModelFactory(itemTypeCtorOrFactory);
                 return {
                     meta: {
                         pageSize: x.meta.pageSize,
@@ -230,23 +228,25 @@ export class HttpBuilder {
         });
     }
 
-    expectMessagePackArray<T>() {
+    expectMessagePackArray<T>(itemTypeCtorOrFactory?: { new(): T } | ((item: any) => T)) {
         this.message.headers.set('Accept', 'application/x-msgpack');
         return this.useHandler(async response => {
             const items: T[] = [];
+            const itemFactory = msgpack.getModelFactory(itemTypeCtorOrFactory);
             for await (const item of decodeArrayStream(response.body!)) {
-                items.push(<T>item);
+                items.push(itemFactory(item));
             }
             return items;
         });
     }
 
-    streamMessagePackArray<T>() {
+    streamMessagePackArray<T>(itemTypeCtorOrFactory?: { new(): T } | ((item: any) => T)) {
         this.message.headers.set('Accept', 'application/x-msgpack');
 
         async function* handler(response: Response) {
+            const itemFactory = msgpack.getModelFactory(itemTypeCtorOrFactory);
             for await (const item of decodeArrayStream(response.body!)) {
-                yield <T>item;
+                yield itemFactory(item);
             }
         }
         
@@ -337,45 +337,4 @@ export interface SendPromise<T> extends Promise<HttpResponseOfT<T>> {
 function asSendPromise<T>(responsePromise: Promise<HttpResponse>, thenReceive: () => Promise<T>): SendPromise<T> {
     (responsePromise as SendPromise<T>).thenReceive = thenReceive;
     return responsePromise as SendPromise<T>;
-}
-
-function getJsonNullableModelFactory<T>(typeCtorOrFactory: { new(): T } | ((object: any) => T) | undefined) {
-    if (!typeCtorOrFactory) {
-        return (x: any) => <T>x;
-    }
-
-    if (isZeroArgumentFunction(typeCtorOrFactory)) {
-        // It cannot be a factory function if it takes no arguments,
-        // so it must be a (zero argument) type (constructor)
-        return (x: any) => {
-            const bound = modelBind(typeCtorOrFactory, x);
-
-            // The server cannot produce the undefined result
-            if (bound === undefined) {
-                throw Error("The model factory created a undefined result");
-            }
-
-            return bound;
-        }
-    }
-
-    return typeCtorOrFactory;
-}
-
-function getJsonModelFactory<T>(typeCtorOrFactory: { new(): T } | ((object: any) => T) | undefined) {
-    const factory = getJsonNullableModelFactory(typeCtorOrFactory);
-
-    return (x: any) => {
-        const result = factory(x);
-
-        if (result === null) {
-            throw Error("The model factory created a null result");
-        }
-
-        return result;
-    };
-}
-
-function isZeroArgumentFunction<T>(typeCtor: Function): typeCtor is { new(): T } {
-    return typeCtor.length === 0;
 }
