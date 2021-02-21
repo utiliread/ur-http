@@ -4,7 +4,6 @@ import { InfinitePaginationResult, PaginationResult } from './pagination';
 import { serialize } from 'ur-json';
 import { Operation } from 'ur-jsonpatch';
 import * as json from "./json";
-import * as msgpack from "./msgpack";
 
 import { TimeoutError } from './timeout-error';
 import { decodeArrayStream } from '@msgpack/msgpack';
@@ -232,6 +231,7 @@ export class HttpBuilder {
         this.message.headers.set('Accept', 'application/x-msgpack');
         return this.useHandler(async response => {
             const items: T[] = [];
+            const msgpack = await import("./msgpack");
             const itemFactory = msgpack.getModelFactory(itemTypeCtorOrFactory);
             for await (const item of decodeArrayStream(response.body!)) {
                 items.push(itemFactory(item));
@@ -244,6 +244,7 @@ export class HttpBuilder {
         this.message.headers.set('Accept', 'application/x-msgpack');
 
         async function* handler(response: Response) {
+            const msgpack = await import("./msgpack");
             const itemFactory = msgpack.getModelFactory(itemTypeCtorOrFactory);
             for await (const item of decodeArrayStream(response.body!)) {
                 yield itemFactory(item);
