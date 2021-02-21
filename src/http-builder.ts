@@ -6,7 +6,6 @@ import { Operation } from 'ur-jsonpatch';
 import * as json from "./json";
 
 import { TimeoutError } from './timeout-error';
-import { decodeArrayStream } from '@msgpack/msgpack';
 
 export class HttpBuilder {
     private _ensureSuccessStatusCode = true;
@@ -233,7 +232,7 @@ export class HttpBuilder {
             const items: T[] = [];
             const msgpack = await import("./msgpack");
             const itemFactory = msgpack.getModelFactory(itemTypeCtorOrFactory);
-            for await (const item of decodeArrayStream(response.body!)) {
+            for await (const item of msgpack.decodeArrayStream(response.body!)) {
                 items.push(itemFactory(item));
             }
             return items;
@@ -246,7 +245,7 @@ export class HttpBuilder {
         async function* handler(response: Response) {
             const msgpack = await import("./msgpack");
             const itemFactory = msgpack.getModelFactory(itemTypeCtorOrFactory);
-            for await (const item of decodeArrayStream(response.body!)) {
+            for await (const item of msgpack.decodeArrayStream(response.body!)) {
                 yield itemFactory(item);
             }
         }

@@ -74,7 +74,6 @@ var http_response_1 = require("./http-response");
 var ur_json_1 = require("ur-json");
 var json = require("./json");
 var timeout_error_1 = require("./timeout-error");
-var msgpack_1 = require("@msgpack/msgpack");
 var HttpBuilder = /** @class */ (function () {
     function HttpBuilder(message, fetch, timeout) {
         this.message = message;
@@ -306,7 +305,7 @@ var HttpBuilder = /** @class */ (function () {
                         _d.label = 2;
                     case 2:
                         _d.trys.push([2, 7, 8, 13]);
-                        _a = __asyncValues(msgpack_1.decodeArrayStream(response.body));
+                        _a = __asyncValues(msgpack.decodeArrayStream(response.body));
                         _d.label = 3;
                     case 3: return [4 /*yield*/, _a.next()];
                     case 4:
@@ -352,7 +351,7 @@ var HttpBuilder = /** @class */ (function () {
                             _d.label = 2;
                         case 2:
                             _d.trys.push([2, 9, 10, 15]);
-                            _a = __asyncValues(msgpack_1.decodeArrayStream(response.body));
+                            _a = __asyncValues(msgpack.decodeArrayStream(response.body));
                             _d.label = 3;
                         case 3: return [4 /*yield*/, __await(_a.next())];
                         case 4:

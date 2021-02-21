@@ -1,5 +1,6 @@
 import { deserialize } from "ur-msgpack";
 import { isZeroArgumentFunction } from "./utils";
+export { decodeArrayStream } from '@msgpack/msgpack';
 export function getNullableModelFactory(typeCtorOrFactory) {
     if (!typeCtorOrFactory) {
         return function (x) { return x; };

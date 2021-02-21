@@ -71,7 +71,6 @@ import { HttpResponse, HttpResponseOfT } from './http-response';
 import { serialize } from 'ur-json';
 import * as json from "./json";
 import { TimeoutError } from './timeout-error';
-import { decodeArrayStream } from '@msgpack/msgpack';
 var HttpBuilder = /** @class */ (function () {
     function HttpBuilder(message, fetch, timeout) {
         this.message = message;
@@ -303,7 +302,7 @@ var HttpBuilder = /** @class */ (function () {
                         _d.label = 2;
                     case 2:
                         _d.trys.push([2, 7, 8, 13]);
-                        _a = __asyncValues(decodeArrayStream(response.body));
+                        _a = __asyncValues(msgpack.decodeArrayStream(response.body));
                         _d.label = 3;
                     case 3: return [4 /*yield*/, _a.next()];
                     case 4:
@@ -349,7 +348,7 @@ var HttpBuilder = /** @class */ (function () {
                             _d.label = 2;
                         case 2:
                             _d.trys.push([2, 9, 10, 15]);
-                            _a = __asyncValues(decodeArrayStream(response.body));
+                            _a = __asyncValues(msgpack.decodeArrayStream(response.body));
                             _d.label = 3;
                         case 3: return [4 /*yield*/, __await(_a.next())];
                         case 4:

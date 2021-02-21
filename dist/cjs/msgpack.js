@@ -1,8 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getModelFactory = exports.getNullableModelFactory = void 0;
+exports.getModelFactory = exports.getNullableModelFactory = exports.decodeArrayStream = void 0;
 var ur_msgpack_1 = require("ur-msgpack");
 var utils_1 = require("./utils");
+var msgpack_1 = require("@msgpack/msgpack");
+Object.defineProperty(exports, "decodeArrayStream", { enumerable: true, get: function () { return msgpack_1.decodeArrayStream; } });
 function getNullableModelFactory(typeCtorOrFactory) {
     if (!typeCtorOrFactory) {
         return function (x) { return x; };
