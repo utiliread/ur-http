@@ -1,29 +1,33 @@
 import { HttpBuilder } from './http-builder';
 import { QueryString } from './query-string';
-export class Http {
-    static request(method, url, params) {
+var Http = /** @class */ (function () {
+    function Http() {
+    }
+    Http.request = function (method, url, params) {
         return HttpBuilder.create(method, url + QueryString.serialize(params));
-    }
-    static head(url, params) {
+    };
+    Http.head = function (url, params) {
         return Http.request('HEAD', url, params);
-    }
-    static post(url, params) {
+    };
+    Http.post = function (url, params) {
         return Http.request('POST', url, params);
-    }
-    static get(url, params) {
+    };
+    Http.get = function (url, params) {
         return Http.request('GET', url, params);
-    }
-    static put(url, params) {
+    };
+    Http.put = function (url, params) {
         return Http.request('PUT', url, params);
-    }
-    static patch(url, params) {
+    };
+    Http.patch = function (url, params) {
         return Http.request('PATCH', url, params);
-    }
-    static delete(url, params) {
+    };
+    Http.delete = function (url, params) {
         return Http.request('DELETE', url, params);
-    }
-}
-Http.defaults = {
-    fetch: window.fetch ? window.fetch.bind(window) : undefined
-};
+    };
+    Http.defaults = {
+        fetch: window.fetch ? window.fetch.bind(window) : undefined
+    };
+    return Http;
+}());
+export { Http };
 //# sourceMappingURL=http.js.map

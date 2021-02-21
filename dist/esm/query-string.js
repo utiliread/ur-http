@@ -1,26 +1,28 @@
 import { DateTime } from "luxon";
-export class QueryString {
-    static serialize(params) {
+var QueryString = /** @class */ (function () {
+    function QueryString() {
+    }
+    QueryString.serialize = function (params) {
         if (!params) {
             return "";
         }
-        const serialized = this._serializeQueryString(params);
+        var serialized = this._serializeQueryString(params);
         if (!serialized.length) {
             return "";
         }
         return "?" + serialized;
-    }
-    static append(url, params) {
+    };
+    QueryString.append = function (url, params) {
         if (!params) {
             return url;
         }
-        const any = url.indexOf("?") >= 0;
-        const separator = any ? "&" : "?";
+        var any = url.indexOf("?") >= 0;
+        var separator = any ? "&" : "?";
         return url + separator + this._serializeQueryString(params);
-    }
-    static getParameter(name) {
-        const regex = new RegExp(`[?&]${name}(=([^&#]*)|&|#|$)`);
-        const match = regex.exec(window.location.href);
+    };
+    QueryString.getParameter = function (name) {
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)");
+        var match = regex.exec(window.location.href);
         if (match) {
             if (match[1].length > 0) {
                 return decodeURIComponent(match[2]);
@@ -29,17 +31,17 @@ export class QueryString {
                 return null;
             }
         }
-    }
-    static _serializeQueryString(source, prefix) {
-        const parts = [];
-        for (const propertyName in source) {
+    };
+    QueryString._serializeQueryString = function (source, prefix) {
+        var parts = [];
+        for (var propertyName in source) {
             if (source.hasOwnProperty(propertyName)) {
-                const key = prefix != null
+                var key = prefix != null
                     ? prefix + (Array.isArray(source)
                         ? "[" + encodeURIComponent(propertyName) + "]"
                         : "." + encodeURIComponent(propertyName))
                     : encodeURIComponent(propertyName);
-                const value = source[propertyName];
+                var value = source[propertyName];
                 if (value instanceof DateTime) {
                     parts.push(key + "=" + encodeURIComponent(value.toISO()));
                 }
@@ -57,6 +59,8 @@ export class QueryString {
             }
         }
         return parts.join("&");
-    }
-}
+    };
+    return QueryString;
+}());
+export { QueryString };
 //# sourceMappingURL=query-string.js.map

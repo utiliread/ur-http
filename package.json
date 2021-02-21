@@ -5,7 +5,7 @@
   "module": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
   "scripts": {
-    "build": "tsc && tsc -p tsconfig.cjs.json && rimraf dist/cjs/**/*.d.ts",
+    "build": "tsc && tsc -p tsconfig.cjs.json",
     "test": "karma start --single-run --browsers ChromeHeadless karma.config.js",
     "watch": "karma start --auto-watch --browsers ChromeDebugging karma.config.js",
     "clean": "rimraf dist"
