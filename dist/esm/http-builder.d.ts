@@ -1,6 +1,7 @@
 import { Fetch } from './http';
 import { HttpResponse, HttpResponseOfT } from './http-response';
 import { Operation } from 'ur-jsonpatch';
+import { Settings } from './settings';
 export declare class HttpBuilder {
     message: Message;
     fetch: Fetch | undefined;
@@ -10,15 +11,16 @@ export declare class HttpBuilder {
     private _onSent;
     constructor(message: Message, fetch: Fetch | undefined, timeout?: number | undefined);
     static create(method: string, url: string): HttpBuilder;
-    using(fetch: Fetch): this;
     onSend(callback: (request: Message) => void | Promise<any>): this;
     onSent(callback: (response: HttpResponse) => void | Promise<any>): this;
     protected useHandler<T>(handler: (response: Response) => Promise<T>): HttpBuilderOfT<T>;
     send(abortSignal?: AbortSignal): Promise<HttpResponse>;
     ensureSuccessStatusCode(ensureSuccessStatusCode?: boolean): this;
-    hasTimeout(timeout: number | null): this;
+    use(settings: Settings): this;
+    useFetch(fetch: Fetch): this;
     useCors(mode: RequestMode): this;
     useBaseUrl(baseUrl: string): this;
+    useTimeout(timeout: number | null): this;
     with(content: any, contentType?: string): this;
     withForm(content: FormData): this;
     withJson(content: any): this;
@@ -69,9 +71,11 @@ export declare class HttpBuilderOfT<T> extends HttpBuilder {
     onSend(callback: (request: Message) => void | Promise<any>): this;
     onSent(callback: (response: HttpResponse) => void | Promise<any>): this;
     ensureSuccessStatusCode(ensureSuccessStatusCode?: boolean): this;
-    hasTimeout(timeout: number): this;
+    use(settings: Settings): this;
+    useFetch(fetch: Fetch): this;
     useCors(mode: RequestMode): this;
     useBaseUrl(baseUrl: string): this;
+    useTimeout(timeout: number): this;
     allowEmptyResponse(): HttpBuilderOfT<T | null>;
     onReceived(callback: (received: T, response: HttpResponseOfT<T>) => void | Promise<any>): this;
     send(abortSignal?: AbortSignal): SendPromise<T>;

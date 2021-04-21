@@ -89,10 +89,6 @@ var HttpBuilder = /** @class */ (function () {
             headers: new Headers()
         }, Http.defaults.fetch, Http.defaults.timeout);
     };
-    HttpBuilder.prototype.using = function (fetch) {
-        this.fetch = fetch;
-        return this;
-    };
     HttpBuilder.prototype.onSend = function (callback) {
         this._onSend.push(callback);
         return this;
@@ -187,8 +183,20 @@ var HttpBuilder = /** @class */ (function () {
         this._ensureSuccessStatusCode = ensureSuccessStatusCode === false ? false : true;
         return this;
     };
-    HttpBuilder.prototype.hasTimeout = function (timeout) {
-        this.timeout = timeout || undefined;
+    HttpBuilder.prototype.use = function (settings) {
+        if (settings.fetch) {
+            this.useFetch(settings.fetch);
+        }
+        if (settings.corsMode) {
+            this.useCors(settings.corsMode);
+        }
+        if (settings.baseUrl) {
+            this.useBaseUrl(settings.baseUrl);
+        }
+        return this;
+    };
+    HttpBuilder.prototype.useFetch = function (fetch) {
+        this.fetch = fetch;
         return this;
     };
     HttpBuilder.prototype.useCors = function (mode) {
@@ -205,6 +213,10 @@ var HttpBuilder = /** @class */ (function () {
         else {
             this.message.url = baseUrl + '/' + this.message.url;
         }
+        return this;
+    };
+    HttpBuilder.prototype.useTimeout = function (timeout) {
+        this.timeout = timeout || undefined;
         return this;
     };
     // Content Extensions
@@ -422,8 +434,12 @@ var HttpBuilderOfT = /** @class */ (function (_super) {
         this.inner.ensureSuccessStatusCode(ensureSuccessStatusCode);
         return this;
     };
-    HttpBuilderOfT.prototype.hasTimeout = function (timeout) {
-        this.inner.hasTimeout(timeout);
+    HttpBuilderOfT.prototype.use = function (settings) {
+        this.inner.use(settings);
+        return this;
+    };
+    HttpBuilderOfT.prototype.useFetch = function (fetch) {
+        this.inner.useFetch(fetch);
         return this;
     };
     HttpBuilderOfT.prototype.useCors = function (mode) {
@@ -432,6 +448,10 @@ var HttpBuilderOfT = /** @class */ (function (_super) {
     };
     HttpBuilderOfT.prototype.useBaseUrl = function (baseUrl) {
         this.inner.useBaseUrl(baseUrl);
+        return this;
+    };
+    HttpBuilderOfT.prototype.useTimeout = function (timeout) {
+        this.inner.useTimeout(timeout);
         return this;
     };
     HttpBuilderOfT.prototype.allowEmptyResponse = function () {

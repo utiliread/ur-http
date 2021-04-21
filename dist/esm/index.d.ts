@@ -7,3 +7,5 @@ export { HttpBuilder, HttpBuilderOfT } from './http-builder';
 export { HttpError } from './http-error';
 export { TimeoutError } from './timeout-error';
 export * from './helpers';
+export { Fetch } from "./http";
+export { Settings } from "./settings";

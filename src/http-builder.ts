@@ -6,6 +6,7 @@ import { Operation } from 'ur-jsonpatch';
 import * as json from "./json";
 
 import { TimeoutError } from './timeout-error';
+import { Settings } from './settings';
 
 export class HttpBuilder {
     private _ensureSuccessStatusCode = true;
@@ -21,11 +22,6 @@ export class HttpBuilder {
             url: url,
             headers: new Headers()
         }, Http.defaults.fetch, Http.defaults.timeout);
-    }
-
-    using(fetch: Fetch) {
-        this.fetch = fetch;
-        return this;
     }
 
     onSend(callback: (request: Message) => void | Promise<any>) {
@@ -109,8 +105,21 @@ export class HttpBuilder {
         return this;
     }
 
-    hasTimeout(timeout: number | null) {
-        this.timeout = timeout || undefined;
+    use(settings: Settings) {
+        if (settings.fetch) {
+            this.useFetch(settings.fetch);
+        }
+        if (settings.corsMode) {
+            this.useCors(settings.corsMode);
+        }
+        if (settings.baseUrl) {
+            this.useBaseUrl(settings.baseUrl);
+        }
+        return this;
+    }
+
+    useFetch(fetch: Fetch) {
+        this.fetch = fetch;
         return this;
     }
 
@@ -130,6 +139,11 @@ export class HttpBuilder {
         else {
             this.message.url = baseUrl + '/' + this.message.url;
         }
+        return this;
+    }
+
+    useTimeout(timeout: number | null) {
+        this.timeout = timeout || undefined;
         return this;
     }
 
@@ -290,8 +304,13 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
         return this;
     }
 
-    hasTimeout(timeout: number) {
-        this.inner.hasTimeout(timeout);
+    use(settings: Settings) {
+        this.inner.use(settings);
+        return this;
+    }
+
+    useFetch(fetch: Fetch) {
+        this.inner.useFetch(fetch);
         return this;
     }
 
@@ -302,6 +321,11 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
 
     useBaseUrl(baseUrl: string) {
         this.inner.useBaseUrl(baseUrl);
+        return this;
+    }
+
+    useTimeout(timeout: number) {
+        this.inner.useTimeout(timeout);
         return this;
     }
 
