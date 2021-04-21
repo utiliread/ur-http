@@ -195,6 +195,18 @@ var HttpBuilder = /** @class */ (function () {
         this.message.mode = mode;
         return this;
     };
+    HttpBuilder.prototype.useBaseUrl = function (baseUrl) {
+        if (baseUrl.endsWith('/')) {
+            baseUrl = baseUrl.substr(0, baseUrl.length - 1);
+        }
+        if (this.message.url.startsWith('/')) {
+            this.message.url = baseUrl + this.message.url;
+        }
+        else {
+            this.message.url = baseUrl + '/' + this.message.url;
+        }
+        return this;
+    };
     // Content Extensions
     HttpBuilder.prototype.with = function (content, contentType) {
         this.message.content = content;
@@ -411,7 +423,15 @@ var HttpBuilderOfT = /** @class */ (function (_super) {
         return this;
     };
     HttpBuilderOfT.prototype.hasTimeout = function (timeout) {
-        this.inner.timeout = timeout;
+        this.inner.hasTimeout(timeout);
+        return this;
+    };
+    HttpBuilderOfT.prototype.useCors = function (mode) {
+        this.inner.useCors(mode);
+        return this;
+    };
+    HttpBuilderOfT.prototype.useBaseUrl = function (baseUrl) {
+        this.inner.useBaseUrl(baseUrl);
         return this;
     };
     HttpBuilderOfT.prototype.allowEmptyResponse = function () {

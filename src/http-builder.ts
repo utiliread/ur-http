@@ -130,6 +130,7 @@ export class HttpBuilder {
         else {
             this.message.url = baseUrl + '/' + this.message.url;
         }
+        return this;
     }
 
     // Content Extensions
@@ -290,7 +291,17 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
     }
 
     hasTimeout(timeout: number) {
-        this.inner.timeout = timeout;
+        this.inner.hasTimeout(timeout);
+        return this;
+    }
+
+    useCors(mode: RequestMode) {
+        this.inner.useCors(mode);
+        return this;
+    }
+
+    useBaseUrl(baseUrl: string) {
+        this.inner.useBaseUrl(baseUrl);
         return this;
     }
 
