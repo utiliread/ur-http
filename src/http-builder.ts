@@ -119,6 +119,19 @@ export class HttpBuilder {
         return this;
     }
 
+    useBaseUrl(baseUrl: string) {
+        if (baseUrl.endsWith('/')) {
+            baseUrl = baseUrl.substr(0, baseUrl.length - 1);
+        }
+
+        if (this.message.url.startsWith('/')) {
+            this.message.url = baseUrl + this.message.url;
+        }
+        else {
+            this.message.url = baseUrl + '/' + this.message.url;
+        }
+    }
+
     // Content Extensions
 
     with(content: any, contentType?: string) {
