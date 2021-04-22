@@ -3,7 +3,7 @@ import { HttpResponse, HttpResponseOfT } from './http-response';
 import { InfinitePaginationResult, PaginationResult } from './pagination';
 import { serialize } from 'ur-json';
 import { Operation } from 'ur-jsonpatch';
-import * as json from "./json";
+import * as jsonFactory from "./json";
 
 import { TimeoutError } from './timeout-error';
 import { Settings } from './settings';
@@ -197,7 +197,7 @@ export class HttpBuilder {
     expectJson<T>(typeCtorOrFactory?: { new(): T } | ((object: any) => T)) {
         this.message.headers.set('Accept', 'application/json');
         return this.useHandler(response => {
-            return response.json().then(x => json.getModelFactory(typeCtorOrFactory)(x));
+            return response.json().then(x => jsonFactory.getModelFactory(typeCtorOrFactory)(x));
         });
     }
 
@@ -205,7 +205,7 @@ export class HttpBuilder {
         this.message.headers.set('Accept', 'application/json');
         return this.useHandler(response => {
             return response.json().then((x: any[]) => {
-                const itemFactory = json.getModelFactory(itemTypeCtorOrFactory);
+                const itemFactory = jsonFactory.getModelFactory(itemTypeCtorOrFactory);
                 return x.map(itemFactory);
             });
         });
@@ -215,7 +215,7 @@ export class HttpBuilder {
         this.message.headers.set('Accept', 'application/json');
         return this.useHandler(response => {
             return response.json().then((x: any[]) => {
-                const itemFactory = json.getNullableModelFactory(itemTypeCtorOrFactory);
+                const itemFactory = jsonFactory.getNullableModelFactory(itemTypeCtorOrFactory);
                 return x.map(itemFactory);
             });
         });
@@ -225,7 +225,7 @@ export class HttpBuilder {
         this.message.headers.set('Accept', 'application/json');
         return this.useHandler(response => {
             return response.json().then((x: PaginationResult<any>) => {
-                const itemFactory = json.getModelFactory(itemTypeCtorOrFactory);
+                const itemFactory = jsonFactory.getModelFactory(itemTypeCtorOrFactory);
                 return {
                     meta: {
                         pageCount: x.meta.pageCount,
@@ -242,7 +242,7 @@ export class HttpBuilder {
         this.message.headers.set('Accept', 'application/json');
         return this.useHandler(response => {
             return response.json().then((x: InfinitePaginationResult<any>) => {
-                const itemFactory = json.getModelFactory(itemTypeCtorOrFactory);
+                const itemFactory = jsonFactory.getModelFactory(itemTypeCtorOrFactory);
                 return {
                     meta: {
                         pageSize: x.meta.pageSize,
@@ -258,8 +258,9 @@ export class HttpBuilder {
         this.message.headers.set('Accept', 'application/x-msgpack');
         return this.useHandler(async response => {
             const items: T[] = [];
-            const msgpack = await import("./msgpack");
-            const itemFactory = msgpack.getModelFactory(itemTypeCtorOrFactory);
+            const msgpack = await import("@msgpack/msgpack");
+            const msgpackFactory = await import("./msgpack");
+            const itemFactory = msgpackFactory.getModelFactory(itemTypeCtorOrFactory);
             for await (const item of msgpack.decodeArrayStream(response.body!)) {
                 items.push(itemFactory(item));
             }
@@ -271,8 +272,9 @@ export class HttpBuilder {
         this.message.headers.set('Accept', 'application/x-msgpack');
 
         async function* handler(response: Response) {
-            const msgpack = await import("./msgpack");
-            const itemFactory = msgpack.getModelFactory(itemTypeCtorOrFactory);
+            const msgpack = await import("@msgpack/msgpack");
+            const msgpackFactory = await import("./msgpack");
+            const itemFactory = msgpackFactory.getModelFactory(itemTypeCtorOrFactory);
             for await (const item of msgpack.decodeArrayStream(response.body!)) {
                 yield itemFactory(item);
             }

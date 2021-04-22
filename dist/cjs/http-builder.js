@@ -74,7 +74,7 @@ exports.HttpBuilderOfT = exports.HttpBuilder = void 0;
 var http_1 = require("./http");
 var http_response_1 = require("./http-response");
 var ur_json_1 = require("ur-json");
-var json = require("./json");
+var jsonFactory = require("./json");
 var timeout_error_1 = require("./timeout-error");
 var HttpBuilder = /** @class */ (function () {
     function HttpBuilder(message, fetch, timeout) {
@@ -262,14 +262,14 @@ var HttpBuilder = /** @class */ (function () {
     HttpBuilder.prototype.expectJson = function (typeCtorOrFactory) {
         this.message.headers.set('Accept', 'application/json');
         return this.useHandler(function (response) {
-            return response.json().then(function (x) { return json.getModelFactory(typeCtorOrFactory)(x); });
+            return response.json().then(function (x) { return jsonFactory.getModelFactory(typeCtorOrFactory)(x); });
         });
     };
     HttpBuilder.prototype.expectJsonArray = function (itemTypeCtorOrFactory) {
         this.message.headers.set('Accept', 'application/json');
         return this.useHandler(function (response) {
             return response.json().then(function (x) {
-                var itemFactory = json.getModelFactory(itemTypeCtorOrFactory);
+                var itemFactory = jsonFactory.getModelFactory(itemTypeCtorOrFactory);
                 return x.map(itemFactory);
             });
         });
@@ -278,7 +278,7 @@ var HttpBuilder = /** @class */ (function () {
         this.message.headers.set('Accept', 'application/json');
         return this.useHandler(function (response) {
             return response.json().then(function (x) {
-                var itemFactory = json.getNullableModelFactory(itemTypeCtorOrFactory);
+                var itemFactory = jsonFactory.getNullableModelFactory(itemTypeCtorOrFactory);
                 return x.map(itemFactory);
             });
         });
@@ -287,7 +287,7 @@ var HttpBuilder = /** @class */ (function () {
         this.message.headers.set('Accept', 'application/json');
         return this.useHandler(function (response) {
             return response.json().then(function (x) {
-                var itemFactory = json.getModelFactory(itemTypeCtorOrFactory);
+                var itemFactory = jsonFactory.getModelFactory(itemTypeCtorOrFactory);
                 return {
                     meta: {
                         pageCount: x.meta.pageCount,
@@ -303,7 +303,7 @@ var HttpBuilder = /** @class */ (function () {
         this.message.headers.set('Accept', 'application/json');
         return this.useHandler(function (response) {
             return response.json().then(function (x) {
-                var itemFactory = json.getModelFactory(itemTypeCtorOrFactory);
+                var itemFactory = jsonFactory.getModelFactory(itemTypeCtorOrFactory);
                 return {
                     meta: {
                         pageSize: x.meta.pageSize,
@@ -318,46 +318,49 @@ var HttpBuilder = /** @class */ (function () {
         var _this = this;
         this.message.headers.set('Accept', 'application/x-msgpack');
         return this.useHandler(function (response) { return __awaiter(_this, void 0, void 0, function () {
-            var items, msgpack, itemFactory, _a, _b, item, e_1_1;
+            var items, msgpack, msgpackFactory, itemFactory, _a, _b, item, e_1_1;
             var e_1, _c;
             return __generator(this, function (_d) {
                 switch (_d.label) {
                     case 0:
                         items = [];
-                        return [4 /*yield*/, Promise.resolve().then(function () { return require("./msgpack"); })];
+                        return [4 /*yield*/, Promise.resolve().then(function () { return require("@msgpack/msgpack"); })];
                     case 1:
                         msgpack = _d.sent();
-                        itemFactory = msgpack.getModelFactory(itemTypeCtorOrFactory);
-                        _d.label = 2;
+                        return [4 /*yield*/, Promise.resolve().then(function () { return require("./msgpack"); })];
                     case 2:
-                        _d.trys.push([2, 7, 8, 13]);
-                        _a = __asyncValues(msgpack.decodeArrayStream(response.body));
+                        msgpackFactory = _d.sent();
+                        itemFactory = msgpackFactory.getModelFactory(itemTypeCtorOrFactory);
                         _d.label = 3;
-                    case 3: return [4 /*yield*/, _a.next()];
-                    case 4:
-                        if (!(_b = _d.sent(), !_b.done)) return [3 /*break*/, 6];
+                    case 3:
+                        _d.trys.push([3, 8, 9, 14]);
+                        _a = __asyncValues(msgpack.decodeArrayStream(response.body));
+                        _d.label = 4;
+                    case 4: return [4 /*yield*/, _a.next()];
+                    case 5:
+                        if (!(_b = _d.sent(), !_b.done)) return [3 /*break*/, 7];
                         item = _b.value;
                         items.push(itemFactory(item));
-                        _d.label = 5;
-                    case 5: return [3 /*break*/, 3];
-                    case 6: return [3 /*break*/, 13];
-                    case 7:
+                        _d.label = 6;
+                    case 6: return [3 /*break*/, 4];
+                    case 7: return [3 /*break*/, 14];
+                    case 8:
                         e_1_1 = _d.sent();
                         e_1 = { error: e_1_1 };
-                        return [3 /*break*/, 13];
-                    case 8:
-                        _d.trys.push([8, , 11, 12]);
-                        if (!(_b && !_b.done && (_c = _a.return))) return [3 /*break*/, 10];
-                        return [4 /*yield*/, _c.call(_a)];
+                        return [3 /*break*/, 14];
                     case 9:
+                        _d.trys.push([9, , 12, 13]);
+                        if (!(_b && !_b.done && (_c = _a.return))) return [3 /*break*/, 11];
+                        return [4 /*yield*/, _c.call(_a)];
+                    case 10:
                         _d.sent();
-                        _d.label = 10;
-                    case 10: return [3 /*break*/, 12];
-                    case 11:
+                        _d.label = 11;
+                    case 11: return [3 /*break*/, 13];
+                    case 12:
                         if (e_1) throw e_1.error;
                         return [7 /*endfinally*/];
-                    case 12: return [7 /*endfinally*/];
-                    case 13: return [2 /*return*/, items];
+                    case 13: return [7 /*endfinally*/];
+                    case 14: return [2 /*return*/, items];
                 }
             });
         }); });
@@ -366,47 +369,50 @@ var HttpBuilder = /** @class */ (function () {
         this.message.headers.set('Accept', 'application/x-msgpack');
         function handler(response) {
             return __asyncGenerator(this, arguments, function handler_1() {
-                var msgpack, itemFactory, _a, _b, item, e_2_1;
+                var msgpack, msgpackFactory, itemFactory, _a, _b, item, e_2_1;
                 var e_2, _c;
                 return __generator(this, function (_d) {
                     switch (_d.label) {
-                        case 0: return [4 /*yield*/, __await(Promise.resolve().then(function () { return require("./msgpack"); }))];
+                        case 0: return [4 /*yield*/, __await(Promise.resolve().then(function () { return require("@msgpack/msgpack"); }))];
                         case 1:
                             msgpack = _d.sent();
-                            itemFactory = msgpack.getModelFactory(itemTypeCtorOrFactory);
-                            _d.label = 2;
+                            return [4 /*yield*/, __await(Promise.resolve().then(function () { return require("./msgpack"); }))];
                         case 2:
-                            _d.trys.push([2, 9, 10, 15]);
-                            _a = __asyncValues(msgpack.decodeArrayStream(response.body));
+                            msgpackFactory = _d.sent();
+                            itemFactory = msgpackFactory.getModelFactory(itemTypeCtorOrFactory);
                             _d.label = 3;
-                        case 3: return [4 /*yield*/, __await(_a.next())];
-                        case 4:
-                            if (!(_b = _d.sent(), !_b.done)) return [3 /*break*/, 8];
+                        case 3:
+                            _d.trys.push([3, 10, 11, 16]);
+                            _a = __asyncValues(msgpack.decodeArrayStream(response.body));
+                            _d.label = 4;
+                        case 4: return [4 /*yield*/, __await(_a.next())];
+                        case 5:
+                            if (!(_b = _d.sent(), !_b.done)) return [3 /*break*/, 9];
                             item = _b.value;
                             return [4 /*yield*/, __await(itemFactory(item))];
-                        case 5: return [4 /*yield*/, _d.sent()];
-                        case 6:
+                        case 6: return [4 /*yield*/, _d.sent()];
+                        case 7:
                             _d.sent();
-                            _d.label = 7;
-                        case 7: return [3 /*break*/, 3];
-                        case 8: return [3 /*break*/, 15];
-                        case 9:
+                            _d.label = 8;
+                        case 8: return [3 /*break*/, 4];
+                        case 9: return [3 /*break*/, 16];
+                        case 10:
                             e_2_1 = _d.sent();
                             e_2 = { error: e_2_1 };
-                            return [3 /*break*/, 15];
-                        case 10:
-                            _d.trys.push([10, , 13, 14]);
-                            if (!(_b && !_b.done && (_c = _a.return))) return [3 /*break*/, 12];
-                            return [4 /*yield*/, __await(_c.call(_a))];
+                            return [3 /*break*/, 16];
                         case 11:
+                            _d.trys.push([11, , 14, 15]);
+                            if (!(_b && !_b.done && (_c = _a.return))) return [3 /*break*/, 13];
+                            return [4 /*yield*/, __await(_c.call(_a))];
+                        case 12:
                             _d.sent();
-                            _d.label = 12;
-                        case 12: return [3 /*break*/, 14];
-                        case 13:
+                            _d.label = 13;
+                        case 13: return [3 /*break*/, 15];
+                        case 14:
                             if (e_2) throw e_2.error;
                             return [7 /*endfinally*/];
-                        case 14: return [7 /*endfinally*/];
-                        case 15: return [2 /*return*/];
+                        case 15: return [7 /*endfinally*/];
+                        case 16: return [2 /*return*/];
                     }
                 });
             });
