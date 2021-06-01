@@ -24,10 +24,10 @@
     "mocha": "^8.3.2",
     "rimraf": "^3.0.2",
     "typescript": "^4.2.4",
-    "ur-msgpack": "^0.0.6"
+    "ur-msgpack": "^1.0.0-alpha0.0"
   },
   "peerDependencies": {
-    "ur-msgpack": "^0.0.6",
+    "ur-msgpack": "^1.0.0-alpha0.0",
     "luxon": "^1.21.2"
   },
   "dependencies": {
