@@ -62,7 +62,7 @@ export class HttpBuilder {
             init.signal = outerController.signal;
         }
 
-        const url = this.buildUrl();
+        const url = this.getUrl();
         const fetchResponsePromise = this.options.fetch(url, init);
         let fetchResponse: Response;
 
@@ -92,7 +92,7 @@ export class HttpBuilder {
         return httpResponse;
     }
 
-    private buildUrl() {
+    getUrl() {
         let baseUrl = this.options.baseUrl ?? "";
         if (baseUrl.endsWith('/')) {
             baseUrl = baseUrl.substr(0, baseUrl.length - 1);

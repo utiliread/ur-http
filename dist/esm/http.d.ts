@@ -4,7 +4,7 @@ export declare class Http {
     static defaults: Options;
     private static instance;
     options: Options;
-    constructor(defaults?: Options);
+    constructor(options?: Options);
     static request(method: string, url: string, params?: any): HttpBuilder;
     static head(url: string, params?: any): HttpBuilder;
     static post(url: string, params?: any): HttpBuilder;

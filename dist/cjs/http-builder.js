@@ -135,7 +135,7 @@ var HttpBuilder = /** @class */ (function () {
                             }
                             init.signal = outerController.signal;
                         }
-                        url = this.buildUrl();
+                        url = this.getUrl();
                         fetchResponsePromise = this.options.fetch(url, init);
                         if (!this.options.timeout) return [3 /*break*/, 6];
                         return [4 /*yield*/, Promise.race([
@@ -174,7 +174,7 @@ var HttpBuilder = /** @class */ (function () {
             });
         });
     };
-    HttpBuilder.prototype.buildUrl = function () {
+    HttpBuilder.prototype.getUrl = function () {
         var _a;
         var baseUrl = (_a = this.options.baseUrl) !== null && _a !== void 0 ? _a : "";
         if (baseUrl.endsWith('/')) {

@@ -1,8 +1,8 @@
 import { HttpBuilder } from './http-builder';
 import { QueryString } from './query-string';
 var Http = /** @class */ (function () {
-    function Http(defaults) {
-        this.options = Object.assign({}, Http.defaults, defaults); // Later sources' properties overwrite earlier ones.
+    function Http(options) {
+        this.options = Object.assign({}, Http.defaults, options); // Later sources' properties overwrite earlier ones.
     }
     Http.request = function (method, url, params) {
         return this.instance.request(method, url, params);

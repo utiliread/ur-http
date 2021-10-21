@@ -13,7 +13,7 @@ export declare class HttpBuilder {
     onSent(callback: (response: HttpResponse) => void | Promise<any>): this;
     protected useHandler<T>(handler: (response: Response) => Promise<T>): HttpBuilderOfT<T>;
     send(abortSignal?: AbortSignal): Promise<HttpResponse>;
-    private buildUrl;
+    getUrl(): string;
     ensureSuccessStatusCode(ensureSuccessStatusCode?: boolean): this;
     use(settings: Settings): this;
     useFetch(fetch: Fetch): this;

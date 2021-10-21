@@ -4,8 +4,8 @@ exports.Http = void 0;
 var http_builder_1 = require("./http-builder");
 var query_string_1 = require("./query-string");
 var Http = /** @class */ (function () {
-    function Http(defaults) {
-        this.options = Object.assign({}, Http.defaults, defaults); // Later sources' properties overwrite earlier ones.
+    function Http(options) {
+        this.options = Object.assign({}, Http.defaults, options); // Later sources' properties overwrite earlier ones.
     }
     Http.request = function (method, url, params) {
         return this.instance.request(method, url, params);
