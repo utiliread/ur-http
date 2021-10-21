@@ -2,7 +2,7 @@ import { HttpBuilder } from './http-builder';
 import { QueryString } from './query-string';
 var Http = /** @class */ (function () {
     function Http(defaults) {
-        this.defaults = Object.assign({}, Http.defaults, defaults); // Later sources' properties overwrite earlier ones.
+        this.options = Object.assign({}, Http.defaults, defaults); // Later sources' properties overwrite earlier ones.
     }
     Http.request = function (method, url, params) {
         return this.instance.request(method, url, params);
@@ -31,7 +31,8 @@ var Http = /** @class */ (function () {
             url: url + QueryString.serialize(params),
             headers: new Headers()
         };
-        return new HttpBuilder(message, this.defaults.fetch, this.defaults.timeout);
+        var options = Object.assign({}, this.options);
+        return new HttpBuilder(message, options);
     };
     Http.prototype.head = function (url, params) {
         return this.request('HEAD', url, params);

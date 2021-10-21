@@ -1,10 +1,10 @@
 import { HttpBuilder } from './http-builder';
 export declare type Fetch = (input: RequestInfo, init?: RequestInit) => Promise<Response>;
 export declare class Http {
-    static defaults: Defaults;
+    static defaults: Options;
     private static instance;
-    defaults: Defaults;
-    constructor(defaults?: Defaults);
+    options: Options;
+    constructor(defaults?: Options);
     static request(method: string, url: string, params?: any): HttpBuilder;
     static head(url: string, params?: any): HttpBuilder;
     static post(url: string, params?: any): HttpBuilder;
@@ -20,8 +20,8 @@ export declare class Http {
     patch(url: string, params?: any): HttpBuilder;
     delete(url: string, params?: any): HttpBuilder;
 }
-interface Defaults {
+export interface Options {
     fetch?: Fetch;
     timeout?: number;
+    baseUrl?: string;
 }
-export {};

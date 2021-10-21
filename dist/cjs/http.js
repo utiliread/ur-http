@@ -5,7 +5,7 @@ var http_builder_1 = require("./http-builder");
 var query_string_1 = require("./query-string");
 var Http = /** @class */ (function () {
     function Http(defaults) {
-        this.defaults = Object.assign({}, Http.defaults, defaults); // Later sources' properties overwrite earlier ones.
+        this.options = Object.assign({}, Http.defaults, defaults); // Later sources' properties overwrite earlier ones.
     }
     Http.request = function (method, url, params) {
         return this.instance.request(method, url, params);
@@ -34,7 +34,8 @@ var Http = /** @class */ (function () {
             url: url + query_string_1.QueryString.serialize(params),
             headers: new Headers()
         };
-        return new http_builder_1.HttpBuilder(message, this.defaults.fetch, this.defaults.timeout);
+        var options = Object.assign({}, this.options);
+        return new http_builder_1.HttpBuilder(message, options);
     };
     Http.prototype.head = function (url, params) {
         return this.request('HEAD', url, params);

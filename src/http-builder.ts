@@ -1,4 +1,4 @@
-import { Fetch, Http } from './http';
+import { Fetch, Http, Options } from './http';
 import { HttpResponse, HttpResponseOfT } from './http-response';
 import { InfinitePaginationResult, PaginationResult } from './pagination';
 import { serialize } from 'ur-json';
@@ -13,7 +13,7 @@ export class HttpBuilder {
     private _onSend: ((request: Message) => void | Promise<any>)[] = [];
     private _onSent: ((response: HttpResponse) => void | Promise<any>)[] = [];
 
-    constructor(public message: Message, public fetch: Fetch | undefined, public timeout?: number) {
+    constructor(public message: Message, public options: Options) {
     }
 
     onSend(callback: (request: Message) => void | Promise<any>) {
@@ -31,7 +31,7 @@ export class HttpBuilder {
     }
 
     async send(abortSignal?: AbortSignal) {
-        if (!this.fetch) {
+        if (!this.options.fetch) {
             throw Error('fetch() is not properly configured');
         }
 
@@ -50,7 +50,7 @@ export class HttpBuilder {
             mode: this.message.mode
         };
 
-        if (abortSignal || this.timeout) {
+        if (abortSignal || this.options.timeout) {
             var outerController = new AbortController();
 
             if (abortSignal) {
@@ -62,16 +62,17 @@ export class HttpBuilder {
             init.signal = outerController.signal;
         }
 
-        const fetchResponsePromise = this.fetch(this.message.url, init);
+        const url = this.buildUrl();
+        const fetchResponsePromise = this.options.fetch(url, init);
         let fetchResponse: Response;
 
-        if (this.timeout) {
+        if (this.options.timeout) {
             fetchResponse = await Promise.race([
                 fetchResponsePromise,
                 new Promise<Response>((_, reject) => setTimeout(() => {
                     outerController.abort();
                     reject(new TimeoutError());
-                }, this.timeout))
+                }, this.options.timeout))
             ]);
         }
         else {
@@ -89,6 +90,20 @@ export class HttpBuilder {
         }
 
         return httpResponse;
+    }
+
+    private buildUrl() {
+        let baseUrl = this.options.baseUrl ?? "";
+        if (baseUrl.endsWith('/')) {
+            baseUrl = baseUrl.substr(0, baseUrl.length - 1);
+        }
+
+        if (this.message.url.startsWith('/')) {
+            return baseUrl + this.message.url;
+        }
+        else {
+            return baseUrl + '/' + this.message.url;
+        }
     }
 
     ensureSuccessStatusCode(ensureSuccessStatusCode?: boolean) {
@@ -111,7 +126,7 @@ export class HttpBuilder {
     }
 
     useFetch(fetch: Fetch) {
-        this.fetch = fetch;
+        this.options.fetch = fetch;
         return this;
     }
 
@@ -121,21 +136,12 @@ export class HttpBuilder {
     }
 
     useBaseUrl(baseUrl: string) {
-        if (baseUrl.endsWith('/')) {
-            baseUrl = baseUrl.substr(0, baseUrl.length - 1);
-        }
-
-        if (this.message.url.startsWith('/')) {
-            this.message.url = baseUrl + this.message.url;
-        }
-        else {
-            this.message.url = baseUrl + '/' + this.message.url;
-        }
+        this.options.baseUrl = baseUrl;
         return this;
     }
 
     useTimeout(timeout: number | null) {
-        this.timeout = timeout || undefined;
+        this.options.timeout = timeout || undefined;
         return this;
     }
 
@@ -280,7 +286,7 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
     private _onReceived: ((received: T, response: HttpResponseOfT<T>) => void | Promise<any>)[] = [];
 
     constructor(private inner: HttpBuilder, private handler: (response: Response) => Promise<T>) {
-        super(inner.message, inner.fetch);
+        super(inner.message, inner.options);
     }
 
     onSend(callback: (request: Message) => void | Promise<any>) {
@@ -365,6 +371,7 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
 
 export interface Message {
     method: string;
+    baseUrl?: string;
     url: string;
     headers: Headers;
     content?: any;

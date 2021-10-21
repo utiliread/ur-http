@@ -4,14 +4,14 @@ import { QueryString } from './query-string';
 export type Fetch = (input: RequestInfo, init?: RequestInit) => Promise<Response>;
 
 export class Http {
-    static defaults: Defaults = {
+    static defaults: Options = {
         fetch: window.fetch ? window.fetch.bind(window) : undefined
     }
     private static instance = new Http(Http.defaults);
-    defaults: Defaults;
+    options: Options;
 
-    constructor(defaults?: Defaults) {
-        this.defaults = Object.assign({}, Http.defaults, defaults); // Later sources' properties overwrite earlier ones.
+    constructor(defaults?: Options) {
+        this.options = Object.assign({}, Http.defaults, defaults); // Later sources' properties overwrite earlier ones.
     }
 
     static request(method: string, url: string, params?: any) {
@@ -48,7 +48,8 @@ export class Http {
             url: url + QueryString.serialize(params),
             headers: new Headers()
         };
-        return new HttpBuilder(message, this.defaults.fetch, this.defaults.timeout);
+        const options = Object.assign({}, this.options);
+        return new HttpBuilder(message, options);
     }
 
     head(url: string, params?: any) {
@@ -76,7 +77,8 @@ export class Http {
     }
 }
 
-interface Defaults {
+export interface Options {
     fetch?: Fetch,
     timeout?: number,
+    baseUrl?: string,
 }

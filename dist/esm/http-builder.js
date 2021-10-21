@@ -73,10 +73,9 @@ import { serialize } from 'ur-json';
 import * as jsonFactory from "./json";
 import { TimeoutError } from './timeout-error';
 var HttpBuilder = /** @class */ (function () {
-    function HttpBuilder(message, fetch, timeout) {
+    function HttpBuilder(message, options) {
         this.message = message;
-        this.fetch = fetch;
-        this.timeout = timeout;
+        this.options = options;
         this._ensureSuccessStatusCode = true;
         this._onSend = [];
         this._onSent = [];
@@ -94,12 +93,12 @@ var HttpBuilder = /** @class */ (function () {
     };
     HttpBuilder.prototype.send = function (abortSignal) {
         return __awaiter(this, void 0, void 0, function () {
-            var _i, _a, callback, init, outerController, fetchResponsePromise, fetchResponse, httpResponse, _b, _c, callback;
+            var _i, _a, callback, init, outerController, url, fetchResponsePromise, fetchResponse, httpResponse, _b, _c, callback;
             var _this = this;
             return __generator(this, function (_d) {
                 switch (_d.label) {
                     case 0:
-                        if (!this.fetch) {
+                        if (!this.options.fetch) {
                             throw Error('fetch() is not properly configured');
                         }
                         if (this.message.contentType) {
@@ -124,7 +123,7 @@ var HttpBuilder = /** @class */ (function () {
                             headers: this.message.headers,
                             mode: this.message.mode
                         };
-                        if (abortSignal || this.timeout) {
+                        if (abortSignal || this.options.timeout) {
                             outerController = new AbortController();
                             if (abortSignal) {
                                 abortSignal.addEventListener("abort", function () {
@@ -133,14 +132,15 @@ var HttpBuilder = /** @class */ (function () {
                             }
                             init.signal = outerController.signal;
                         }
-                        fetchResponsePromise = this.fetch(this.message.url, init);
-                        if (!this.timeout) return [3 /*break*/, 6];
+                        url = this.buildUrl();
+                        fetchResponsePromise = this.options.fetch(url, init);
+                        if (!this.options.timeout) return [3 /*break*/, 6];
                         return [4 /*yield*/, Promise.race([
                                 fetchResponsePromise,
                                 new Promise(function (_, reject) { return setTimeout(function () {
                                     outerController.abort();
                                     reject(new TimeoutError());
-                                }, _this.timeout); })
+                                }, _this.options.timeout); })
                             ])];
                     case 5:
                         fetchResponse = _d.sent();
@@ -171,6 +171,19 @@ var HttpBuilder = /** @class */ (function () {
             });
         });
     };
+    HttpBuilder.prototype.buildUrl = function () {
+        var _a;
+        var baseUrl = (_a = this.options.baseUrl) !== null && _a !== void 0 ? _a : "";
+        if (baseUrl.endsWith('/')) {
+            baseUrl = baseUrl.substr(0, baseUrl.length - 1);
+        }
+        if (this.message.url.startsWith('/')) {
+            return baseUrl + this.message.url;
+        }
+        else {
+            return baseUrl + '/' + this.message.url;
+        }
+    };
     HttpBuilder.prototype.ensureSuccessStatusCode = function (ensureSuccessStatusCode) {
         this._ensureSuccessStatusCode = ensureSuccessStatusCode === false ? false : true;
         return this;
@@ -188,7 +201,7 @@ var HttpBuilder = /** @class */ (function () {
         return this;
     };
     HttpBuilder.prototype.useFetch = function (fetch) {
-        this.fetch = fetch;
+        this.options.fetch = fetch;
         return this;
     };
     HttpBuilder.prototype.useCors = function (mode) {
@@ -196,19 +209,11 @@ var HttpBuilder = /** @class */ (function () {
         return this;
     };
     HttpBuilder.prototype.useBaseUrl = function (baseUrl) {
-        if (baseUrl.endsWith('/')) {
-            baseUrl = baseUrl.substr(0, baseUrl.length - 1);
-        }
-        if (this.message.url.startsWith('/')) {
-            this.message.url = baseUrl + this.message.url;
-        }
-        else {
-            this.message.url = baseUrl + '/' + this.message.url;
-        }
+        this.options.baseUrl = baseUrl;
         return this;
     };
     HttpBuilder.prototype.useTimeout = function (timeout) {
-        this.timeout = timeout || undefined;
+        this.options.timeout = timeout || undefined;
         return this;
     };
     // Content Extensions
@@ -414,7 +419,7 @@ export { HttpBuilder };
 var HttpBuilderOfT = /** @class */ (function (_super) {
     __extends(HttpBuilderOfT, _super);
     function HttpBuilderOfT(inner, handler) {
-        var _this = _super.call(this, inner.message, inner.fetch) || this;
+        var _this = _super.call(this, inner.message, inner.options) || this;
         _this.inner = inner;
         _this.handler = handler;
         _this._onReceived = [];
