@@ -10,8 +10,8 @@ export class Http {
     private static instance = new Http(Http.defaults);
     options: Options;
 
-    constructor(defaults?: Options) {
-        this.options = Object.assign({}, Http.defaults, defaults); // Later sources' properties overwrite earlier ones.
+    constructor(options?: Options) {
+        this.options = Object.assign({}, Http.defaults, options); // Later sources' properties overwrite earlier ones.
     }
 
     static request(method: string, url: string, params?: any) {
