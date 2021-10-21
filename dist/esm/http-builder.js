@@ -68,7 +68,6 @@ var __asyncGenerator = (this && this.__asyncGenerator) || function (thisArg, _ar
     function reject(value) { resume("throw", value); }
     function settle(f, v) { if (f(v), q.shift(), q.length) resume(q[0][0], q[0][1]); }
 };
-import { Http } from './http';
 import { HttpResponse, HttpResponseOfT } from './http-response';
 import { serialize } from 'ur-json';
 import * as jsonFactory from "./json";
@@ -82,13 +81,6 @@ var HttpBuilder = /** @class */ (function () {
         this._onSend = [];
         this._onSent = [];
     }
-    HttpBuilder.create = function (method, url) {
-        return new HttpBuilder({
-            method: method,
-            url: url,
-            headers: new Headers()
-        }, Http.defaults.fetch, Http.defaults.timeout);
-    };
     HttpBuilder.prototype.onSend = function (callback) {
         this._onSend.push(callback);
         return this;

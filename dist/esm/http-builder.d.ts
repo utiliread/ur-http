@@ -10,7 +10,6 @@ export declare class HttpBuilder {
     private _onSend;
     private _onSent;
     constructor(message: Message, fetch: Fetch | undefined, timeout?: number | undefined);
-    static create(method: string, url: string): HttpBuilder;
     onSend(callback: (request: Message) => void | Promise<any>): this;
     onSent(callback: (response: HttpResponse) => void | Promise<any>): this;
     protected useHandler<T>(handler: (response: Response) => Promise<T>): HttpBuilderOfT<T>;

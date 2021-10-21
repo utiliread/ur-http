@@ -71,7 +71,6 @@ var __asyncGenerator = (this && this.__asyncGenerator) || function (thisArg, _ar
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HttpBuilderOfT = exports.HttpBuilder = void 0;
-var http_1 = require("./http");
 var http_response_1 = require("./http-response");
 var ur_json_1 = require("ur-json");
 var jsonFactory = require("./json");
@@ -85,13 +84,6 @@ var HttpBuilder = /** @class */ (function () {
         this._onSend = [];
         this._onSent = [];
     }
-    HttpBuilder.create = function (method, url) {
-        return new HttpBuilder({
-            method: method,
-            url: url,
-            headers: new Headers()
-        }, http_1.Http.defaults.fetch, http_1.Http.defaults.timeout);
-    };
     HttpBuilder.prototype.onSend = function (callback) {
         this._onSend.push(callback);
         return this;

@@ -16,14 +16,6 @@ export class HttpBuilder {
     constructor(public message: Message, public fetch: Fetch | undefined, public timeout?: number) {
     }
 
-    static create(method: string, url: string) {
-        return new HttpBuilder({
-            method: method,
-            url: url,
-            headers: new Headers()
-        }, Http.defaults.fetch, Http.defaults.timeout);
-    }
-
     onSend(callback: (request: Message) => void | Promise<any>) {
         this._onSend.push(callback);
         return this;
