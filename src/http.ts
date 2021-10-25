@@ -7,39 +7,48 @@ export class Http {
     static defaults: Options = {
         fetch: window.fetch ? window.fetch.bind(window) : undefined
     }
-    private static instance = new Http(Http.defaults);
-    options: Options;
+    private static instance?: Http;
+    options: Readonly<Options>;
 
-    constructor(options?: Options) {
+    constructor(options?: Partial<Options>) {
         this.options = Object.assign({}, Http.defaults, options); // Later sources' properties overwrite earlier ones.
     }
 
     static request(method: string, url: string, params?: any) {
-        return this.instance.request(method, url, params);
+        return this.getInstance().request(method, url, params);
     }
 
     static head(url: string, params?: any) {
-        return this.instance.head(url, params);
+        return this.getInstance().head(url, params);
     }
 
     static post(url: string, params?: any) {
-        return this.instance.post(url, params);
+        return this.getInstance().post(url, params);
     }
 
     static get(url: string, params?: any) {
-        return this.instance.get(url, params);
+        return this.getInstance().get(url, params);
     }
 
     static put(url: string, params?: any) {
-        return this.instance.put(url, params);
+        return this.getInstance().put(url, params);
     }
 
     static patch(url: string, params?: any) {
-        return this.instance.patch(url, params);
+        return this.getInstance().patch(url, params);
     }
 
     static delete(url: string, params?: any) {
-        return this.instance.delete(url, params);
+        return this.getInstance().delete(url, params);
+    }
+
+    private static getInstance() {
+        if (!this.instance) {
+            this.instance = new Http();
+            // The singleton instance should always use the static options
+            this.instance.options = Http.defaults;
+        }
+        return this.instance;
     }
 
     request(method: string, url: string, params?: any) {

@@ -8,25 +8,33 @@ var Http = /** @class */ (function () {
         this.options = Object.assign({}, Http.defaults, options); // Later sources' properties overwrite earlier ones.
     }
     Http.request = function (method, url, params) {
-        return this.instance.request(method, url, params);
+        return this.getInstance().request(method, url, params);
     };
     Http.head = function (url, params) {
-        return this.instance.head(url, params);
+        return this.getInstance().head(url, params);
     };
     Http.post = function (url, params) {
-        return this.instance.post(url, params);
+        return this.getInstance().post(url, params);
     };
     Http.get = function (url, params) {
-        return this.instance.get(url, params);
+        return this.getInstance().get(url, params);
     };
     Http.put = function (url, params) {
-        return this.instance.put(url, params);
+        return this.getInstance().put(url, params);
     };
     Http.patch = function (url, params) {
-        return this.instance.patch(url, params);
+        return this.getInstance().patch(url, params);
     };
     Http.delete = function (url, params) {
-        return this.instance.delete(url, params);
+        return this.getInstance().delete(url, params);
+    };
+    Http.getInstance = function () {
+        if (!this.instance) {
+            this.instance = new Http();
+            // The singleton instance should always use the static options
+            this.instance.options = Http.defaults;
+        }
+        return this.instance;
     };
     Http.prototype.request = function (method, url, params) {
         var message = {
@@ -58,7 +66,6 @@ var Http = /** @class */ (function () {
     Http.defaults = {
         fetch: window.fetch ? window.fetch.bind(window) : undefined
     };
-    Http.instance = new Http(Http.defaults);
     return Http;
 }());
 exports.Http = Http;

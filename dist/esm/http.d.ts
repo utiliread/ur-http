@@ -2,9 +2,9 @@ import { HttpBuilder } from './http-builder';
 export declare type Fetch = (input: RequestInfo, init?: RequestInit) => Promise<Response>;
 export declare class Http {
     static defaults: Options;
-    private static instance;
-    options: Options;
-    constructor(options?: Options);
+    private static instance?;
+    options: Readonly<Options>;
+    constructor(options?: Partial<Options>);
     static request(method: string, url: string, params?: any): HttpBuilder;
     static head(url: string, params?: any): HttpBuilder;
     static post(url: string, params?: any): HttpBuilder;
@@ -12,6 +12,7 @@ export declare class Http {
     static put(url: string, params?: any): HttpBuilder;
     static patch(url: string, params?: any): HttpBuilder;
     static delete(url: string, params?: any): HttpBuilder;
+    private static getInstance;
     request(method: string, url: string, params?: any): HttpBuilder;
     head(url: string, params?: any): HttpBuilder;
     post(url: string, params?: any): HttpBuilder;

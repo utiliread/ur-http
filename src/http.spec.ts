@@ -6,6 +6,13 @@ describe("static http", () => {
         const builder = Http.get("/hello");
         expect(builder.options.fetch).to.equal(Http.defaults.fetch);
     });
+
+    it("can get with changed default fetch", () => {
+        Http.get("/hello") // Creates singleton
+        Http.defaults.fetch = fakeFetch;
+        const builder = Http.get("/hello");
+        expect(builder.options.fetch).to.equal(fakeFetch);
+    });
 });
 
 describe("instance http", () => {
