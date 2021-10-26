@@ -93,7 +93,11 @@ export class HttpBuilder {
     }
 
     getUrl() {
-        let baseUrl = this.options.baseUrl ?? "";
+        let baseUrl = this.options.baseUrl;
+        if (!baseUrl) {
+            return this.message.url;
+        }
+
         if (baseUrl.endsWith('/')) {
             baseUrl = baseUrl.substr(0, baseUrl.length - 1);
         }
