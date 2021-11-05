@@ -1,10 +1,5 @@
-import { Fetch, Http, Options } from './http';
+import { Fetch, Options } from './http';
 import { HttpResponse, HttpResponseOfT } from './http-response';
-import { InfinitePaginationResult, PaginationResult } from './pagination';
-import { serialize } from 'ur-json';
-import { Operation } from 'ur-jsonpatch';
-import * as jsonFactory from "./json";
-
 import { TimeoutError } from './timeout-error';
 import { Settings } from './settings';
 
@@ -163,18 +158,6 @@ export class HttpBuilder {
         return this;
     }
 
-    withJson(content: any) {
-        this.message.content = serialize(content);
-        this.message.contentType = 'application/json';
-        return this;
-    }
-
-    withJsonPatch(operations: Operation[]) {
-        this.message.content = serialize(operations);
-        this.message.contentType = 'application/json-patch+json';
-        return this;
-    }
-
     // Modifier Extensions
 
     addHeader(name: string, value: string) {
@@ -194,95 +177,6 @@ export class HttpBuilder {
         return this.useHandler(response => {
             return response.arrayBuffer();
         });
-    }
-
-    expectJson<T>(typeCtorOrFactory?: { new(): T } | ((object: any) => T)) {
-        this.message.headers.set('Accept', 'application/json');
-        return this.useHandler(response => {
-            return response.json().then(x => jsonFactory.getModelFactory(typeCtorOrFactory)(x));
-        });
-    }
-
-    expectJsonArray<T>(itemTypeCtorOrFactory: { new(): T } | ((item: any) => T)) {
-        this.message.headers.set('Accept', 'application/json');
-        return this.useHandler(response => {
-            return response.json().then((x: any[]) => {
-                const itemFactory = jsonFactory.getModelFactory(itemTypeCtorOrFactory);
-                return x.map(itemFactory);
-            });
-        });
-    }
-
-    expectJsonNullableArray<T>(itemTypeCtorOrFactory: { new(): T } | ((item: any) => T)) {
-        this.message.headers.set('Accept', 'application/json');
-        return this.useHandler(response => {
-            return response.json().then((x: any[]) => {
-                const itemFactory = jsonFactory.getNullableModelFactory(itemTypeCtorOrFactory);
-                return x.map(itemFactory);
-            });
-        });
-    }
-
-    expectJsonPaginationResult<T>(itemTypeCtorOrFactory: { new(): T } | ((item: any) => T)) {
-        this.message.headers.set('Accept', 'application/json');
-        return this.useHandler(response => {
-            return response.json().then((x: PaginationResult<any>) => {
-                const itemFactory = jsonFactory.getModelFactory(itemTypeCtorOrFactory);
-                return {
-                    meta: {
-                        pageCount: x.meta.pageCount,
-                        pageSize: x.meta.pageSize,
-                        totalItems: x.meta.totalItems
-                    },
-                    data: x.data.map(itemFactory)
-                };
-            });
-        });
-    }
-
-    expectJsonInfinitePaginationResult<T>(itemTypeCtorOrFactory: { new(): T } | ((item: any) => T)) {
-        this.message.headers.set('Accept', 'application/json');
-        return this.useHandler(response => {
-            return response.json().then((x: InfinitePaginationResult<any>) => {
-                const itemFactory = jsonFactory.getModelFactory(itemTypeCtorOrFactory);
-                return {
-                    meta: {
-                        pageSize: x.meta.pageSize,
-                        continuationToken: x.meta.continuationToken
-                    },
-                    data: x.data.map(itemFactory)
-                };
-            });
-        });
-    }
-
-    expectMessagePackArray<T>(itemTypeCtorOrFactory?: { new(): T } | ((item: any) => T)) {
-        this.message.headers.set('Accept', 'application/x-msgpack');
-        return this.useHandler(async response => {
-            const items: T[] = [];
-            const msgpack = await import("@msgpack/msgpack");
-            const msgpackFactory = await import("./msgpack");
-            const itemFactory = msgpackFactory.getModelFactory(itemTypeCtorOrFactory);
-            for await (const item of msgpack.decodeArrayStream(response.body!)) {
-                items.push(itemFactory(item));
-            }
-            return items;
-        });
-    }
-
-    streamMessagePackArray<T>(itemTypeCtorOrFactory?: { new(): T } | ((item: any) => T)) {
-        this.message.headers.set('Accept', 'application/x-msgpack');
-
-        async function* handler(response: Response) {
-            const msgpack = await import("@msgpack/msgpack");
-            const msgpackFactory = await import("./msgpack");
-            const itemFactory = msgpackFactory.getModelFactory(itemTypeCtorOrFactory);
-            for await (const item of msgpack.decodeArrayStream(response.body!)) {
-                yield itemFactory(item);
-            }
-        }
-        
-        return this.useHandler(response => Promise.resolve(handler(response)));
     }
 }
 

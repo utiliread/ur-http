@@ -1,39 +1,139 @@
-import { modelBind } from "ur-json";
-import { isZeroArgumentFunction } from "./utils";
+import { HttpBuilder } from "./http-builder";
+import { InfinitePaginationResult, PaginationResult } from "./pagination";
+import { modelBind, serialize } from "ur-json";
+import { getMapper, getNullableMapper, Mapper, Type } from "./mapping";
+import type { Operation } from "ur-jsonpatch";
+import { HttpBuilderOfT } from ".";
 
-export function getNullableModelFactory<T>(typeCtorOrFactory: { new(): T } | ((object: any) => T) | undefined) {
-    if (!typeCtorOrFactory) {
-        return (x: any) => <T>x;
-    }
+type TypeOrMapper<T> = Type<T> | Mapper<T>;
 
-    if (isZeroArgumentFunction(typeCtorOrFactory)) {
-        // It cannot be a factory function if it takes no arguments,
-        // so it must be a (zero argument) type (constructor)
-        return (x: any) => {
-            const bound = modelBind(typeCtorOrFactory, x);
+declare module "./http-builder" {
+  interface HttpBuilder {
+    withJson(content: any): this;
+    withJsonPatch(operations: Operation[]): this;
 
-            // The server cannot produce the undefined result
-            if (bound === undefined) {
-                throw Error("The model factory created a undefined result");
-            }
-
-            return bound;
-        }
-    }
-
-    return typeCtorOrFactory;
+    expectJson<T>(typeOrMapper?: TypeOrMapper<T>): HttpBuilderOfT<T>;
+    expectJsonArray<T>(typeOrMapper: TypeOrMapper<T>): HttpBuilderOfT<T[]>;
+    expectJsonNullableArray<T>(
+      typeOrMapper: TypeOrMapper<T>
+    ): HttpBuilderOfT<(T | null)[]>;
+    expectJsonPaginationResult<T>(
+      typeOrMapper: TypeOrMapper<T>
+    ): HttpBuilderOfT<PaginationResult<T>>;
+    expectJsonInfinitePaginationResult<T>(
+      typeOrMapper: TypeOrMapper<T>
+    ): HttpBuilderOfT<InfinitePaginationResult<T>>;
+  }
+  interface HttpBuilderOfT<T> {
+    withJson(content: any): this;
+    withJsonPatch(operations: Operation[]): this;
+  }
 }
 
-export function getModelFactory<T>(typeCtorOrFactory: { new(): T } | ((object: any) => T) | undefined) {
-    const factory = getNullableModelFactory(typeCtorOrFactory);
+HttpBuilder.prototype.withJson = function (this: HttpBuilder, content: any) {
+  this.message.content = serialize(content);
+  this.message.contentType = "application/json";
+  return this;
+};
 
-    return (x: any) => {
-        const result = factory(x);
+HttpBuilder.prototype.withJsonPatch = function (
+  this: HttpBuilder,
+  operations: Operation[]
+) {
+  this.message.content = serialize(operations);
+  this.message.contentType = "application/json-patch+json";
+  return this;
+};
 
-        if (result === null) {
-            throw Error("The model factory created a null result");
-        }
+HttpBuilderOfT.prototype.withJson = function <T>(
+  this: HttpBuilderOfT<T>,
+  content: any
+) {
+  this.message.content = serialize(content);
+  this.message.contentType = "application/json";
+  return this;
+};
 
-        return result;
-    };
-}
+HttpBuilderOfT.prototype.withJsonPatch = function <T>(
+  this: HttpBuilderOfT<T>,
+  operations: Operation[]
+) {
+  this.message.content = serialize(operations);
+  this.message.contentType = "application/json-patch+json";
+  return this;
+};
+
+HttpBuilder.prototype.expectJson = function <T>(
+  this: HttpBuilder,
+  typeOrMapper?: TypeOrMapper<T>
+) {
+  this.message.headers.set("Accept", "application/json");
+  return this.useHandler((response) => {
+    return response.json().then((x) => getMapper(modelBind, typeOrMapper)(x));
+  });
+};
+
+HttpBuilder.prototype.expectJsonArray = function <T>(
+  this: HttpBuilder,
+  typeOrMapper: TypeOrMapper<T>
+) {
+  this.message.headers.set("Accept", "application/json");
+  return this.useHandler((response) => {
+    return response.json().then((x: any[]) => {
+      const itemFactory = getMapper(modelBind, typeOrMapper);
+      return x.map(itemFactory);
+    });
+  });
+};
+
+HttpBuilder.prototype.expectJsonNullableArray = function <T>(
+  this: HttpBuilder,
+  typeOrMapper: TypeOrMapper<T>
+): HttpBuilderOfT<(T | null)[]> {
+  this.message.headers.set("Accept", "application/json");
+  return this.useHandler((response) => {
+    return response.json().then((x: any[]) => {
+      const itemFactory = getNullableMapper(modelBind, typeOrMapper);
+      return x.map(itemFactory);
+    });
+  });
+};
+
+HttpBuilder.prototype.expectJsonPaginationResult = function <T>(
+  this: HttpBuilder,
+  typeOrMapper: TypeOrMapper<T>
+) {
+  this.message.headers.set("Accept", "application/json");
+  return this.useHandler((response) => {
+    return response.json().then((x: PaginationResult<any>) => {
+      const itemFactory = getMapper(modelBind, typeOrMapper);
+      return {
+        meta: {
+          pageCount: x.meta.pageCount,
+          pageSize: x.meta.pageSize,
+          totalItems: x.meta.totalItems,
+        },
+        data: x.data.map(itemFactory),
+      };
+    });
+  });
+};
+
+HttpBuilder.prototype.expectJsonInfinitePaginationResult = function <T>(
+  this: HttpBuilder,
+  typeOrMapper: TypeOrMapper<T>
+) {
+  this.message.headers.set("Accept", "application/json");
+  return this.useHandler((response) => {
+    return response.json().then((x: InfinitePaginationResult<any>) => {
+      const itemFactory = getMapper(modelBind, typeOrMapper);
+      return {
+        meta: {
+          pageSize: x.meta.pageSize,
+          continuationToken: x.meta.continuationToken,
+        },
+        data: x.data.map(itemFactory),
+      };
+    });
+  });
+};

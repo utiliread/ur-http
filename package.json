@@ -13,7 +13,7 @@
   "devDependencies": {
     "@types/chai": "^4.2.16",
     "@types/luxon": "^1.26.4",
-    "@types/mocha": "^8.2.2",
+    "@types/mocha": "^9.0.0",
     "chai": "^4.3.4",
     "karma": "^6.3.2",
     "karma-chai": "^0.1.0",
@@ -21,17 +21,24 @@
     "karma-mocha": "^2.0.1",
     "karma-typescript": "^5.5.1",
     "luxon": "^1.26.0",
-    "mocha": "^8.3.2",
+    "mocha": "^9.1.3",
     "rimraf": "^3.0.2",
     "typescript": "^4.2.4",
+    "ur-json": "^1.5.3",
+    "ur-jsonpatch": "^1.1.3",
     "ur-msgpack": "^1.0.0-alpha0.0"
   },
   "peerDependencies": {
+    "ur-json": "^1.5.3",
     "ur-msgpack": "^1.0.0-alpha0.0",
     "luxon": "^1.21.2"
   },
-  "dependencies": {
-    "ur-json": "^1.5.3",
-    "ur-jsonpatch": "^1.1.3"
+  "peerDependenciesMeta": {
+    "ur-json": {
+      "optional": true
+    },
+    "ur-msgpack": {
+      "optional": true
+    }
   }
 }

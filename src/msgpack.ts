@@ -1,39 +1,48 @@
 import { deserialize } from "ur-msgpack";
-import { isZeroArgumentFunction } from "./utils";
+import { HttpBuilder } from "./http-builder";
+import { decodeArrayStream } from "@msgpack/msgpack";
+import { getMapper, Mapper, Type } from "./mapping";
 
-export function getNullableModelFactory<T>(typeCtorOrFactory: { new(): T } | ((object: any) => T) | undefined) {
-    if (!typeCtorOrFactory) {
-        return (x: any) => <T>x;
-    }
+type TypeOrMapper<T> = Type<T> | Mapper<T>;
 
-    if (isZeroArgumentFunction(typeCtorOrFactory)) {
-        // It cannot be a factory function if it takes no arguments,
-        // so it must be a (zero argument) type (constructor)
-        return (x: any) => {
-            const bound = deserialize(typeCtorOrFactory, x);
-
-            // The server cannot produce the undefined result
-            if (bound === undefined) {
-                throw Error("The model factory created a undefined result");
-            }
-
-            return bound;
-        }
-    }
-
-    return typeCtorOrFactory;
+declare module "./http-builder" {
+  interface HttpBuilder {
+    expectMessagePackArray<T>(
+      typeOrMapper?: TypeOrMapper<T>
+    ): HttpBuilderOfT<T[]>;
+    streamMessagePackArray<T>(
+      typeOrMapper?: TypeOrMapper<T>
+    ): HttpBuilderOfT<AsyncGenerator<T, void, unknown>>;
+  }
 }
 
-export function getModelFactory<T>(typeCtorOrFactory: { new(): T } | ((object: any) => T) | undefined) {
-    const factory = getNullableModelFactory(typeCtorOrFactory);
+HttpBuilder.prototype.expectMessagePackArray = function <T>(
+  this: HttpBuilder,
+  typeOrMapper?: TypeOrMapper<T>
+) {
+  this.message.headers.set("Accept", "application/x-msgpack");
+  return this.useHandler(async (response) => {
+    const items: T[] = [];
+    const itemFactory = getMapper(deserialize, typeOrMapper);
+    for await (const item of decodeArrayStream(response.body!)) {
+      items.push(itemFactory(item));
+    }
+    return items;
+  });
+};
 
-    return (x: any) => {
-        const result = factory(x);
+HttpBuilder.prototype.streamMessagePackArray = function <T>(
+  this: HttpBuilder,
+  typeOrMapper?: TypeOrMapper<T>
+) {
+  this.message.headers.set("Accept", "application/x-msgpack");
 
-        if (result === null) {
-            throw Error("The model factory created a null result");
-        }
+  async function* handler(response: Response) {
+    const itemFactory = getMapper(deserialize, typeOrMapper);
+    for await (const item of decodeArrayStream(response.body!)) {
+      yield itemFactory(item);
+    }
+  }
 
-        return result;
-    };
-}
+  return this.useHandler((response) => Promise.resolve(handler(response)));
+};
