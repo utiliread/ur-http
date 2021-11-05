@@ -5,7 +5,7 @@
   "module": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
   "scripts": {
-    "build": "tsc && tsc -p tsconfig.cjs.json",
+    "build": "tsc && tsc -p tsconfig.cjs.json && replace-in-file ./http-builder ur-http dist/esm/json.d.ts && replace-in-file ./http-builder ur-http dist/esm/msgpack.d.ts",
     "test": "karma start --single-run --browsers ChromeHeadless karma.config.js",
     "watch": "karma start --auto-watch --browsers ChromeDebugging karma.config.js",
     "clean": "rimraf dist"
@@ -22,6 +22,7 @@
     "karma-typescript": "^5.5.1",
     "luxon": "^1.26.0",
     "mocha": "^9.1.3",
+    "replace-in-file": "^6.3.2",
     "rimraf": "^3.0.2",
     "typescript": "^4.2.4",
     "ur-json": "^1.5.3",
@@ -29,9 +30,9 @@
     "ur-msgpack": "^1.0.0-alpha0.0"
   },
   "peerDependencies": {
+    "luxon": "^1.21.2",
     "ur-json": "^1.5.3",
-    "ur-msgpack": "^1.0.0-alpha0.0",
-    "luxon": "^1.21.2"
+    "ur-msgpack": "^1.0.0-alpha0.0"
   },
   "peerDependenciesMeta": {
     "ur-json": {

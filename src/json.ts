@@ -1,9 +1,8 @@
-import { HttpBuilder } from "./http-builder";
+import { HttpBuilder, HttpBuilderOfT } from "./http-builder";
 import { InfinitePaginationResult, PaginationResult } from "./pagination";
 import { modelBind, serialize } from "ur-json";
 import { getMapper, getNullableMapper, Mapper, Type } from "./mapping";
 import type { Operation } from "ur-jsonpatch";
-import { HttpBuilderOfT } from ".";
 
 type TypeOrMapper<T> = Type<T> | Mapper<T>;
 
