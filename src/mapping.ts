@@ -1,4 +1,4 @@
-type DeserializeFn<T> = (type: Type<T>, source: any) => T | null | undefined;
+type DeserializeFn<T> = (source: any, type: Type<T>) => T | null | undefined;
 export type Type<T> = { new(): T };
 export type Mapper<T> = ((source: any) => T);
 

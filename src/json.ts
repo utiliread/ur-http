@@ -1,8 +1,8 @@
 import { HttpBuilder, HttpBuilderOfT } from "./http-builder";
 import { InfinitePaginationResult, PaginationResult } from "./pagination";
-import { modelBind, serialize } from "ur-json";
+import { deserialize, serialize } from "@utiliread/json";
 import { getMapper, getNullableMapper, Mapper, Type } from "./mapping";
-import type { Operation } from "ur-jsonpatch";
+import type { Operation } from "@utiliread/jsonpatch";
 
 type TypeOrMapper<T> = Type<T> | Mapper<T>;
 
@@ -68,7 +68,7 @@ HttpBuilder.prototype.expectJson = function <T>(
 ) {
   this.message.headers.set("Accept", "application/json");
   return this.useHandler((response) => {
-    return response.json().then((x) => getMapper(modelBind, typeOrMapper)(x));
+    return response.json().then((x) => getMapper(deserialize, typeOrMapper)(x));
   });
 };
 
@@ -79,7 +79,7 @@ HttpBuilder.prototype.expectJsonArray = function <T>(
   this.message.headers.set("Accept", "application/json");
   return this.useHandler((response) => {
     return response.json().then((x: any[]) => {
-      const itemFactory = getMapper(modelBind, typeOrMapper);
+      const itemFactory = getMapper(deserialize, typeOrMapper);
       return x.map(itemFactory);
     });
   });
@@ -92,7 +92,7 @@ HttpBuilder.prototype.expectJsonNullableArray = function <T>(
   this.message.headers.set("Accept", "application/json");
   return this.useHandler((response) => {
     return response.json().then((x: any[]) => {
-      const itemFactory = getNullableMapper(modelBind, typeOrMapper);
+      const itemFactory = getNullableMapper(deserialize, typeOrMapper);
       return x.map(itemFactory);
     });
   });
@@ -105,7 +105,7 @@ HttpBuilder.prototype.expectJsonPaginationResult = function <T>(
   this.message.headers.set("Accept", "application/json");
   return this.useHandler((response) => {
     return response.json().then((x: PaginationResult<any>) => {
-      const itemFactory = getMapper(modelBind, typeOrMapper);
+      const itemFactory = getMapper(deserialize, typeOrMapper);
       return {
         meta: {
           pageCount: x.meta.pageCount,
@@ -125,7 +125,7 @@ HttpBuilder.prototype.expectJsonInfinitePaginationResult = function <T>(
   this.message.headers.set("Accept", "application/json");
   return this.useHandler((response) => {
     return response.json().then((x: InfinitePaginationResult<any>) => {
-      const itemFactory = getMapper(modelBind, typeOrMapper);
+      const itemFactory = getMapper(deserialize, typeOrMapper);
       return {
         meta: {
           pageSize: x.meta.pageSize,

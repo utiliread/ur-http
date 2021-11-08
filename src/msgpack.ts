@@ -1,4 +1,4 @@
-import { deserialize } from "ur-msgpack";
+import { deserialize } from "@utiliread/msgpack";
 import { HttpBuilder } from "./http-builder";
 import { decodeArrayStream } from "@msgpack/msgpack";
 import { getMapper, Mapper, Type } from "./mapping";
