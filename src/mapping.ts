@@ -11,7 +11,7 @@ export function getNullableMapper<T>(deserialize: DeserializeFn<T>, typeOrMap: T
         // It cannot be a factory function if it takes no arguments,
         // so it must be a (zero argument) type (constructor)
         return (x: any) => {
-            const bound = deserialize(typeOrMap, x);
+            const bound = deserialize(x, typeOrMap);
 
             // The server cannot produce the undefined result
             if (bound === undefined) {
