@@ -4,6 +4,12 @@
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
+  "sideEffects": [
+    "./dist/*/json.js",
+    "./dist/*/msgpack.js",
+    "./src/*/json.ts",
+    "./src/*/msgpack.ts"
+  ],
   "scripts": {
     "build": "tsc && tsc -p tsconfig.cjs.json && replace-in-file ./http-builder @utiliread/http dist/esm/json.d.ts && replace-in-file ./http-builder @utiliread/http dist/esm/msgpack.d.ts",
     "test": "karma start --single-run --browsers ChromeHeadless karma.config.js",
