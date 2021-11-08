@@ -28,14 +28,14 @@
     "replace-in-file": "^6.3.2",
     "rimraf": "^3.0.2",
     "typescript": "^4.2.4",
-    "@utiliread/json": "^1.0.1",
+    "@utiliread/json": "^1.0.2",
     "@utiliread/jsonpatch": "^1.0.0",
-    "@utiliread/msgpack": "^1.0.0"
+    "@utiliread/msgpack": "^1.0.1"
   },
   "peerDependencies": {
     "luxon": "^2.1.0",
-    "@utiliread/json": "^1.0.1",
-    "@utiliread/msgpack": "^1.0.0"
+    "@utiliread/json": "^1.0.2",
+    "@utiliread/msgpack": "^1.0.1"
   },
   "peerDependenciesMeta": {
     "@utiliread/json": {
