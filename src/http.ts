@@ -1,4 +1,4 @@
-import { EventAggregator } from './event-aggregator';
+import { EventAggregator } from './events';
 import { HttpBuilder } from './http-builder';
 import { HttpResponse, HttpResponseOfT } from './http-response';
 import { QueryString } from './query-string';

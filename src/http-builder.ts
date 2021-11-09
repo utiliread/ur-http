@@ -2,7 +2,7 @@ import { Fetch, Options } from './http';
 import { HttpResponse, HttpResponseOfT } from './http-response';
 import { TimeoutError } from './timeout-error';
 import { Settings } from './settings';
-import { HttpEvent } from './event-aggregator';
+import { HttpEvent } from './events';
 
 type Reducer<P extends any[] = any[]> = (...params: P) => unknown;
 
@@ -39,7 +39,7 @@ export class HttpBuilder {
             event.reducer = reducer;
             event.params = params;
             event.response = response;
-            ea.publish(event);
+            return ea.publish(event);
         })
         return this;
     }
@@ -291,7 +291,7 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
             event.params = params;
             event.response = response;
             event.value = value;
-            ea.publish(event);
+            return ea.publish(event);
         })
         return this;
     }
