@@ -1,4 +1,4 @@
-import { EventAggregator } from './events';
+import { DefaultEventAggregator, EventAggregator } from './events';
 import { HttpBuilder } from './http-builder';
 import { HttpResponse, HttpResponseOfT } from './http-response';
 import { QueryString } from './query-string';
@@ -7,10 +7,11 @@ export type Fetch = (input: RequestInfo, init?: RequestInit) => Promise<Response
 
 export class Http {
     static defaults: Options = {
-        fetch: window.fetch ? window.fetch.bind(window) : undefined
+        fetch: window.fetch ? window.fetch.bind(window) : undefined,
     }
     private static instance?: Http;
     options: Readonly<Options>;
+    eventAggregator: EventAggregator = new DefaultEventAggregator();
 
     constructor(options?: Partial<Options>) {
         this.options = Object.assign({}, Http.defaults, options); // Later sources' properties overwrite earlier ones.
@@ -60,7 +61,7 @@ export class Http {
             headers: new Headers()
         };
         const options = Object.assign({}, this.options);
-        return new HttpBuilder(message, options);
+        return new HttpBuilder(message, options, this.eventAggregator);
     }
 
     head(url: string, params?: any) {
@@ -92,7 +93,6 @@ export interface Options {
     fetch?: Fetch,
     timeout?: number,
     baseUrl?: string,
-    eventAggregator?: EventAggregator,
     onSent?: (response: HttpResponse) => void | Promise<any>;
     onReceived?: <T>(response: HttpResponseOfT<T>, value: T) => void | Promise<any>;
 }

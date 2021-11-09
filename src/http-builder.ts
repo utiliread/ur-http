@@ -3,6 +3,7 @@ import { HttpResponse, HttpResponseOfT } from './http-response';
 import { TimeoutError } from './timeout-error';
 import { Settings } from './settings';
 import { HttpEvent } from './events';
+import { EventAggregator } from '.';
 
 type Reducer<P extends any[] = any[]> = (...params: P) => unknown;
 
@@ -11,7 +12,7 @@ export class HttpBuilder {
     private _onSend: ((request: Message) => void | Promise<any>)[] = [];
     private _onSent: ((response: HttpResponse) => void | Promise<any>)[] = [];
 
-    constructor(public message: Message, public options: Options) {
+    constructor(public message: Message, public options: Options, public eventAggregator: EventAggregator) {
         if (options.onSent) {
             this._onSent.push(options.onSent);
         }
@@ -29,17 +30,13 @@ export class HttpBuilder {
 
     onSentPublishEvent<P extends any[]>(reducer: Reducer<P>, ...params: P) {
         this._onSent.push(response => {
-            const ea = this.options.eventAggregator;
-            if (!ea) {
-                throw new Error("No event aggregator configured");
-            }
             const event = new HttpEvent();
             event.hook = "sent";
             event.url = response.url;
             event.reducer = reducer;
             event.params = params;
             event.response = response;
-            return ea.publish(event);
+            return this.eventAggregator.publish(event);
         })
         return this;
     }
@@ -207,7 +204,7 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
     private _onReceived: ((response: HttpResponseOfT<T>, value: T) => void | Promise<any>)[] = [];
 
     constructor(private inner: HttpBuilder, private handler: (response: Response) => Promise<T>) {
-        super(inner.message, inner.options);
+        super(inner.message, inner.options, inner.eventAggregator);
 
         if (inner.options.onReceived) {
             this._onReceived.push(inner.options.onReceived);
@@ -280,10 +277,6 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
 
     onReceivedPublishEvent<P extends any[]>(reducer: Reducer<P>, ...params: P) {
         this._onReceived.push((response, value) => {
-            const ea = this.options.eventAggregator;
-            if (!ea) {
-                throw new Error("No event aggregator configured");
-            }
             const event = new HttpEvent();
             event.hook = "received";
             event.url = response.url;
@@ -291,7 +284,7 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
             event.params = params;
             event.response = response;
             event.value = value;
-            return ea.publish(event);
+            return this.eventAggregator.publish(event);
         })
         return this;
     }

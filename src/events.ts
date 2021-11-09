@@ -21,7 +21,6 @@ export class DefaultEventAggregator implements EventAggregator {
 
   async publish(event: HttpEvent) {
     const subscribers = this.subscribers.slice();
-
     for (const subscriber of subscribers) {
       await Promise.resolve(subscriber(event));
     }
