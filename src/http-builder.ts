@@ -24,14 +24,15 @@ export class HttpBuilder {
         return this;
     }
 
-    onSentPublishNotification<P extends any[]>(reducer: Reducer<P>, ...params: P) {
+    onSentPublishEvent<P extends any[]>(reducer: Reducer<P>, ...params: P) {
         this._onSent.push(response => {
             const ea = this.options.eventAggregator;
             if (!ea) {
                 throw new Error("No event aggregator configured");
             }
-            const event = new HttpEvent<Reducer<P>>();
-            event.kind = "sent";
+            const event = new HttpEvent();
+            event.hook = "sent";
+            event.url = response.url;
             event.reducer = reducer;
             event.params = params;
             event.response = response;
@@ -216,8 +217,8 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
         return this;
     }
 
-    onSentPublishNotification<P extends any[]>(reducer: Reducer<P>, ...params: P) {
-        this.inner.onSentPublishNotification(reducer, ...params);
+    onSentPublishEvent<P extends any[]>(reducer: Reducer<P>, ...params: P) {
+        this.inner.onSentPublishEvent(reducer, ...params);
         return this;
     }
 
@@ -270,15 +271,17 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
         return this;
     }
 
-    onReceivedPublishNotification<P extends any[]>(reducer: Reducer<P>, ...params: P) {
+    onReceivedPublishEvent<P extends any[]>(reducer: Reducer<P>, ...params: P) {
         this._onReceived.push((value, response) => {
             const ea = this.options.eventAggregator;
             if (!ea) {
                 throw new Error("No event aggregator configured");
             }
-            const event = new HttpEvent<Reducer<P>>();
-            event.kind = "received";
+            const event = new HttpEvent();
+            event.hook = "received";
+            event.url = response.url;
             event.reducer = reducer;
+            event.params = params;
             event.response = response;
             event.value = value;
             ea.publish(event);
