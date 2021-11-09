@@ -9,6 +9,10 @@ export class HttpResponse {
         return this.rawResponse.status;
     }
 
+    get headers() {
+        return this.rawResponse.headers;
+    }
+
     get isInformational() {
         return this.statusCode >= 100 && this.statusCode < 200;
     }

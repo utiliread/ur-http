@@ -6,7 +6,7 @@ import { Settings } from './settings';
 export class HttpBuilder {
     private _ensureSuccessStatusCode = true;
     private _onSend: ((request: Message) => void | Promise<any>)[] = [];
-    private _onSent: ((request: Message, response: HttpResponse) => void | Promise<any>)[] = [];
+    private _onSent: ((response: HttpResponse, request: Message) => void | Promise<any>)[] = [];
 
     constructor(public message: Message, public options: Options) {
         if (options.onSent) {
@@ -19,7 +19,7 @@ export class HttpBuilder {
         return this;
     }
 
-    onSent(callback: (request: Message, response: HttpResponse) => void | Promise<any>) {
+    onSent(callback: (response: HttpResponse, request: Message) => void | Promise<any>) {
         this._onSent.push(callback);
         return this;
     }
@@ -87,7 +87,7 @@ export class HttpBuilder {
         }
 
         for (const callback of this._onSent) {
-            await Promise.resolve(callback(this.message, httpResponse));
+            await Promise.resolve(callback(httpResponse, this.message));
         }
 
         return httpResponse;
@@ -187,7 +187,7 @@ export class HttpBuilder {
 }
 
 export class HttpBuilderOfT<T> extends HttpBuilder {
-    private _onReceived: ((request: Message, response: HttpResponseOfT<T>, value: T) => void | Promise<any>)[] = [];
+    private _onReceived: ((response: HttpResponseOfT<T>, request: Message, value: T) => void | Promise<any>)[] = [];
 
     constructor(private inner: HttpBuilder, private handler: (response: Response) => Promise<T>) {
         super(inner.message, inner.options);
@@ -202,7 +202,7 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
         return this;
     }
 
-    onSent(callback: (request: Message, response: HttpResponse) => void | Promise<any>) {
+    onSent(callback: (response: HttpResponse, request: Message) => void | Promise<any>) {
         this.inner.onSent(callback);
         return this;
     }
@@ -251,7 +251,7 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
         });
     }
 
-    onReceived(callback: (request: Message, response: HttpResponseOfT<T>, value: T) => void | Promise<any>) {
+    onReceived(callback: (response: HttpResponseOfT<T>, request: Message, value: T) => void | Promise<any>) {
         this._onReceived.push(callback);
         return this;
     }
@@ -271,7 +271,7 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
         const value = await response.receive();
 
         for (const callback of this._onReceived) {
-            await Promise.resolve(callback(request, response, value));
+            await Promise.resolve(callback(response, request, value));
         }
 
         return value;

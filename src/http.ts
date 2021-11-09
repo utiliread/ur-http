@@ -91,6 +91,6 @@ export interface Options {
     fetch?: Fetch,
     timeout?: number,
     baseUrl?: string,
-    onSent?: (request: Message, response: HttpResponse) => void | Promise<any>;
-    onReceived?: <T>(request: Message, response: HttpResponseOfT<T>, value: T) => void | Promise<any>;
+    onSent?: (response: HttpResponse, request: Message) => void | Promise<any>;
+    onReceived?: <T>(response: HttpResponseOfT<T>, request: Message, value: T) => void | Promise<any>;
 }
