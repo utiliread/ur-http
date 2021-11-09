@@ -37,16 +37,19 @@ export class HttpBuilder {
             this.message.headers.set('Content-Type', this.message.contentType);
         }
 
+        // Resolve the final url and assign it to the message
+        // This makes the final url apper in onSend, onSent, and on Received handlers
+        this.message.url = this.getUrl();
+
         for (const callback of this._onSend) {
             await Promise.resolve(callback(this.message));
         }
 
-        const message = this.message;
         const init: RequestInit = {
-            method: message.method,
-            body: message.content,
-            headers: message.headers,
-            mode: message.mode
+            method: this.message.method,
+            body: this.message.content,
+            headers: this.message.headers,
+            mode: this.message.mode
         };
 
         if (abortSignal || this.options.timeout) {
@@ -61,8 +64,7 @@ export class HttpBuilder {
             init.signal = outerController.signal;
         }
 
-        const url = this.getUrl();
-        const fetchResponsePromise = this.options.fetch(url, init);
+        const fetchResponsePromise = this.options.fetch(this.message.url, init);
         let fetchResponse: Response;
 
         if (this.options.timeout) {
@@ -85,7 +87,7 @@ export class HttpBuilder {
         }
 
         for (const callback of this._onSent) {
-            await Promise.resolve(callback(message, httpResponse));
+            await Promise.resolve(callback(this.message, httpResponse));
         }
 
         return httpResponse;
@@ -280,7 +282,6 @@ export type HttpMethod = "HEAD" | "POST" | "GET" | "PUT" | "PATCH" | "DELETE";
 
 export interface Message {
     method: HttpMethod;
-    baseUrl?: string;
     url: string;
     headers: Headers;
     content?: any;
