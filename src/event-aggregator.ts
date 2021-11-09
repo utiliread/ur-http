@@ -1,9 +1,19 @@
+import { HttpResponse } from "./http-response";
+
 export interface EventAggregator {
-  publish(event: any, data?: any): void;
+  publish<T>(event: HttpEvent<T>): void;
   subscribe<T>(
-    event: T,
-    callback: (event: T, data?: any) => unknown
+    eventType: new() => HttpEvent<T>,
+    callback: (event: HttpEvent<T>) => unknown
   ): Subscription;
+}
+
+export class HttpEvent<T> {
+    kind!: "sent" | "received";
+    reducer!: T;
+    params: any;
+    response!: HttpResponse;
+    value?: any;
 }
 
 export interface Subscription {
