@@ -1,5 +1,5 @@
-import { DefaultEventAggregator, EventAggregator } from './events';
-import { HttpBuilder } from './http-builder';
+import { EventHub, DefaultEventHub } from './events';
+import { HttpBuilder, HttpMethod, Message } from './http-builder';
 import { HttpResponse, HttpResponseOfT } from './http-response';
 import { QueryString } from './query-string';
 
@@ -11,13 +11,13 @@ export class Http {
     }
     private static instance?: Http;
     options: Readonly<Options>;
-    eventAggregator: EventAggregator = new DefaultEventAggregator();
+    eventHub: EventHub = new DefaultEventHub();
 
     constructor(options?: Partial<Options>) {
         this.options = Object.assign({}, Http.defaults, options); // Later sources' properties overwrite earlier ones.
     }
 
-    static request(method: string, url: string, params?: any) {
+    static request(method: HttpMethod, url: string, params?: any) {
         return this.getInstance().request(method, url, params);
     }
 
@@ -54,14 +54,14 @@ export class Http {
         return this.instance;
     }
 
-    request(method: string, url: string, params?: any) {
+    request(method: HttpMethod, url: string, params?: any) {
         const message = {
             method,
             url: url + QueryString.serialize(params),
             headers: new Headers()
         };
         const options = Object.assign({}, this.options);
-        return new HttpBuilder(message, options, this.eventAggregator);
+        return new HttpBuilder(message, options, this.eventHub);
     }
 
     head(url: string, params?: any) {
@@ -93,6 +93,6 @@ export interface Options {
     fetch?: Fetch,
     timeout?: number,
     baseUrl?: string,
-    onSent?: (response: HttpResponse) => void | Promise<any>;
-    onReceived?: <T>(response: HttpResponseOfT<T>, value: T) => void | Promise<any>;
+    onSent?: (request: Message, response: HttpResponse) => void | Promise<any>;
+    onReceived?: <T>(request: Message, response: HttpResponseOfT<T>, value: T) => void | Promise<any>;
 }

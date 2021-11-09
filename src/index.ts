@@ -5,7 +5,7 @@ export {
   InfinitePage,
   InfinitePaginationResult,
 } from "./pagination";
-export { EventAggregator, HttpEvent } from "./events";
+export { EventHub, HttpEvent } from "./events";
 export { ProblemDetails } from "./problem-details";
 export { QueryString } from "./query-string";
 export { HttpResponse, HttpResponseOfT } from "./http-response";

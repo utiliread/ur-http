@@ -2,17 +2,16 @@ import { Fetch, Options } from './http';
 import { HttpResponse, HttpResponseOfT } from './http-response';
 import { TimeoutError } from './timeout-error';
 import { Settings } from './settings';
-import { HttpEvent } from './events';
-import { EventAggregator } from '.';
+import { HttpEvent, EventHub } from './events';
 
 type Reducer<P extends any[] = any[]> = (...params: P) => unknown;
 
 export class HttpBuilder {
     private _ensureSuccessStatusCode = true;
     private _onSend: ((request: Message) => void | Promise<any>)[] = [];
-    private _onSent: ((response: HttpResponse) => void | Promise<any>)[] = [];
+    private _onSent: ((request: Message, response: HttpResponse) => void | Promise<any>)[] = [];
 
-    constructor(public message: Message, public options: Options, public eventAggregator: EventAggregator) {
+    constructor(public message: Message, public options: Options, public eventHub: EventHub) {
         if (options.onSent) {
             this._onSent.push(options.onSent);
         }
@@ -23,20 +22,21 @@ export class HttpBuilder {
         return this;
     }
 
-    onSent(callback: (response: HttpResponse) => void | Promise<any>) {
+    onSent(callback: (request: Message, response: HttpResponse) => void | Promise<any>) {
         this._onSent.push(callback);
         return this;
     }
 
     onSentPublishEvent<P extends any[]>(reducer: Reducer<P>, ...params: P) {
-        this._onSent.push(response => {
+        this._onSent.push((request, response) => {
             const event = new HttpEvent();
+            event.method = request.method;
             event.hook = "sent";
             event.url = response.url;
             event.reducer = reducer;
             event.params = params;
             event.response = response;
-            return this.eventAggregator.publish(event);
+            return this.eventHub.publish(event);
         })
         return this;
     }
@@ -58,11 +58,12 @@ export class HttpBuilder {
             await Promise.resolve(callback(this.message));
         }
 
+        const message = this.message;
         const init: RequestInit = {
-            method: this.message.method,
-            body: this.message.content,
-            headers: this.message.headers,
-            mode: this.message.mode
+            method: message.method,
+            body: message.content,
+            headers: message.headers,
+            mode: message.mode
         };
 
         if (abortSignal || this.options.timeout) {
@@ -101,7 +102,7 @@ export class HttpBuilder {
         }
 
         for (const callback of this._onSent) {
-            await Promise.resolve(callback(httpResponse));
+            await Promise.resolve(callback(message, httpResponse));
         }
 
         return httpResponse;
@@ -201,10 +202,10 @@ export class HttpBuilder {
 }
 
 export class HttpBuilderOfT<T> extends HttpBuilder {
-    private _onReceived: ((response: HttpResponseOfT<T>, value: T) => void | Promise<any>)[] = [];
+    private _onReceived: ((request: Message, response: HttpResponseOfT<T>, value: T) => void | Promise<any>)[] = [];
 
     constructor(private inner: HttpBuilder, private handler: (response: Response) => Promise<T>) {
-        super(inner.message, inner.options, inner.eventAggregator);
+        super(inner.message, inner.options, inner.eventHub);
 
         if (inner.options.onReceived) {
             this._onReceived.push(inner.options.onReceived);
@@ -216,7 +217,7 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
         return this;
     }
 
-    onSent(callback: (response: HttpResponse) => void | Promise<any>) {
+    onSent(callback: (request: Message, response: HttpResponse) => void | Promise<any>) {
         this.inner.onSent(callback);
         return this;
     }
@@ -270,13 +271,13 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
         });
     }
 
-    onReceived(callback: (response: HttpResponseOfT<T>, value: T) => void | Promise<any>) {
+    onReceived(callback: (request: Message, response: HttpResponseOfT<T>, value: T) => void | Promise<any>) {
         this._onReceived.push(callback);
         return this;
     }
 
     onReceivedPublishEvent<P extends any[]>(reducer: Reducer<P>, ...params: P) {
-        this._onReceived.push((response, value) => {
+        this._onReceived.push((_, response, value) => {
             const event = new HttpEvent();
             event.hook = "received";
             event.url = response.url;
@@ -284,7 +285,7 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
             event.params = params;
             event.response = response;
             event.value = value;
-            return this.eventAggregator.publish(event);
+            return this.eventHub.publish(event);
         })
         return this;
     }
@@ -300,18 +301,21 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
     }
 
     private async handleReceive(response: HttpResponseOfT<T>) {
+        const request = this.message;
         const value = await response.receive();
 
         for (const callback of this._onReceived) {
-            await Promise.resolve(callback(response, value));
+            await Promise.resolve(callback(request, response, value));
         }
 
         return value;
     }
 }
 
+export type HttpMethod = "HEAD" | "POST" | "GET" | "PUT" | "PATCH" | "DELETE";
+
 export interface Message {
-    method: string;
+    method: HttpMethod;
     baseUrl?: string;
     url: string;
     headers: Headers;

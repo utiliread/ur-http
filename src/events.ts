@@ -1,9 +1,11 @@
+import { HttpMethod } from "./http-builder";
 import { HttpResponse } from "./http-response";
 
 type CallbackFn = (event: HttpEvent) => void | Promise<void>;
 
 export class HttpEvent {
   hook!: "sent" | "received";
+  method!: HttpMethod;
   url!: string;
   reducer!: Function;
   params!: any[];
@@ -11,12 +13,12 @@ export class HttpEvent {
   value?: any;
 }
 
-export interface EventAggregator {
+export interface EventHub {
   publish(event: HttpEvent): Promise<void>;
   subscribe(callback: CallbackFn): Subscription;
 }
 
-export class DefaultEventAggregator implements EventAggregator {
+export class DefaultEventHub implements EventHub {
   private subscribers: CallbackFn[] = [];
 
   async publish(event: HttpEvent) {
