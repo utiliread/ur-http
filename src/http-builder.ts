@@ -12,6 +12,9 @@ export class HttpBuilder {
     private _onSent: ((response: HttpResponse) => void | Promise<any>)[] = [];
 
     constructor(public message: Message, public options: Options) {
+        if (options.onSent) {
+            this._onSent.push(options.onSent);
+        }
     }
 
     onSend(callback: (request: Message) => void | Promise<any>) {
@@ -201,10 +204,14 @@ export class HttpBuilder {
 }
 
 export class HttpBuilderOfT<T> extends HttpBuilder {
-    private _onReceived: ((received: T, response: HttpResponseOfT<T>) => void | Promise<any>)[] = [];
+    private _onReceived: ((response: HttpResponseOfT<T>, value: T) => void | Promise<any>)[] = [];
 
     constructor(private inner: HttpBuilder, private handler: (response: Response) => Promise<T>) {
         super(inner.message, inner.options);
+
+        if (inner.options.onReceived) {
+            this._onReceived.push(inner.options.onReceived);
+        }
     }
 
     onSend(callback: (request: Message) => void | Promise<any>) {
@@ -266,13 +273,13 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
         });
     }
 
-    onReceived(callback: (received: T, response: HttpResponseOfT<T>) => void | Promise<any>) {
+    onReceived(callback: (response: HttpResponseOfT<T>, value: T) => void | Promise<any>) {
         this._onReceived.push(callback);
         return this;
     }
 
     onReceivedPublishEvent<P extends any[]>(reducer: Reducer<P>, ...params: P) {
-        this._onReceived.push((value, response) => {
+        this._onReceived.push((response, value) => {
             const ea = this.options.eventAggregator;
             if (!ea) {
                 throw new Error("No event aggregator configured");
@@ -300,13 +307,13 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
     }
 
     private async handleReceive(response: HttpResponseOfT<T>) {
-        const received = await response.receive();
+        const value = await response.receive();
 
         for (const callback of this._onReceived) {
-            await Promise.resolve(callback(received, response));
+            await Promise.resolve(callback(response, value));
         }
 
-        return received;
+        return value;
     }
 }
 

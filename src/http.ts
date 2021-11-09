@@ -1,5 +1,6 @@
 import { EventAggregator } from './event-aggregator';
 import { HttpBuilder } from './http-builder';
+import { HttpResponse, HttpResponseOfT } from './http-response';
 import { QueryString } from './query-string';
 
 export type Fetch = (input: RequestInfo, init?: RequestInit) => Promise<Response>;
@@ -92,4 +93,6 @@ export interface Options {
     timeout?: number,
     baseUrl?: string,
     eventAggregator?: EventAggregator,
+    onSent?: (response: HttpResponse) => void | Promise<any>;
+    onReceived?: <T>(response: HttpResponseOfT<T>, value: T) => void | Promise<any>;
 }
