@@ -2,16 +2,13 @@ import { Fetch, Options } from './http';
 import { HttpResponse, HttpResponseOfT } from './http-response';
 import { TimeoutError } from './timeout-error';
 import { Settings } from './settings';
-import { HttpEvent, EventHub } from './events';
-
-type Reducer<P extends any[] = any[]> = (...params: P) => unknown;
 
 export class HttpBuilder {
     private _ensureSuccessStatusCode = true;
     private _onSend: ((request: Message) => void | Promise<any>)[] = [];
     private _onSent: ((request: Message, response: HttpResponse) => void | Promise<any>)[] = [];
 
-    constructor(public message: Message, public options: Options, public eventHub: EventHub) {
+    constructor(public message: Message, public options: Options) {
         if (options.onSent) {
             this._onSent.push(options.onSent);
         }
@@ -24,20 +21,6 @@ export class HttpBuilder {
 
     onSent(callback: (request: Message, response: HttpResponse) => void | Promise<any>) {
         this._onSent.push(callback);
-        return this;
-    }
-
-    onSentPublishEvent<P extends any[]>(reducer: Reducer<P>, ...params: P) {
-        this._onSent.push((request, response) => {
-            const event = new HttpEvent();
-            event.method = request.method;
-            event.hook = "sent";
-            event.url = response.url;
-            event.reducer = reducer;
-            event.params = params;
-            event.response = response;
-            return this.eventHub.publish(event);
-        })
         return this;
     }
 
@@ -205,7 +188,7 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
     private _onReceived: ((request: Message, response: HttpResponseOfT<T>, value: T) => void | Promise<any>)[] = [];
 
     constructor(private inner: HttpBuilder, private handler: (response: Response) => Promise<T>) {
-        super(inner.message, inner.options, inner.eventHub);
+        super(inner.message, inner.options);
 
         if (inner.options.onReceived) {
             this._onReceived.push(inner.options.onReceived);
@@ -219,11 +202,6 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
 
     onSent(callback: (request: Message, response: HttpResponse) => void | Promise<any>) {
         this.inner.onSent(callback);
-        return this;
-    }
-
-    onSentPublishEvent<P extends any[]>(reducer: Reducer<P>, ...params: P) {
-        this.inner.onSentPublishEvent(reducer, ...params);
         return this;
     }
 
@@ -276,20 +254,6 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
         return this;
     }
 
-    onReceivedPublishEvent<P extends any[]>(reducer: Reducer<P>, ...params: P) {
-        this._onReceived.push((_, response, value) => {
-            const event = new HttpEvent();
-            event.hook = "received";
-            event.url = response.url;
-            event.reducer = reducer;
-            event.params = params;
-            event.response = response;
-            event.value = value;
-            return this.eventHub.publish(event);
-        })
-        return this;
-    }
-
     send(abortSignal?: AbortSignal) {
         const responsePromise = this.inner.send(abortSignal).then(x => new HttpResponseOfT<T>(x.rawResponse, this.handler));
 
@@ -329,6 +293,7 @@ export interface SendPromise<T> extends Promise<HttpResponseOfT<T>> {
 }
 
 function asSendPromise<T>(responsePromise: Promise<HttpResponse>, thenReceive: () => Promise<T>): SendPromise<T> {
-    (responsePromise as SendPromise<T>).thenReceive = thenReceive;
-    return responsePromise as SendPromise<T>;
+    const sendPromise = responsePromise as SendPromise<T>;
+    sendPromise.thenReceive = thenReceive;
+    return sendPromise;
 }

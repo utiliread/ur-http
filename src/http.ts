@@ -1,4 +1,3 @@
-import { EventHub, DefaultEventHub } from './events';
 import { HttpBuilder, HttpMethod, Message } from './http-builder';
 import { HttpResponse, HttpResponseOfT } from './http-response';
 import { QueryString } from './query-string';
@@ -11,7 +10,6 @@ export class Http {
     }
     private static instance?: Http;
     options: Readonly<Options>;
-    eventHub: EventHub = new DefaultEventHub();
 
     constructor(options?: Partial<Options>) {
         this.options = Object.assign({}, Http.defaults, options); // Later sources' properties overwrite earlier ones.
@@ -61,7 +59,7 @@ export class Http {
             headers: new Headers()
         };
         const options = Object.assign({}, this.options);
-        return new HttpBuilder(message, options, this.eventHub);
+        return new HttpBuilder(message, options);
     }
 
     head(url: string, params?: any) {
