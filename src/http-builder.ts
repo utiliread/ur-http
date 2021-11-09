@@ -3,6 +3,8 @@ import { HttpResponse, HttpResponseOfT } from './http-response';
 import { TimeoutError } from './timeout-error';
 import { Settings } from './settings';
 
+type Reducer<P extends any[] = any[]> = (...params: P) => unknown;
+
 export class HttpBuilder {
     private _ensureSuccessStatusCode = true;
     private _onSend: ((request: Message) => void | Promise<any>)[] = [];
@@ -18,6 +20,17 @@ export class HttpBuilder {
 
     onSent(callback: (response: HttpResponse) => void | Promise<any>) {
         this._onSent.push(callback);
+        return this;
+    }
+
+    onSentPublishNotification<P extends any[]>(reducer: Reducer<P>, ...params: P) {
+        this._onSent.push(response => {
+            const ea = this.options.eventAggregator;
+            if (!ea) {
+                throw new Error("No event aggregator configured");
+            }
+            ea.publish(reducer, { response, params });
+        })
         return this;
     }
 
@@ -197,6 +210,11 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
         return this;
     }
 
+    onSentPublishNotification<P extends any[]>(reducer: Reducer<P>, ...params: P) {
+        this.inner.onSentPublishNotification(reducer, ...params);
+        return this;
+    }
+
     ensureSuccessStatusCode(ensureSuccessStatusCode?: boolean) {
         this.inner.ensureSuccessStatusCode(ensureSuccessStatusCode);
         return this;
@@ -243,6 +261,17 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
 
     onReceived(callback: (received: T, response: HttpResponseOfT<T>) => void | Promise<any>) {
         this._onReceived.push(callback);
+        return this;
+    }
+
+    onReceivedPublishNotification<P extends any[]>(reducer: Reducer<P>, ...params: P) {
+        this._onReceived.push((value, response) => {
+            const ea = this.options.eventAggregator;
+            if (!ea) {
+                throw new Error("No event aggregator configured");
+            }
+            ea.publish(reducer, { value, response, params });
+        })
         return this;
     }
 

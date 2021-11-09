@@ -1,3 +1,4 @@
+import { EventAggregator } from './event-aggregator';
 import { HttpBuilder } from './http-builder';
 import { QueryString } from './query-string';
 
@@ -90,4 +91,5 @@ export interface Options {
     fetch?: Fetch,
     timeout?: number,
     baseUrl?: string,
+    eventAggregator?: EventAggregator,
 }
