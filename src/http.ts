@@ -10,7 +10,7 @@ export class Http {
         fetch: window.fetch ? window.fetch.bind(window) : undefined,
     }
     private static instance?: Http;
-    options: Readonly<HttpOptions>;
+    options: HttpOptions;
     /** @internal */
     _onSend = new EventAggregator<[Message]>();
     /** @internal */
