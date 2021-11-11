@@ -235,6 +235,7 @@ export interface Message {
     content?: any;
     contentType?: string;
     mode?: RequestMode;
+    properties: {[key: string]: any};
 }
 
 export interface RequestOptions {

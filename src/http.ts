@@ -63,7 +63,8 @@ export class Http {
         const message = {
             method,
             url: url + QueryString.serialize(params),
-            headers: new Headers()
+            headers: new Headers(),
+            properties: {},
         };
         const fetch = this.options.fetch;
         if (!fetch) {
