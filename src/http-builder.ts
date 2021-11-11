@@ -1,26 +1,24 @@
-import { Fetch, Options } from './http';
+import { Fetch } from './http';
 import { HttpResponse, HttpResponseOfT } from './http-response';
 import { TimeoutError } from './timeout-error';
-import { Settings } from './settings';
+import { EventAggregator } from './event-aggregator';
+import { Http } from '.';
 
 export class HttpBuilder {
     private _ensureSuccessStatusCode = true;
-    private _onSend: ((request: Message) => void | Promise<any>)[] = [];
-    private _onSent: ((response: HttpResponse, request: Message) => void | Promise<any>)[] = [];
+    private _onSend = new EventAggregator<[Message]>();
+    private _onSent = new EventAggregator<[HttpResponse, Message]>();
 
-    constructor(public message: Message, public options: Options) {
-        if (options.onSent) {
-            this._onSent.push(options.onSent);
-        }
+    constructor(public message: Message, public options: RequestOptions, /** @internal */ public http: Http) {
     }
 
-    onSend(callback: (request: Message) => void | Promise<any>) {
-        this._onSend.push(callback);
+    onSend(callback: (request: Message) => void | Promise<void>) {
+        this._onSend.subscribe(callback);
         return this;
     }
 
-    onSent(callback: (response: HttpResponse, request: Message) => void | Promise<any>) {
-        this._onSent.push(callback);
+    onSent(callback: (response: HttpResponse, request: Message) => void | Promise<void>) {
+        this._onSent.subscribe(callback);
         return this;
     }
 
@@ -29,10 +27,6 @@ export class HttpBuilder {
     }
 
     async send(abortSignal?: AbortSignal) {
-        if (!this.options.fetch) {
-            throw Error('fetch() is not properly configured');
-        }
-
         if (this.message.contentType) {
             this.message.headers.set('Content-Type', this.message.contentType);
         }
@@ -41,9 +35,8 @@ export class HttpBuilder {
         // This makes the final url apper in onSend, onSent, and on Received handlers
         this.message.url = this.getUrl();
 
-        for (const callback of this._onSend) {
-            await Promise.resolve(callback(this.message));
-        }
+        await this._onSend.publish(this.message);
+        await this.http._onSend.publish(this.message);
 
         const init: RequestInit = {
             method: this.message.method,
@@ -54,7 +47,6 @@ export class HttpBuilder {
 
         if (abortSignal || this.options.timeout) {
             var outerController = new AbortController();
-
             if (abortSignal) {
                 abortSignal.addEventListener("abort", () => {
                     outerController.abort();
@@ -86,9 +78,8 @@ export class HttpBuilder {
             httpResponse.ensureSuccessfulStatusCode();
         }
 
-        for (const callback of this._onSent) {
-            await Promise.resolve(callback(httpResponse, this.message));
-        }
+        await this._onSent.publish(httpResponse, this.message);
+        await this.http._onSent.publish(httpResponse, this.message);
 
         return httpResponse;
     }
@@ -117,31 +108,8 @@ export class HttpBuilder {
         return this;
     }
 
-    use(settings: Settings) {
-        if (settings.fetch) {
-            this.useFetch(settings.fetch);
-        }
-        if (settings.corsMode) {
-            this.useCors(settings.corsMode);
-        }
-        if (settings.baseUrl) {
-            this.useBaseUrl(settings.baseUrl);
-        }
-        return this;
-    }
-
-    useFetch(fetch: Fetch) {
-        this.options.fetch = fetch;
-        return this;
-    }
-
     useCors(mode: RequestMode) {
         this.message.mode = mode;
-        return this;
-    }
-
-    useBaseUrl(baseUrl: string) {
-        this.options.baseUrl = baseUrl;
         return this;
     }
 
@@ -187,22 +155,18 @@ export class HttpBuilder {
 }
 
 export class HttpBuilderOfT<T> extends HttpBuilder {
-    private _onReceived: ((response: HttpResponseOfT<T>, request: Message, value: T) => void | Promise<any>)[] = [];
+    private _onReceived = new EventAggregator<[HttpResponseOfT<T>, Message, T]>();
 
     constructor(private inner: HttpBuilder, private handler: (response: Response) => Promise<T>) {
-        super(inner.message, inner.options);
-
-        if (inner.options.onReceived) {
-            this._onReceived.push(inner.options.onReceived);
-        }
+        super(inner.message, inner.options, inner.http);
     }
 
-    onSend(callback: (request: Message) => void | Promise<any>) {
+    onSend(callback: (request: Message) => void | Promise<void>) {
         this.inner.onSend(callback);
         return this;
     }
 
-    onSent(callback: (response: HttpResponse, request: Message) => void | Promise<any>) {
+    onSent(callback: (response: HttpResponse, request: Message) => void | Promise<void>) {
         this.inner.onSent(callback);
         return this;
     }
@@ -212,23 +176,8 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
         return this;
     }
 
-    use(settings: Settings) {
-        this.inner.use(settings);
-        return this;
-    }
-
-    useFetch(fetch: Fetch) {
-        this.inner.useFetch(fetch);
-        return this;
-    }
-
     useCors(mode: RequestMode) {
         this.inner.useCors(mode);
-        return this;
-    }
-
-    useBaseUrl(baseUrl: string) {
-        this.inner.useBaseUrl(baseUrl);
         return this;
     }
 
@@ -238,8 +187,8 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
     }
 
     allowEmptyResponse() {
-        if (this._onReceived.length) {
-            throw new Error("onReceived() should only be called after allowEmptyResponse()");
+        if (this._onReceived.any) {
+            throw new Error("onReceived() must be called after allowEmptyResponse() because the callback type changes");
         }
 
         return new HttpBuilderOfT<T | null>(this.inner, response => {
@@ -251,8 +200,8 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
         });
     }
 
-    onReceived(callback: (response: HttpResponseOfT<T>, request: Message, value: T) => void | Promise<any>) {
-        this._onReceived.push(callback);
+    onReceived(callback: (response: HttpResponseOfT<T>, request: Message, value: T) => void | Promise<void>) {
+        this._onReceived.subscribe(callback);
         return this;
     }
 
@@ -270,9 +219,8 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
         const request = this.message;
         const value = await response.receive();
 
-        for (const callback of this._onReceived) {
-            await Promise.resolve(callback(response, request, value));
-        }
+        await this._onReceived.publish(response, request, value);
+        await this.http._onReceived.publish(response, request, value);
 
         return value;
     }
@@ -287,6 +235,12 @@ export interface Message {
     content?: any;
     contentType?: string;
     mode?: RequestMode;
+}
+
+export interface RequestOptions {
+    fetch: Fetch,
+    timeout?: number,
+    baseUrl?: string,
 }
 
 export interface SendPromise<T> extends Promise<HttpResponseOfT<T>> {
