@@ -26,7 +26,7 @@ HttpBuilder.prototype.expectMessagePack = function <T>(
   this.message.headers.set("Accept", "application/x-msgpack");
   return this.useHandler(async (response) => {
     const itemFactory = getMapper(deserialize, typeOrMapper);
-    const decoded = decodeAsync(response.body!);
+    const decoded = await decodeAsync(response.body!);
     return itemFactory(decoded);
   });
 };
