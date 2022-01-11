@@ -22,9 +22,9 @@ export function events<B extends HttpBuilderOfT<T>, P extends any[], T>(
   configure: (...params: P) => Partial<EventsOfT<T>>
 ): (...params: P) => B;
 export function events<B extends HttpBuilderOfT<T>, P extends any[], T>(
-    action: (...params: P) => B,
-    configure: (...params: P) => Partial<EventsOfT<T>>
-  ): (...params: P) => B {
+  action: (...params: P) => B,
+  configure: (...params: P) => Partial<EventsOfT<T>>
+): (...params: P) => B {
   return function (...params: P) {
     const builder = action(...params);
     const events = configure(...params);
