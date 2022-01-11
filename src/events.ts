@@ -13,10 +13,10 @@ interface EventsOfT<T> extends Events {
   ) => void | Promise<void>;
 }
 
-export function events<B extends HttpBuilder, P extends any[]>(
-  action: (...params: P) => B,
+export function events<P extends any[]>(
+  action: (...params: P) => HttpBuilder,
   configure: (...params: P) => Partial<Events>
-): (...params: P) => B;
+): (...params: P) => HttpBuilder;
 export function events<B extends HttpBuilderOfT<T>, P extends any[], T>(
   action: (...params: P) => B,
   configure: (...params: P) => Partial<EventsOfT<T>>
