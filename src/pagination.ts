@@ -1,5 +1,5 @@
 export interface Page {
-    number: number;
+    number?: number;
     size: number;
 }
 
