@@ -1,4 +1,4 @@
-export const statusCodes = {
+export const statusCodes = Object.freeze({
   status100Continue: 100,
   status101SwitchingProtocols: 101,
   status102Processing: 102,
@@ -64,4 +64,4 @@ export const statusCodes = {
   status508LoopDetected: 508,
   status510NotExtended: 510,
   status511NetworkAuthenticationRequired: 511,
-};
+});
