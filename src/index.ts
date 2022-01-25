@@ -15,3 +15,4 @@ export { events } from "./events";
 export * from "./helpers";
 export { Fetch } from "./http";
 export { Subscription } from "./event-aggregator";
+export { statusCodes } from "./status-codes";
