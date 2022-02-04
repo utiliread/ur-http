@@ -22,7 +22,7 @@ export class HttpBuilder {
         return this;
     }
 
-    useHandler<T>(handler: (response: Response) => Promise<T>) {
+    useHandler<T>(handler: (response: HttpResponse) => Promise<T>) {
         return new HttpBuilderOfT<T>(this, handler);
     }
 
@@ -143,13 +143,13 @@ export class HttpBuilder {
 
     expectString() {
         return this.useHandler(response => {
-            return response.text();
+            return response.rawResponse.text();
         });
     }
 
     expectBinary() {
         return this.useHandler(response => {
-            return response.arrayBuffer();
+            return response.rawResponse.arrayBuffer();
         });
     }
 }
@@ -157,7 +157,7 @@ export class HttpBuilder {
 export class HttpBuilderOfT<T> extends HttpBuilder {
     private _onReceived = new EventAggregator<[HttpResponseOfT<T>, Message, T]>();
 
-    constructor(private inner: HttpBuilder, private handler: (response: Response) => Promise<T>) {
+    constructor(private inner: HttpBuilder, private handler: (response: HttpResponse) => Promise<T>) {
         super(inner.message, inner.options, inner.http);
     }
 
@@ -192,7 +192,7 @@ export class HttpBuilderOfT<T> extends HttpBuilder {
         }
 
         return new HttpBuilderOfT<T | null>(this.inner, response => {
-            if (response.status === 204) {
+            if (response.statusCode === 204) {
                 return Promise.resolve(null);
             }
 

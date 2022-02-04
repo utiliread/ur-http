@@ -68,7 +68,7 @@ HttpBuilder.prototype.expectJson = function <T>(
 ) {
   this.message.headers.set("Accept", "application/json");
   return this.useHandler((response) => {
-    return response.json().then((x) => getMapper(deserialize, typeOrMapper)(x));
+    return response.rawResponse.json().then((x) => getMapper(deserialize, typeOrMapper)(x));
   });
 };
 
@@ -78,7 +78,7 @@ HttpBuilder.prototype.expectJsonArray = function <T>(
 ) {
   this.message.headers.set("Accept", "application/json");
   return this.useHandler((response) => {
-    return response.json().then((x: any[]) => {
+    return response.rawResponse.json().then((x: any[]) => {
       const itemFactory = getMapper(deserialize, typeOrMapper);
       return x.map(itemFactory);
     });
@@ -91,7 +91,7 @@ HttpBuilder.prototype.expectJsonNullableArray = function <T>(
 ): HttpBuilderOfT<(T | null)[]> {
   this.message.headers.set("Accept", "application/json");
   return this.useHandler((response) => {
-    return response.json().then((x: any[]) => {
+    return response.rawResponse.json().then((x: any[]) => {
       const itemFactory = getNullableMapper(deserialize, typeOrMapper);
       return x.map(itemFactory);
     });
@@ -104,7 +104,7 @@ HttpBuilder.prototype.expectJsonPaginationResult = function <T>(
 ) {
   this.message.headers.set("Accept", "application/json");
   return this.useHandler((response) => {
-    return response.json().then((x: PaginationResult<any>) => {
+    return response.rawResponse.json().then((x: PaginationResult<any>) => {
       const itemFactory = getMapper(deserialize, typeOrMapper);
       return {
         meta: {
@@ -124,7 +124,7 @@ HttpBuilder.prototype.expectJsonInfinitePaginationResult = function <T>(
 ) {
   this.message.headers.set("Accept", "application/json");
   return this.useHandler((response) => {
-    return response.json().then((x: InfinitePaginationResult<any>) => {
+    return response.rawResponse.json().then((x: InfinitePaginationResult<any>) => {
       const itemFactory = getMapper(deserialize, typeOrMapper);
       return {
         meta: {

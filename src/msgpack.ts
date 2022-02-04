@@ -2,6 +2,7 @@ import { deserialize } from "@utiliread/msgpack";
 import { HttpBuilder } from "./http-builder";
 import { decodeArrayStream, decodeAsync } from "@msgpack/msgpack";
 import { getMapper, Mapper, Type } from "./mapping";
+import { HttpResponse } from "./http-response";
 
 type TypeOrMapper<T> = Type<T> | Mapper<T>;
 
@@ -26,7 +27,7 @@ HttpBuilder.prototype.expectMessagePack = function <T>(
   this.message.headers.set("Accept", "application/x-msgpack");
   return this.useHandler(async (response) => {
     const itemFactory = getMapper(deserialize, typeOrMapper);
-    const decoded = await decodeAsync(response.body!);
+    const decoded = await decodeAsync(response.rawResponse.body!);
     return itemFactory(decoded);
   });
 };
@@ -39,7 +40,7 @@ HttpBuilder.prototype.expectMessagePackArray = function <T>(
   return this.useHandler(async (response) => {
     const items: T[] = [];
     const itemFactory = getMapper(deserialize, typeOrMapper);
-    for await (const item of decodeArrayStream(response.body!)) {
+    for await (const item of decodeArrayStream(response.rawResponse.body!)) {
       items.push(itemFactory(item));
     }
     return items;
@@ -52,9 +53,9 @@ HttpBuilder.prototype.streamMessagePackArray = function <T>(
 ) {
   this.message.headers.set("Accept", "application/x-msgpack");
 
-  async function* handler(response: Response) {
+  async function* handler(response: HttpResponse) {
     const itemFactory = getMapper(deserialize, typeOrMapper);
-    for await (const item of decodeArrayStream(response.body!)) {
+    for await (const item of decodeArrayStream(response.rawResponse.body!)) {
       yield itemFactory(item);
     }
   }
