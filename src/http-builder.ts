@@ -22,7 +22,7 @@ export class HttpBuilder {
         return this;
     }
 
-    protected useHandler<T>(handler: (response: Response) => Promise<T>) {
+    useHandler<T>(handler: (response: Response) => Promise<T>) {
         return new HttpBuilderOfT<T>(this, handler);
     }
 
