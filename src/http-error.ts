@@ -2,6 +2,8 @@ import { HttpResponse } from './http-response';
 import { ProblemDetails } from './problem-details';
 
 export class HttpError extends Error {
+    private detailsPromise?: Promise<ProblemDetails>;
+
     get hasDetails() {
         const contentType = this.response?.rawResponse?.headers.get("Content-Type");
         return contentType?.includes("application/problem+json");
@@ -20,7 +22,8 @@ export class HttpError extends Error {
         const rawResponse = this.response?.rawResponse;
 
         if (rawResponse && this.hasDetails) {
-            return rawResponse.json().then(details => <TDetails>details);
+            this.detailsPromise ??= rawResponse.json().then(details => <ProblemDetails>details);
+            return this.detailsPromise.then(details => <TDetails>details);
         }
 
         return Promise.reject(new Error("There are no problem details in the response"));
