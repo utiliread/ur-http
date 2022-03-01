@@ -2,6 +2,11 @@ import { HttpResponse } from './http-response';
 import { ProblemDetails } from './problem-details';
 
 export class HttpError extends Error {
+    get hasDetails() {
+        const contentType = this.response?.rawResponse?.headers.get("Content-Type");
+        return contentType?.includes("application/problem+json");
+    }
+
     constructor(public statusCode: number, private response: HttpResponse | undefined = undefined) {
         super(`The response was not successful: ${statusCode}`);
         this.name = 'HttpError';
@@ -14,11 +19,8 @@ export class HttpError extends Error {
     details<TDetails = ProblemDetails>() {
         const rawResponse = this.response?.rawResponse;
 
-        if (rawResponse) {
-            const contentType = rawResponse.headers.get("Content-Type");
-            if (contentType && contentType.includes("application/problem+json")) {
-                return rawResponse.json().then(details => <TDetails>details);
-            }
+        if (rawResponse && this.hasDetails) {
+            return rawResponse.json().then(details => <TDetails>details);
         }
 
         return Promise.reject(new Error("There are no problem details in the response"));
