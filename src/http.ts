@@ -7,7 +7,7 @@ export type Fetch = (input: RequestInfo, init?: RequestInit) => Promise<Response
 
 export class Http {
     static defaults: HttpOptions = {
-        fetch: window.fetch ? window.fetch.bind(window) : undefined,
+        fetch: self.fetch ? self.fetch.bind(self) : undefined,
     }
     private static instance?: Http;
     options: HttpOptions;
