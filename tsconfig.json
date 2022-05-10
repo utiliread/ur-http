@@ -1,12 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2018",
+    "moduleResolution": "Node",
     "strict": true,
     "stripInternal": true,
     "rootDirs": ["src"],
     "lib": ["ES2018", "DOM"]
   },
-  "exclude": [
-    "dist"
-  ]
+  "exclude": ["dist"]
 }
