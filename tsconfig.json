@@ -5,5 +5,8 @@
     "stripInternal": true,
     "rootDirs": ["src"],
     "lib": ["ES2018", "DOM"]
-  }
+  },
+  "exclude": [
+    "dist"
+  ]
 }
