@@ -1,0 +1,13 @@
+{
+    "name": "@utiliread/http/jsonpatch",
+    "source": "./src/index.ts",
+    "main": "../../dist/jsonpatch.js",
+    "module": "../../dist/jsonpatch.mjs",
+    "types": "../../dist/jsonpatch.d.ts",
+    "dependencies": {
+      "@utiliread/http": "../../",
+      "@utiliread/json": "^1.0.2",
+      "@utiliread/jsonpatch": "^1.0.0"
+    }
+  }
+  

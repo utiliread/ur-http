@@ -1,6 +1,7 @@
 type DeserializeFn<T> = (source: any, type: Type<T>) => T | null | undefined;
 export type Type<T> = { new(): T };
 export type Mapper<T> = ((source: any) => T);
+export type TypeOrMapper<T> = Type<T> | Mapper<T>;
 
 export function getNullableMapper<T>(deserialize: DeserializeFn<T>, typeOrMap: Type<T> | Mapper<T> | undefined): Mapper<T | null> {
     if (!typeOrMap) {

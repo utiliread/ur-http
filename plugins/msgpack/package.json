@@ -1,0 +1,12 @@
+{
+  "name": "@utiliread/http/msgpack",
+  "source": "./src/index.ts",
+  "main": "../../dist/msgpack.js",
+  "module": "../../dist/msgpack.mjs",
+  "types": "../../dist/msgpack.d.ts",
+  "dependencies": {
+    "@msgpack/msgpack": "^2.7.2",
+    "@utiliread/http": "../../",
+    "@utiliread/msgpack": "^1.0.1"
+  }
+}

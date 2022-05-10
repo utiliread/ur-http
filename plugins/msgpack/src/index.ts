@@ -1,16 +1,12 @@
 import { deserialize } from "@utiliread/msgpack";
-import { HttpBuilder } from "./http-builder";
+import { HttpBuilder, HttpBuilderOfT, HttpResponse, TypeOrMapper } from "@utiliread/http";
 import { decodeArrayStream, decodeAsync } from "@msgpack/msgpack";
-import { getMapper, Mapper, Type } from "./mapping";
-import { HttpResponse } from "./http-response";
+import { getMapper } from "../../../src/mapping";
 
-type TypeOrMapper<T> = Type<T> | Mapper<T>;
-
-declare module "./http-builder" {
+// https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+declare module "@utiliread/http" {
   interface HttpBuilder {
-    expectMessagePack<T>(
-      typeOrMapper?: TypeOrMapper<T>
-    ): HttpBuilderOfT<T>;
+    expectMessagePack<T>(typeOrMapper?: TypeOrMapper<T>): HttpBuilderOfT<T>;
     expectMessagePackArray<T>(
       typeOrMapper?: TypeOrMapper<T>
     ): HttpBuilderOfT<T[]>;

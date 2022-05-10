@@ -1,15 +1,15 @@
-import { HttpBuilder, HttpBuilderOfT } from "./http-builder";
-import { InfinitePaginationResult, PaginationResult } from "./pagination";
+import { HttpBuilder, HttpBuilderOfT, TypeOrMapper } from "@utiliread/http";
+import type {
+  InfinitePaginationResult,
+  PaginationResult,
+} from "../../../src/pagination";
 import { deserialize, serialize } from "@utiliread/json";
-import { getMapper, getNullableMapper, Mapper, Type } from "./mapping";
-import type { Operation } from "@utiliread/jsonpatch";
+import { getMapper, getNullableMapper } from "../../../src/mapping";
 
-type TypeOrMapper<T> = Type<T> | Mapper<T>;
-
-declare module "./http-builder" {
+// https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+declare module "@utiliread/http" {
   interface HttpBuilder {
     withJson(content: any): this;
-    withJsonPatch(operations: Operation[]): this;
 
     expectJson<T>(typeOrMapper?: TypeOrMapper<T>): HttpBuilderOfT<T>;
     expectJsonArray<T>(typeOrMapper: TypeOrMapper<T>): HttpBuilderOfT<T[]>;
@@ -25,22 +25,12 @@ declare module "./http-builder" {
   }
   interface HttpBuilderOfT<T> {
     withJson(content: any): this;
-    withJsonPatch(operations: Operation[]): this;
   }
 }
 
 HttpBuilder.prototype.withJson = function (this: HttpBuilder, content: any) {
   this.message.content = serialize(content);
   this.message.contentType = "application/json";
-  return this;
-};
-
-HttpBuilder.prototype.withJsonPatch = function (
-  this: HttpBuilder,
-  operations: Operation[]
-) {
-  this.message.content = serialize(operations);
-  this.message.contentType = "application/json-patch+json";
   return this;
 };
 
@@ -53,22 +43,15 @@ HttpBuilderOfT.prototype.withJson = function <T>(
   return this;
 };
 
-HttpBuilderOfT.prototype.withJsonPatch = function <T>(
-  this: HttpBuilderOfT<T>,
-  operations: Operation[]
-) {
-  this.message.content = serialize(operations);
-  this.message.contentType = "application/json-patch+json";
-  return this;
-};
-
 HttpBuilder.prototype.expectJson = function <T>(
   this: HttpBuilder,
   typeOrMapper?: TypeOrMapper<T>
 ) {
   this.message.headers.set("Accept", "application/json");
   return this.useHandler((response) => {
-    return response.rawResponse.json().then((x) => getMapper(deserialize, typeOrMapper)(x));
+    return response.rawResponse
+      .json()
+      .then((x) => getMapper(deserialize, typeOrMapper)(x));
   });
 };
 
@@ -124,15 +107,17 @@ HttpBuilder.prototype.expectJsonInfinitePaginationResult = function <T>(
 ) {
   this.message.headers.set("Accept", "application/json");
   return this.useHandler((response) => {
-    return response.rawResponse.json().then((x: InfinitePaginationResult<any>) => {
-      const itemFactory = getMapper(deserialize, typeOrMapper);
-      return {
-        meta: {
-          pageSize: x.meta.pageSize,
-          continuationToken: x.meta.continuationToken,
-        },
-        data: x.data.map(itemFactory),
-      };
-    });
+    return response.rawResponse
+      .json()
+      .then((x: InfinitePaginationResult<any>) => {
+        const itemFactory = getMapper(deserialize, typeOrMapper);
+        return {
+          meta: {
+            pageSize: x.meta.pageSize,
+            continuationToken: x.meta.continuationToken,
+          },
+          data: x.data.map(itemFactory),
+        };
+      });
   });
 };

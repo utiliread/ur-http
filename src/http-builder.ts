@@ -2,7 +2,7 @@ import { Fetch } from './http';
 import { HttpResponse, HttpResponseOfT } from './http-response';
 import { TimeoutError } from './timeout-error';
 import { EventAggregator } from './event-aggregator';
-import { Http } from '.';
+import { Http } from './http';
 
 export class HttpBuilder {
     private _ensureSuccessStatusCode = true;

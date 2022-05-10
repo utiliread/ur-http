@@ -1,0 +1,11 @@
+{
+  "name": "@utiliread/http/json",
+  "source": "./src/index.ts",
+  "main": "../../dist/json.js",
+  "module": "../../dist/json.mjs",
+  "types": "../../dist/json.d.ts",
+  "dependencies": {
+    "@utiliread/http": "../../",
+    "@utiliread/json": "^1.0.2"
+  }
+}
