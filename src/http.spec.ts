@@ -1,6 +1,5 @@
 import { expect } from "chai";
 import { Http } from "./http";
-import "./json";
 
 describe("static http", () => {
   it("can get", () => {
@@ -71,32 +70,6 @@ describe("instance http", () => {
     const builder = http.get("/hello");
     expect(builder.getUrl()).to.equal("base/hello");
   });
-
-  it("can post json, with then expect", async () => {
-    const user = await new Http()
-      .post("https://reqres.in/api/users")
-      .withJson({
-        name: "morpheus",
-        job: "leader",
-      })
-      .expectJson<{ name: string; job: string }>()
-      .transfer();
-
-    expect(user.name).to.equal("morpheus");
-  });
-
-  it("can post json, expect then with", async () => {
-    const user = await new Http()
-      .post("https://reqres.in/api/users")
-      .expectJson<{ name: string; job: string }>()
-      .withJson({
-        name: "morpheus",
-        job: "leader",
-      })
-      .transfer();
-
-    expect(user.name).to.equal("morpheus");
-  }).timeout(5000);
 });
 
 function fakeFetch(input: RequestInfo, init?: RequestInit): Promise<Response> {

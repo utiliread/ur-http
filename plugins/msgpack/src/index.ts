@@ -1,6 +1,7 @@
 import { deserialize } from "@utiliread/msgpack";
-import { HttpBuilder, HttpBuilderOfT, HttpResponse, TypeOrMapper } from "@utiliread/http";
+import { HttpBuilder, HttpBuilderOfT, HttpResponse } from "@utiliread/http";
 import { decodeArrayStream, decodeAsync } from "@msgpack/msgpack";
+import type { TypeOrMapper } from "../../../src/mapping";
 import { getMapper } from "../../../src/mapping";
 
 // https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation

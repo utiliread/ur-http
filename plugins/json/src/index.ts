@@ -1,9 +1,10 @@
-import { HttpBuilder, HttpBuilderOfT, TypeOrMapper } from "@utiliread/http";
+import { HttpBuilder, HttpBuilderOfT } from "@utiliread/http";
 import type {
   InfinitePaginationResult,
   PaginationResult,
 } from "../../../src/pagination";
 import { deserialize, serialize } from "@utiliread/json";
+import type { TypeOrMapper } from "../../../src/mapping";
 import { getMapper, getNullableMapper } from "../../../src/mapping";
 
 // https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation

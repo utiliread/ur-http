@@ -5,5 +5,5 @@
     "stripInternal": true,
     "lib": ["ES2018", "DOM"]
   },
-  "exclude": ["dist/*", "*.d.ts"]
+  "exclude": ["./dist/*", "./*.d.ts"]
 }
