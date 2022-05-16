@@ -6,8 +6,8 @@
   "types": "dist/esm/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
     },
     "./json": {
       "import": "./dist/esm/json/index.js",
