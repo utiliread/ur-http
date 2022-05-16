@@ -10,16 +10,16 @@
       "require": "./dist/index.js"
     },
     "./json": {
-      "import": "./dist/json.mjs",
-      "require": "./dist/json.js"
+      "import": "./dist/esm/json/index.js",
+      "require": "./dist/cjs/json/index.js"
     },
     "./jsonpatch": {
-      "import": "./dist/jsonpatch.mjs",
-      "require": "./dist/jsonpatch.js"
+      "import": "./dist/esm/jsonpatch/index.js",
+      "require": "./dist/cjs/jsonpatch/index.js"
     },
     "./msgpack": {
-      "import": "./dist/msgpack.mjs",
-      "require": "./dist/msgpack.js"
+      "import": "./dist/esm/msgpack/index.js",
+      "require": "./dist/cjs/msgpack/index.js"
     }
   },
   "sideEffects": [
