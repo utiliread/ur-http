@@ -1,1 +1,1 @@
-export * from "./plugins/msgpack/src/index";
+export * from "./dist/esm/msgpack";

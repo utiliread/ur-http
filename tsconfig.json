@@ -1,11 +1,21 @@
 {
   "compilerOptions": {
     "target": "ES2018",
+    "module": "ESNext",
     "moduleResolution": "Node",
+    "declaration": true,
+    "sourceMap": true,
     "strict": true,
     "stripInternal": true,
-    "rootDirs": ["src"],
-    "lib": ["ES2018", "DOM"]
+    "rootDir": "src",
+    "outDir": "dist/esm",
+    "lib": ["ES2018", "DOM"],
+    "types": ["mocha"]
   },
-  "exclude": ["dist"]
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "./*.d.ts"
+  ]
 }

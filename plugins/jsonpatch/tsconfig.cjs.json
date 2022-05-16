@@ -1,8 +1,8 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.cjs.json",
   "compilerOptions": {
     "rootDir": "src",
-    "outDir": "../../dist/esm/jsonpatch"
+    "outDir": "../../dist/cjs/jsonpatch"
   },
   "include": ["./src/*.ts"]
 }

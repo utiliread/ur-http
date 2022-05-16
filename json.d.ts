@@ -1,1 +1,1 @@
-export * from "./plugins/json/src/index";
+export * from "./dist/esm/json";

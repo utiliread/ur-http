@@ -1,1 +1,1 @@
-export * from "./plugins/jsonpatch/src/index";
+export * from "./dist/esm/jsonpatch";
