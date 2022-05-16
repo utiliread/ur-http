@@ -1,6 +1,6 @@
 {
   "name": "@utiliread/http",
-  "version": "1.17.6",
+  "version": "1.17.7",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
