@@ -23,7 +23,7 @@ module.exports = function (config) {
       coverageOptions: {
         instrumentation: false,
       },
-      tsconfig: "./tsconfig.test.json",
+      tsconfig: "./tsconfig.cjs.json",
     },
   });
 };
