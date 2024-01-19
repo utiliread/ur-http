@@ -1,5 +1,5 @@
-import { expect } from "chai";
 import { Http } from "./http";
+import { expect } from "chai";
 
 describe("static http", () => {
   it("can get", () => {
