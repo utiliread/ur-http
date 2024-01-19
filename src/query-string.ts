@@ -49,7 +49,9 @@ export class QueryString {
                 const value = source[propertyName];
 
                 if (value instanceof DateTime) {
-                    parts.push(key + "=" + encodeURIComponent(value.toISO()));
+                    if (value.isValid) {
+                        parts.push(key + "=" + encodeURIComponent(value.toISO()!));
+                    }
                 }
                 else if (value === null) {
                     parts.push(key);
