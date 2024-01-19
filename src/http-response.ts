@@ -47,7 +47,7 @@ export class HttpResponse {
 export class HttpResponseOfT<T> extends HttpResponse {
   constructor(
     rawResponse: Response,
-    private handler: (response: HttpResponse) => Promise<T>
+    private handler: (response: HttpResponse) => Promise<T>,
   ) {
     super(rawResponse);
   }

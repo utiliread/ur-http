@@ -6,7 +6,7 @@ import { QueryString } from "./query-string";
 
 export type Fetch = (
   input: RequestInfo,
-  init?: RequestInit
+  init?: RequestInit,
 ) => Promise<Response>;
 
 export class Http {
@@ -81,7 +81,7 @@ export class Http {
         timeout: this.options.timeout,
         baseUrl: this.options.baseUrl,
       },
-      this
+      this,
     );
     return builder;
   }
@@ -115,7 +115,10 @@ export class Http {
   }
 
   onSent(
-    callback: (response: HttpResponse, request: Message) => void | Promise<void>
+    callback: (
+      response: HttpResponse,
+      request: Message,
+    ) => void | Promise<void>,
   ): Subscription {
     return this._onSent.subscribe(callback);
   }
@@ -124,8 +127,8 @@ export class Http {
     callback: (
       response: HttpResponseOfT<any>,
       request: Message,
-      value: any
-    ) => void | Promise<void>
+      value: any,
+    ) => void | Promise<void>,
   ): Subscription {
     return this._onReceived.subscribe(callback);
   }

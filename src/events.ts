@@ -9,21 +9,21 @@ interface EventsOfT<T> extends Events {
   received: (
     response: HttpResponse,
     request: Message,
-    value: T
+    value: T,
   ) => void | Promise<void>;
 }
 
 export function events<P extends any[]>(
   action: (...params: P) => HttpBuilder,
-  configure: (...params: P) => Partial<Events>
+  configure: (...params: P) => Partial<Events>,
 ): (...params: P) => HttpBuilder;
 export function events<B extends HttpBuilderOfT<T>, P extends any[], T>(
   action: (...params: P) => B,
-  configure: (...params: P) => Partial<EventsOfT<T>>
+  configure: (...params: P) => Partial<EventsOfT<T>>,
 ): (...params: P) => B;
 export function events<B extends HttpBuilderOfT<T>, P extends any[], T>(
   action: (...params: P) => B,
-  configure: (...params: P) => Partial<EventsOfT<T>>
+  configure: (...params: P) => Partial<EventsOfT<T>>,
 ): (...params: P) => B {
   return function (...params: P) {
     const builder = action(...params);

@@ -33,6 +33,7 @@
     "build:json": "cd ./plugins/json && tsc && tsc -p tsconfig.cjs.json",
     "build:jsonpatch": "cd ./plugins/jsonpatch && tsc && tsc -p tsconfig.cjs.json",
     "build:msgpack": "cd ./plugins/msgpack && tsc && tsc -p tsconfig.cjs.json",
+    "prettier": "prettier --write src/**/*.ts plugins/**/*.ts",
     "test": "web-test-runner",
     "clean": "rimraf dist"
   },
@@ -51,6 +52,7 @@
     "chai": "^5.0.0",
     "luxon": "^3.0.4",
     "mocha": "^10.0.0",
+    "prettier": "^3.2.4",
     "rimraf": "^5.0.5",
     "typescript": "^5.3.3"
   },
