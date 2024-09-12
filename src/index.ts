@@ -17,4 +17,6 @@ export * from "./helpers";
 export type { Fetch } from "./http";
 export type { Subscription } from "./event-aggregator";
 export { statusCodes } from "./status-codes";
-export * as Mapping from "./mapping";
+
+import * as Mapping from "./mapping";
+export { Mapping };

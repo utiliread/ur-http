@@ -8,7 +8,6 @@
     "strict": true,
     "stripInternal": true,
     "rootDir": "src",
-    "outDir": "dist/esm",
     "lib": ["ES2018", "DOM"],
     "types": ["mocha"]
   },
