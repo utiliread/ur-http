@@ -1,1 +1,1 @@
-export * from "./dist/esm/jsonpatch";
+export * from "./dist/jsonpatch";

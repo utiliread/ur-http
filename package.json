@@ -7,36 +7,36 @@
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js"
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
     },
     "./json": {
-      "import": "./dist/esm/json/index.js",
-      "require": "./dist/cjs/json/index.js"
+      "import": "./dist/json.mjs",
+      "require": "./dist/json.js"
     },
     "./jsonpatch": {
-      "import": "./dist/esm/jsonpatch/index.js",
-      "require": "./dist/cjs/jsonpatch/index.js"
+      "import": "./dist/jsonpatch.mjs",
+      "require": "./dist/jsonpatch.js"
     },
     "./msgpack": {
-      "import": "./dist/esm/msgpack/index.js",
-      "require": "./dist/cjs/msgpack/index.js"
+      "import": "./dist/msgpack.mjs",
+      "require": "./dist/msgpack.js"
     }
   },
   "sideEffects": [
-    "./dist/*/json/index.js",
-    "./dist/*/jsonpatch/index.js",
-    "./dist/*/msgpack/index.js"
+    "./dist/json.m?js",
+    "./dist/jsonpatch.m?js",
+    "./dist/msgpack.m?js"
   ],
   "scripts": {
-    "build": "npm run build:core && npm run build:json && npm run build:jsonpatch && npm run build:msgpack",
-    "build:core": "parcel build",
-    "build:json": "cd ./plugins/json && tsc && tsc -p tsconfig.cjs.json",
-    "build:jsonpatch": "cd ./plugins/jsonpatch && tsc && tsc -p tsconfig.cjs.json",
-    "build:msgpack": "cd ./plugins/msgpack && tsc && tsc -p tsconfig.cjs.json",
+    "build": "npm run build:main && npm run build:json && npm run build:jsonpatch && npm run build:msgpack",
+    "build:main": "parcel build",
+    "build:json": "parcel build plugins/json",
+    "build:jsonpatch": "parcel build plugins/jsonpatch",
+    "build:msgpack": "parcel build plugins/msgpack",
     "prettier": "prettier --write *.mjs src/**/*.ts plugins/**/*.ts",
     "test": "web-test-runner",
-    "clean": "rimraf dist"
+    "clean": "rimraf .parcel-cache dist"
   },
   "publishConfig": {
     "access": "public"

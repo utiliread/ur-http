@@ -1,1 +1,1 @@
-export * from "./dist/esm/json";
+export * from "./dist/json";

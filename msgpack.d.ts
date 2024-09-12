@@ -1,1 +1,1 @@
-export * from "./dist/esm/msgpack";
+export * from "./dist/msgpack";
