@@ -34,7 +34,7 @@
     "build:json": "cd ./plugins/json && tsc && tsc -p tsconfig.cjs.json",
     "build:jsonpatch": "cd ./plugins/jsonpatch && tsc && tsc -p tsconfig.cjs.json",
     "build:msgpack": "cd ./plugins/msgpack && tsc && tsc -p tsconfig.cjs.json",
-    "prettier": "prettier --write src/**/*.ts plugins/**/*.ts",
+    "prettier": "prettier --write *.mjs src/**/*.ts plugins/**/*.ts",
     "test": "web-test-runner",
     "clean": "rimraf dist"
   },
