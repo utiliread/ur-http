@@ -1,4 +1,4 @@
-import { HttpBuilder, HttpBuilderOfT, HttpResponse, TypeOrMapper, getMapper } from "@utiliread/http";
+import { HttpBuilder, HttpResponse, TypeOrMapper, getMapper } from "@utiliread/http";
 import { decodeArrayStream, decodeAsync } from "@msgpack/msgpack";
 
 import { deserialize } from "@utiliread/msgpack";
@@ -6,13 +6,13 @@ import { deserialize } from "@utiliread/msgpack";
 // https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
 declare module "@utiliread/http" {
   interface HttpBuilder {
-    expectMessagePack<T>(typeOrMapper?: TypeOrMapper<T>): HttpBuilderOfT<T>;
+    expectMessagePack<T>(typeOrMapper?: import("@utiliread/http").TypeOrMapper<T>): import("@utiliread/http").HttpBuilderOfT<T>;
     expectMessagePackArray<T>(
-      typeOrMapper?: TypeOrMapper<T>,
-    ): HttpBuilderOfT<T[]>;
+      typeOrMapper?: import("@utiliread/http").TypeOrMapper<T>,
+    ): import("@utiliread/http").HttpBuilderOfT<T[]>;
     streamMessagePackArray<T>(
-      typeOrMapper?: TypeOrMapper<T>,
-    ): HttpBuilderOfT<AsyncGenerator<T, void, unknown>>;
+      typeOrMapper?: import("@utiliread/http").TypeOrMapper<T>,
+    ): import("@utiliread/http").HttpBuilderOfT<AsyncGenerator<T, void, unknown>>;
   }
 }
 

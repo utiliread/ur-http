@@ -1,14 +1,15 @@
 import { HttpBuilder, HttpBuilderOfT } from "@utiliread/http";
-import { serialize } from "@utiliread/json";
+
 import type { Operation } from "@utiliread/jsonpatch";
+import { serialize } from "@utiliread/json";
 
 // https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
 declare module "@utiliread/http" {
   interface HttpBuilder {
-    withJsonPatch(operations: Operation[]): this;
+    withJsonPatch(operations: import("@utiliread/jsonpatch").Operation[]): this;
   }
   interface HttpBuilderOfT<T> {
-    withJsonPatch(operations: Operation[]): this;
+    withJsonPatch(operations: import("@utiliread/jsonpatch").Operation[]): this;
   }
 }
 

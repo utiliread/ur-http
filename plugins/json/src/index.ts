@@ -2,12 +2,12 @@ import {
   HttpBuilder,
   HttpBuilderOfT,
   getMapper,
-  getNullableMapper
+  getNullableMapper,
 } from "@utiliread/http";
 import type {
   InfinitePaginationResult,
   PaginationResult,
-  TypeOrMapper
+  TypeOrMapper,
 } from "@utiliread/http";
 import { deserialize, serialize } from "@utiliread/json";
 
@@ -16,17 +16,25 @@ declare module "@utiliread/http" {
   interface HttpBuilder {
     withJson(content: any): this;
 
-    expectJson<T>(typeOrMapper?: TypeOrMapper<T>): HttpBuilderOfT<T>;
-    expectJsonArray<T>(typeOrMapper: TypeOrMapper<T>): HttpBuilderOfT<T[]>;
+    expectJson<T>(
+      typeOrMapper?: import("@utiliread/http").TypeOrMapper<T>
+    ): import("@utiliread/http").HttpBuilderOfT<T>;
+    expectJsonArray<T>(
+      typeOrMapper: import("@utiliread/http").TypeOrMapper<T>
+    ): import("@utiliread/http").HttpBuilderOfT<T[]>;
     expectJsonNullableArray<T>(
-      typeOrMapper: TypeOrMapper<T>,
-    ): HttpBuilderOfT<(T | null)[]>;
+      typeOrMapper: import("@utiliread/http").TypeOrMapper<T>
+    ): import("@utiliread/http").HttpBuilderOfT<(T | null)[]>;
     expectJsonPaginationResult<T>(
-      typeOrMapper: TypeOrMapper<T>,
-    ): HttpBuilderOfT<PaginationResult<T>>;
+      typeOrMapper: import("@utiliread/http").TypeOrMapper<T>
+    ): import("@utiliread/http").HttpBuilderOfT<
+      import("@utiliread/http").PaginationResult<T>
+    >;
     expectJsonInfinitePaginationResult<T>(
-      typeOrMapper: TypeOrMapper<T>,
-    ): HttpBuilderOfT<InfinitePaginationResult<T>>;
+      typeOrMapper: import("@utiliread/http").TypeOrMapper<T>
+    ): import("@utiliread/http").HttpBuilderOfT<
+      import("@utiliread/http").InfinitePaginationResult<T>
+    >;
   }
   interface HttpBuilderOfT<T> {
     withJson(content: any): this;
@@ -41,7 +49,7 @@ HttpBuilder.prototype.withJson = function (this: HttpBuilder, content: any) {
 
 HttpBuilderOfT.prototype.withJson = function <T>(
   this: HttpBuilderOfT<T>,
-  content: any,
+  content: any
 ) {
   this.message.content = serialize(content);
   this.message.contentType = "application/json";
@@ -50,69 +58,75 @@ HttpBuilderOfT.prototype.withJson = function <T>(
 
 HttpBuilder.prototype.expectJson = function <T>(
   this: HttpBuilder,
-  typeOrMapper?: TypeOrMapper<T>,
+  typeOrMapper?: TypeOrMapper<T>
 ) {
   this.message.headers.set("Accept", "application/json");
   return this.useHandler((response) => {
-    return response.rawResponse
+    const promise = response.rawResponse
       .json()
       .then((x) => getMapper(deserialize, typeOrMapper)(x));
+    return promise;
   });
 };
 
 HttpBuilder.prototype.expectJsonArray = function <T>(
   this: HttpBuilder,
-  typeOrMapper: TypeOrMapper<T>,
+  typeOrMapper: TypeOrMapper<T>
 ) {
   this.message.headers.set("Accept", "application/json");
   return this.useHandler((response) => {
-    return response.rawResponse.json().then((x: any[]) => {
+    const promise = response.rawResponse.json().then((x: any[]) => {
       const itemFactory = getMapper(deserialize, typeOrMapper);
       return x.map(itemFactory);
     });
+    return promise;
   });
 };
 
 HttpBuilder.prototype.expectJsonNullableArray = function <T>(
   this: HttpBuilder,
-  typeOrMapper: TypeOrMapper<T>,
+  typeOrMapper: TypeOrMapper<T>
 ): HttpBuilderOfT<(T | null)[]> {
   this.message.headers.set("Accept", "application/json");
   return this.useHandler((response) => {
-    return response.rawResponse.json().then((x: any[]) => {
+    const promise = response.rawResponse.json().then((x: any[]) => {
       const itemFactory = getNullableMapper(deserialize, typeOrMapper);
       return x.map(itemFactory);
     });
+    return promise;
   });
 };
 
 HttpBuilder.prototype.expectJsonPaginationResult = function <T>(
   this: HttpBuilder,
-  typeOrMapper: TypeOrMapper<T>,
+  typeOrMapper: TypeOrMapper<T>
 ) {
   this.message.headers.set("Accept", "application/json");
   return this.useHandler((response) => {
-    return response.rawResponse.json().then((x: PaginationResult<any>) => {
-      const itemFactory = getMapper(deserialize, typeOrMapper);
-      return {
-        meta: {
-          pageCount: x.meta.pageCount,
-          pageSize: x.meta.pageSize,
-          totalItems: x.meta.totalItems,
-        },
-        data: x.data.map(itemFactory),
-      };
-    });
+    const promise = response.rawResponse
+      .json()
+      .then((x: PaginationResult<any>) => {
+        const itemFactory = getMapper(deserialize, typeOrMapper);
+        return {
+          meta: {
+            pageCount: x.meta.pageCount,
+            pageSize: x.meta.pageSize,
+            totalItems: x.meta.totalItems,
+          },
+          data: x.data.map(itemFactory),
+        };
+      });
+    return promise;
   });
 };
 
 HttpBuilder.prototype.expectJsonInfinitePaginationResult = function <T>(
   this: HttpBuilder,
-  typeOrMapper: TypeOrMapper<T>,
+  typeOrMapper: TypeOrMapper<T>
 ) {
   this.message.headers.set("Accept", "application/json");
   return this.useHandler((response) => {
-    return response.rawResponse
+    const promise = response.rawResponse
       .json()
       .then((x: InfinitePaginationResult<any>) => {
         const itemFactory = getMapper(deserialize, typeOrMapper);
@@ -124,5 +138,6 @@ HttpBuilder.prototype.expectJsonInfinitePaginationResult = function <T>(
           data: x.data.map(itemFactory),
         };
       });
+    return promise;
   });
 };
