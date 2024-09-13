@@ -1,10 +1,17 @@
 import {
   HttpBuilder,
   HttpBuilderOfT,
+  InfinitePaginationResult,
+  PaginationResult,
+  TypeOrMapper,
   getMapper,
   getNullableMapper,
 } from "@utiliread/http";
 import { deserialize, serialize } from "@utiliread/json";
+
+// Force declarations to be module augmentations instead of ambient module declarations
+// https://www.typescriptlang.org/docs/handbook/modules/reference.html#ambient-modules
+export default {};
 
 // https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
 declare module "@utiliread/http" {
@@ -12,20 +19,20 @@ declare module "@utiliread/http" {
     withJson(content: any): this;
 
     expectJson<T>(
-      typeOrMapper?: import("@utiliread/http").TypeOrMapper<T>
+      typeOrMapper?: TypeOrMapper<T>
     ): HttpBuilderOfT<T>;
     expectJsonArray<T>(
-      typeOrMapper: import("@utiliread/http").TypeOrMapper<T>
+      typeOrMapper: TypeOrMapper<T>
     ): HttpBuilderOfT<T[]>;
     expectJsonNullableArray<T>(
-      typeOrMapper: import("@utiliread/http").TypeOrMapper<T>
+      typeOrMapper: TypeOrMapper<T>
     ): HttpBuilderOfT<(T | null)[]>;
     expectJsonPaginationResult<T>(
-      typeOrMapper: import("@utiliread/http").TypeOrMapper<T>
-    ): HttpBuilderOfT<import("@utiliread/http").PaginationResult<T>>;
+      typeOrMapper: TypeOrMapper<T>
+    ): HttpBuilderOfT<PaginationResult<T>>;
     expectJsonInfinitePaginationResult<T>(
-      typeOrMapper: import("@utiliread/http").TypeOrMapper<T>
-    ): HttpBuilderOfT<import("@utiliread/http").InfinitePaginationResult<T>>;
+      typeOrMapper: TypeOrMapper<T>
+    ): HttpBuilderOfT<InfinitePaginationResult<T>>;
   }
 
   interface HttpBuilderOfT<T> {
@@ -50,7 +57,7 @@ HttpBuilderOfT.prototype.withJson = function <T>(
 
 HttpBuilder.prototype.expectJson = function <T>(
   this: HttpBuilder,
-  typeOrMapper?: import("@utiliread/http").TypeOrMapper<T>
+  typeOrMapper?: TypeOrMapper<T>
 ) {
   this.message.headers.set("Accept", "application/json");
   return this.useHandler((response) => {
@@ -63,7 +70,7 @@ HttpBuilder.prototype.expectJson = function <T>(
 
 HttpBuilder.prototype.expectJsonArray = function <T>(
   this: HttpBuilder,
-  typeOrMapper: import("@utiliread/http").TypeOrMapper<T>
+  typeOrMapper: TypeOrMapper<T>
 ) {
   this.message.headers.set("Accept", "application/json");
   return this.useHandler((response) => {
@@ -77,7 +84,7 @@ HttpBuilder.prototype.expectJsonArray = function <T>(
 
 HttpBuilder.prototype.expectJsonNullableArray = function <T>(
   this: HttpBuilder,
-  typeOrMapper: import("@utiliread/http").TypeOrMapper<T>
+  typeOrMapper: TypeOrMapper<T>
 ): HttpBuilderOfT<(T | null)[]> {
   this.message.headers.set("Accept", "application/json");
   return this.useHandler((response) => {
@@ -91,13 +98,13 @@ HttpBuilder.prototype.expectJsonNullableArray = function <T>(
 
 HttpBuilder.prototype.expectJsonPaginationResult = function <T>(
   this: HttpBuilder,
-  typeOrMapper: import("@utiliread/http").TypeOrMapper<T>
+  typeOrMapper: TypeOrMapper<T>
 ) {
   this.message.headers.set("Accept", "application/json");
   return this.useHandler((response) => {
     const promise = response.rawResponse
       .json()
-      .then((x: import("@utiliread/http").PaginationResult<any>) => {
+      .then((x: PaginationResult<any>) => {
         const itemFactory = getMapper(deserialize, typeOrMapper);
         return {
           meta: {
@@ -114,13 +121,13 @@ HttpBuilder.prototype.expectJsonPaginationResult = function <T>(
 
 HttpBuilder.prototype.expectJsonInfinitePaginationResult = function <T>(
   this: HttpBuilder,
-  typeOrMapper: import("@utiliread/http").TypeOrMapper<T>
+  typeOrMapper: TypeOrMapper<T>
 ) {
   this.message.headers.set("Accept", "application/json");
   return this.useHandler((response) => {
     const promise = response.rawResponse
       .json()
-      .then((x: import("@utiliread/http").InfinitePaginationResult<any>) => {
+      .then((x: InfinitePaginationResult<any>) => {
         const itemFactory = getMapper(deserialize, typeOrMapper);
         return {
           meta: {
