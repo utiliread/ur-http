@@ -1,4 +1,4 @@
-import { HttpBuilder, HttpResponse, TypeOrMapper, getMapper } from "@utiliread/http";
+import { HttpBuilder, HttpResponse, getMapper } from "@utiliread/http";
 import { decodeArrayStream, decodeAsync } from "@msgpack/msgpack";
 
 import { deserialize } from "@utiliread/msgpack";
@@ -6,19 +6,21 @@ import { deserialize } from "@utiliread/msgpack";
 // https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
 declare module "@utiliread/http" {
   interface HttpBuilder {
-    expectMessagePack<T>(typeOrMapper?: import("@utiliread/http").TypeOrMapper<T>): import("@utiliread/http").HttpBuilderOfT<T>;
+    expectMessagePack<T>(
+      typeOrMapper?: import("@utiliread/http").TypeOrMapper<T>
+    ): HttpBuilderOfT<T>;
     expectMessagePackArray<T>(
-      typeOrMapper?: import("@utiliread/http").TypeOrMapper<T>,
-    ): import("@utiliread/http").HttpBuilderOfT<T[]>;
+      typeOrMapper?: import("@utiliread/http").TypeOrMapper<T>
+    ): HttpBuilderOfT<T[]>;
     streamMessagePackArray<T>(
-      typeOrMapper?: import("@utiliread/http").TypeOrMapper<T>,
-    ): import("@utiliread/http").HttpBuilderOfT<AsyncGenerator<T, void, unknown>>;
+      typeOrMapper?: import("@utiliread/http").TypeOrMapper<T>
+    ): HttpBuilderOfT<AsyncGenerator<T, void, unknown>>;
   }
 }
 
 HttpBuilder.prototype.expectMessagePack = function <T>(
   this: HttpBuilder,
-  typeOrMapper?: TypeOrMapper<T>,
+  typeOrMapper?: import("@utiliread/http").TypeOrMapper<T>
 ) {
   this.message.headers.set("Accept", "application/x-msgpack");
   return this.useHandler(async (response) => {
@@ -30,7 +32,7 @@ HttpBuilder.prototype.expectMessagePack = function <T>(
 
 HttpBuilder.prototype.expectMessagePackArray = function <T>(
   this: HttpBuilder,
-  typeOrMapper?: TypeOrMapper<T>,
+  typeOrMapper?: import("@utiliread/http").TypeOrMapper<T>
 ) {
   this.message.headers.set("Accept", "application/x-msgpack");
   return this.useHandler(async (response) => {
@@ -45,7 +47,7 @@ HttpBuilder.prototype.expectMessagePackArray = function <T>(
 
 HttpBuilder.prototype.streamMessagePackArray = function <T>(
   this: HttpBuilder,
-  typeOrMapper?: TypeOrMapper<T>,
+  typeOrMapper?: import("@utiliread/http").TypeOrMapper<T>
 ) {
   this.message.headers.set("Accept", "application/x-msgpack");
 

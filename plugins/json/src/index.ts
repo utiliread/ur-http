@@ -4,11 +4,6 @@ import {
   getMapper,
   getNullableMapper,
 } from "@utiliread/http";
-import type {
-  InfinitePaginationResult,
-  PaginationResult,
-  TypeOrMapper,
-} from "@utiliread/http";
 import { deserialize, serialize } from "@utiliread/json";
 
 // https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
@@ -18,24 +13,21 @@ declare module "@utiliread/http" {
 
     expectJson<T>(
       typeOrMapper?: import("@utiliread/http").TypeOrMapper<T>
-    ): import("@utiliread/http").HttpBuilderOfT<T>;
+    ): HttpBuilderOfT<T>;
     expectJsonArray<T>(
       typeOrMapper: import("@utiliread/http").TypeOrMapper<T>
-    ): import("@utiliread/http").HttpBuilderOfT<T[]>;
+    ): HttpBuilderOfT<T[]>;
     expectJsonNullableArray<T>(
       typeOrMapper: import("@utiliread/http").TypeOrMapper<T>
-    ): import("@utiliread/http").HttpBuilderOfT<(T | null)[]>;
+    ): HttpBuilderOfT<(T | null)[]>;
     expectJsonPaginationResult<T>(
       typeOrMapper: import("@utiliread/http").TypeOrMapper<T>
-    ): import("@utiliread/http").HttpBuilderOfT<
-      import("@utiliread/http").PaginationResult<T>
-    >;
+    ): HttpBuilderOfT<import("@utiliread/http").PaginationResult<T>>;
     expectJsonInfinitePaginationResult<T>(
       typeOrMapper: import("@utiliread/http").TypeOrMapper<T>
-    ): import("@utiliread/http").HttpBuilderOfT<
-      import("@utiliread/http").InfinitePaginationResult<T>
-    >;
+    ): HttpBuilderOfT<import("@utiliread/http").InfinitePaginationResult<T>>;
   }
+
   interface HttpBuilderOfT<T> {
     withJson(content: any): this;
   }
@@ -58,7 +50,7 @@ HttpBuilderOfT.prototype.withJson = function <T>(
 
 HttpBuilder.prototype.expectJson = function <T>(
   this: HttpBuilder,
-  typeOrMapper?: TypeOrMapper<T>
+  typeOrMapper?: import("@utiliread/http").TypeOrMapper<T>
 ) {
   this.message.headers.set("Accept", "application/json");
   return this.useHandler((response) => {
@@ -71,7 +63,7 @@ HttpBuilder.prototype.expectJson = function <T>(
 
 HttpBuilder.prototype.expectJsonArray = function <T>(
   this: HttpBuilder,
-  typeOrMapper: TypeOrMapper<T>
+  typeOrMapper: import("@utiliread/http").TypeOrMapper<T>
 ) {
   this.message.headers.set("Accept", "application/json");
   return this.useHandler((response) => {
@@ -85,7 +77,7 @@ HttpBuilder.prototype.expectJsonArray = function <T>(
 
 HttpBuilder.prototype.expectJsonNullableArray = function <T>(
   this: HttpBuilder,
-  typeOrMapper: TypeOrMapper<T>
+  typeOrMapper: import("@utiliread/http").TypeOrMapper<T>
 ): HttpBuilderOfT<(T | null)[]> {
   this.message.headers.set("Accept", "application/json");
   return this.useHandler((response) => {
@@ -99,13 +91,13 @@ HttpBuilder.prototype.expectJsonNullableArray = function <T>(
 
 HttpBuilder.prototype.expectJsonPaginationResult = function <T>(
   this: HttpBuilder,
-  typeOrMapper: TypeOrMapper<T>
+  typeOrMapper: import("@utiliread/http").TypeOrMapper<T>
 ) {
   this.message.headers.set("Accept", "application/json");
   return this.useHandler((response) => {
     const promise = response.rawResponse
       .json()
-      .then((x: PaginationResult<any>) => {
+      .then((x: import("@utiliread/http").PaginationResult<any>) => {
         const itemFactory = getMapper(deserialize, typeOrMapper);
         return {
           meta: {
@@ -122,13 +114,13 @@ HttpBuilder.prototype.expectJsonPaginationResult = function <T>(
 
 HttpBuilder.prototype.expectJsonInfinitePaginationResult = function <T>(
   this: HttpBuilder,
-  typeOrMapper: TypeOrMapper<T>
+  typeOrMapper: import("@utiliread/http").TypeOrMapper<T>
 ) {
   this.message.headers.set("Accept", "application/json");
   return this.useHandler((response) => {
     const promise = response.rawResponse
       .json()
-      .then((x: InfinitePaginationResult<any>) => {
+      .then((x: import("@utiliread/http").InfinitePaginationResult<any>) => {
         const itemFactory = getMapper(deserialize, typeOrMapper);
         return {
           meta: {

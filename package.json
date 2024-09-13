@@ -7,20 +7,44 @@
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
     },
     "./json": {
-      "import": "./dist/json.mjs",
-      "require": "./dist/json.js"
+      "import": {
+        "types": "./dist/json.d.ts",
+        "default": "./dist/json.mjs"
+      },
+      "require": {
+        "types": "./dist/json.d.ts",
+        "default": "./dist/json.js"
+      }
     },
     "./jsonpatch": {
-      "import": "./dist/jsonpatch.mjs",
-      "require": "./dist/jsonpatch.js"
+      "import": {
+        "types": "./dist/jsonpatch.d.ts",
+        "default": "./dist/jsonpatch.mjs"
+      },
+      "require": {
+        "types": "./dist/jsonpatch.d.ts",
+        "default": "./dist/jsonpatch.js"
+      }
     },
     "./msgpack": {
-      "import": "./dist/msgpack.mjs",
-      "require": "./dist/msgpack.js"
+      "import": {
+        "types": "./dist/msgpack.d.ts",
+        "default": "./dist/msgpack.mjs"
+      },
+      "require": {
+        "types": "./dist/msgpack.d.ts",
+        "default": "./dist/msgpack.js"
+      }
     }
   },
   "sideEffects": [
