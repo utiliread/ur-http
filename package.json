@@ -1,6 +1,6 @@
 {
   "name": "@utiliread/http",
-  "version": "1.19.0",
+  "version": "1.19.1",
   "source": "src/index.ts",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
