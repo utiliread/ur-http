@@ -1,6 +1,5 @@
 import { HttpBuilder, HttpBuilderOfT } from "@utiliread/http";
 
-import { Operation } from "@utiliread/jsonpatch";
 import { serialize } from "@utiliread/json";
 
 // Force declarations to be module augmentations instead of ambient module declarations
@@ -10,17 +9,17 @@ export default {};
 // https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
 declare module "@utiliread/http" {
   interface HttpBuilder {
-    withJsonPatch(operations: Operation[]): this;
+    withJsonPatch(operations: import("@utiliread/jsonpatch").Operation[]): this;
   }
-  
+
   interface HttpBuilderOfT<T> {
-    withJsonPatch(operations: Operation[]): this;
+    withJsonPatch(operations: import("@utiliread/jsonpatch").Operation[]): this;
   }
 }
 
 HttpBuilder.prototype.withJsonPatch = function (
   this: HttpBuilder,
-  operations: Operation[]
+  operations: import("@utiliread/jsonpatch").Operation[]
 ) {
   this.message.content = serialize(operations);
   this.message.contentType = "application/json-patch+json";
@@ -29,7 +28,7 @@ HttpBuilder.prototype.withJsonPatch = function (
 
 HttpBuilderOfT.prototype.withJsonPatch = function <T>(
   this: HttpBuilderOfT<T>,
-  operations: Operation[]
+  operations: import("@utiliread/jsonpatch").Operation[]
 ) {
   this.message.content = serialize(operations);
   this.message.contentType = "application/json-patch+json";
