@@ -28,9 +28,9 @@
     }
   },
   "sideEffects": [
-    "./dist/json.m?js",
-    "./dist/jsonpatch.m?js",
-    "./dist/msgpack.m?js"
+    "./dist/json.{mjs,js}",
+    "./dist/jsonpatch.{mjs,js}",
+    "./dist/msgpack.{mjs,js}"
   ],
   "scripts": {
     "build": "npm run build:main && npm run build:json && npm run build:jsonpatch && npm run build:msgpack",
