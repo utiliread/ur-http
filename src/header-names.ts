@@ -102,7 +102,7 @@ export const date = "Date";
 export const dnt = "DNT";
 
 /** Gets the `ETag` HTTP header name. */
-export const eTag = "ETag";
+export const etag = "ETag";
 
 /** Gets the `Expires` HTTP header name. */
 export const expires = "Expires";
