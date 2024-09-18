@@ -18,20 +18,16 @@ declare module "@utiliread/http" {
   interface HttpBuilder {
     withJson(content: any): this;
 
-    expectJson<T>(
-      typeOrMapper?: TypeOrMapper<T>
-    ): HttpBuilderOfT<T>;
-    expectJsonArray<T>(
-      typeOrMapper: TypeOrMapper<T>
-    ): HttpBuilderOfT<T[]>;
+    expectJson<T>(typeOrMapper?: TypeOrMapper<T>): HttpBuilderOfT<T>;
+    expectJsonArray<T>(typeOrMapper: TypeOrMapper<T>): HttpBuilderOfT<T[]>;
     expectJsonNullableArray<T>(
-      typeOrMapper: TypeOrMapper<T>
+      typeOrMapper: TypeOrMapper<T>,
     ): HttpBuilderOfT<(T | null)[]>;
     expectJsonPaginationResult<T>(
-      typeOrMapper: TypeOrMapper<T>
+      typeOrMapper: TypeOrMapper<T>,
     ): HttpBuilderOfT<PaginationResult<T>>;
     expectJsonInfinitePaginationResult<T>(
-      typeOrMapper: TypeOrMapper<T>
+      typeOrMapper: TypeOrMapper<T>,
     ): HttpBuilderOfT<InfinitePaginationResult<T>>;
   }
 
@@ -48,7 +44,7 @@ HttpBuilder.prototype.withJson = function (this: HttpBuilder, content: any) {
 
 HttpBuilderOfT.prototype.withJson = function <T>(
   this: HttpBuilderOfT<T>,
-  content: any
+  content: any,
 ) {
   this.message.content = serialize(content);
   this.message.contentType = "application/json";
@@ -57,7 +53,7 @@ HttpBuilderOfT.prototype.withJson = function <T>(
 
 HttpBuilder.prototype.expectJson = function <T>(
   this: HttpBuilder,
-  typeOrMapper?: TypeOrMapper<T>
+  typeOrMapper?: TypeOrMapper<T>,
 ) {
   this.message.headers.set("Accept", "application/json");
   return this.useHandler((response) => {
@@ -70,7 +66,7 @@ HttpBuilder.prototype.expectJson = function <T>(
 
 HttpBuilder.prototype.expectJsonArray = function <T>(
   this: HttpBuilder,
-  typeOrMapper: TypeOrMapper<T>
+  typeOrMapper: TypeOrMapper<T>,
 ) {
   this.message.headers.set("Accept", "application/json");
   return this.useHandler((response) => {
@@ -84,7 +80,7 @@ HttpBuilder.prototype.expectJsonArray = function <T>(
 
 HttpBuilder.prototype.expectJsonNullableArray = function <T>(
   this: HttpBuilder,
-  typeOrMapper: TypeOrMapper<T>
+  typeOrMapper: TypeOrMapper<T>,
 ): HttpBuilderOfT<(T | null)[]> {
   this.message.headers.set("Accept", "application/json");
   return this.useHandler((response) => {
@@ -98,7 +94,7 @@ HttpBuilder.prototype.expectJsonNullableArray = function <T>(
 
 HttpBuilder.prototype.expectJsonPaginationResult = function <T>(
   this: HttpBuilder,
-  typeOrMapper: TypeOrMapper<T>
+  typeOrMapper: TypeOrMapper<T>,
 ) {
   this.message.headers.set("Accept", "application/json");
   return this.useHandler((response) => {
@@ -121,7 +117,7 @@ HttpBuilder.prototype.expectJsonPaginationResult = function <T>(
 
 HttpBuilder.prototype.expectJsonInfinitePaginationResult = function <T>(
   this: HttpBuilder,
-  typeOrMapper: TypeOrMapper<T>
+  typeOrMapper: TypeOrMapper<T>,
 ) {
   this.message.headers.set("Accept", "application/json");
   return this.useHandler((response) => {

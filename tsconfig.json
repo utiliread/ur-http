@@ -1,20 +1,15 @@
 {
   "compilerOptions": {
-    "target": "ES2018",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "declaration": true,
     "sourceMap": true,
     "strict": true,
     "stripInternal": true,
     "rootDir": "src",
-    "lib": ["ES2018", "DOM"],
+    "outDir": "dist",
+    "lib": ["ES2020", "DOM"],
     "types": ["mocha"]
-  },
-  "include": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "./*.d.ts"
-  ]
+  }
 }

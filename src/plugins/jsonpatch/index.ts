@@ -19,7 +19,7 @@ declare module "@utiliread/http" {
 
 HttpBuilder.prototype.withJsonPatch = function (
   this: HttpBuilder,
-  operations: import("@utiliread/jsonpatch").Operation[]
+  operations: import("@utiliread/jsonpatch").Operation[],
 ) {
   this.message.content = serialize(operations);
   this.message.contentType = "application/json-patch+json";
@@ -28,7 +28,7 @@ HttpBuilder.prototype.withJsonPatch = function (
 
 HttpBuilderOfT.prototype.withJsonPatch = function <T>(
   this: HttpBuilderOfT<T>,
-  operations: import("@utiliread/jsonpatch").Operation[]
+  operations: import("@utiliread/jsonpatch").Operation[],
 ) {
   this.message.content = serialize(operations);
   this.message.contentType = "application/json-patch+json";
