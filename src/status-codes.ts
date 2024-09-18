@@ -1,67 +1,65 @@
-export const statusCodes = Object.freeze({
-  status100Continue: 100,
-  status101SwitchingProtocols: 101,
-  status102Processing: 102,
-  status200OK: 200,
-  status201Created: 201,
-  status202Accepted: 202,
-  status203NonAuthoritative: 203,
-  status204NoContent: 204,
-  status205ResetContent: 205,
-  status206PartialContent: 206,
-  status207MultiStatus: 207,
-  status208AlreadyReported: 208,
-  status226IMUsed: 226,
-  status300MultipleChoices: 300,
-  status301MovedPermanently: 301,
-  status302Found: 302,
-  status303SeeOther: 303,
-  status304NotModified: 304,
-  status305UseProxy: 305,
-  status306SwitchProxy: 306,
-  status307TemporaryRedirect: 307,
-  status308PermanentRedirect: 308,
-  status400BadRequest: 400,
-  status401Unauthorized: 401,
-  status402PaymentRequired: 402,
-  status403Forbidden: 403,
-  status404NotFound: 404,
-  status405MethodNotAllowed: 405,
-  status406NotAcceptable: 406,
-  status407ProxyAuthenticationRequired: 407,
-  status408RequestTimeout: 408,
-  status409Conflict: 409,
-  status410Gone: 410,
-  status411LengthRequired: 411,
-  status412PreconditionFailed: 412,
-  status413RequestEntityTooLarge: 413,
-  status413PayloadTooLarge: 413,
-  status414RequestUriTooLong: 414,
-  status414UriTooLong: 414,
-  status415UnsupportedMediaType: 415,
-  status416RequestedRangeNotSatisfiable: 416,
-  status416RangeNotSatisfiable: 416,
-  status417ExpectationFailed: 417,
-  status418ImATeapot: 418,
-  status419AuthenticationTimeout: 419,
-  status421MisdirectedRequest: 421,
-  status422UnprocessableEntity: 422,
-  status423Locked: 423,
-  status424FailedDependency: 424,
-  status426UpgradeRequired: 426,
-  status428PreconditionRequired: 428,
-  status429TooManyRequests: 429,
-  status431RequestHeaderFieldsTooLarge: 431,
-  status451UnavailableForLegalReasons: 451,
-  status500InternalServerError: 500,
-  status501NotImplemented: 501,
-  status502BadGateway: 502,
-  status503ServiceUnavailable: 503,
-  status504GatewayTimeout: 504,
-  status505HttpVersionNotsupported: 505,
-  status506VariantAlsoNegotiates: 506,
-  status507InsufficientStorage: 507,
-  status508LoopDetected: 508,
-  status510NotExtended: 510,
-  status511NetworkAuthenticationRequired: 511,
-});
+export const status100Continue = 100;
+export const status101SwitchingProtocols = 101;
+export const status102Processing = 102;
+export const status200OK = 200;
+export const status201Created = 201;
+export const status202Accepted = 202;
+export const status203NonAuthoritative = 203;
+export const status204NoContent = 204;
+export const status205ResetContent = 205;
+export const status206PartialContent = 206;
+export const status207MultiStatus = 207;
+export const status208AlreadyReported = 208;
+export const status226IMUsed = 226;
+export const status300MultipleChoices = 300;
+export const status301MovedPermanently = 301;
+export const status302Found = 302;
+export const status303SeeOther = 303;
+export const status304NotModified = 304;
+export const status305UseProxy = 305;
+export const status306SwitchProxy = 306;
+export const status307TemporaryRedirect = 307;
+export const status308PermanentRedirect = 308;
+export const status400BadRequest = 400;
+export const status401Unauthorized = 401;
+export const status402PaymentRequired = 402;
+export const status403Forbidden = 403;
+export const status404NotFound = 404;
+export const status405MethodNotAllowed = 405;
+export const status406NotAcceptable = 406;
+export const status407ProxyAuthenticationRequired = 407;
+export const status408RequestTimeout = 408;
+export const status409Conflict = 409;
+export const status410Gone = 410;
+export const status411LengthRequired = 411;
+export const status412PreconditionFailed = 412;
+export const status413RequestEntityTooLarge = 413;
+export const status413PayloadTooLarge = 413;
+export const status414RequestUriTooLong = 414;
+export const status414UriTooLong = 414;
+export const status415UnsupportedMediaType = 415;
+export const status416RequestedRangeNotSatisfiable = 416;
+export const status416RangeNotSatisfiable = 416;
+export const status417ExpectationFailed = 417;
+export const status418ImATeapot = 418;
+export const status419AuthenticationTimeout = 419;
+export const status421MisdirectedRequest = 421;
+export const status422UnprocessableEntity = 422;
+export const status423Locked = 423;
+export const status424FailedDependency = 424;
+export const status426UpgradeRequired = 426;
+export const status428PreconditionRequired = 428;
+export const status429TooManyRequests = 429;
+export const status431RequestHeaderFieldsTooLarge = 431;
+export const status451UnavailableForLegalReasons = 451;
+export const status500InternalServerError = 500;
+export const status501NotImplemented = 501;
+export const status502BadGateway = 502;
+export const status503ServiceUnavailable = 503;
+export const status504GatewayTimeout = 504;
+export const status505HttpVersionNotsupported = 505;
+export const status506VariantAlsoNegotiates = 506;
+export const status507InsufficientStorage = 507;
+export const status508LoopDetected = 508;
+export const status510NotExtended = 510;
+export const status511NetworkAuthenticationRequired = 511;

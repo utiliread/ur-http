@@ -16,5 +16,6 @@ export { events } from "./events";
 export * from "./helpers";
 export type { Fetch } from "./http";
 export type { Subscription } from "./event-aggregator";
-export { statusCodes } from "./status-codes";
+export * as headerNames from "./header-names";
+export * as statusCodes from "./status-codes";
 export * from "./mapper";
