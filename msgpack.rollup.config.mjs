@@ -22,7 +22,7 @@ export default [
         format: "es",
       },
     },
-    options
+    options,
   ),
   Object.assign(
     {
@@ -32,6 +32,6 @@ export default [
         format: "cjs",
       },
     },
-    options
+    options,
   ),
 ];

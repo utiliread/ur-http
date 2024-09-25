@@ -1,8 +1,9 @@
-import { Fetch } from "./http";
 import { HttpResponse, HttpResponseOfT } from "./http-response";
-import { TimeoutError } from "./timeout-error";
+
 import { EventAggregator } from "./event-aggregator";
+import { Fetch } from "./http";
 import { Http } from "./http";
+import { TimeoutError } from "./errors/timeout-error";
 
 export class HttpBuilder {
   private _ensureSuccessStatusCode = true;

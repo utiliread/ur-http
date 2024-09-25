@@ -1,4 +1,4 @@
-import { HttpError } from "./http-error";
+import { HttpError } from "./errors/http-error";
 
 export class HttpResponse {
   get url() {

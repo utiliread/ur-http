@@ -1,8 +1,10 @@
-import { HttpResponse } from "./http-response";
-import { ProblemDetails } from "./problem-details";
+import { HttpResponse } from "../http-response";
+import { ProblemDetails } from "../problem-details";
 
 export class HttpError extends Error {
   private detailsPromise?: Promise<ProblemDetails>;
+
+  readonly name: "HttpError" = "HttpError";
 
   get hasDetails() {
     const contentType = this.response?.rawResponse?.headers.get("Content-Type");
@@ -14,7 +16,6 @@ export class HttpError extends Error {
     private response: HttpResponse | undefined = undefined,
   ) {
     super(`The response was not successful: ${statusCode}`);
-    this.name = "HttpError";
 
     // Set the prototype explicitly to allow for "... instanceof HttpError",
     // see https://github.com/Microsoft/TypeScript-wiki/blob/master/Breaking-Changes.md#extending-built-ins-like-error-array-and-map-may-no-longer-work
@@ -35,4 +36,8 @@ export class HttpError extends Error {
       new Error("There are no problem details in the response"),
     );
   }
+}
+
+export function isHttpError(error: unknown): error is HttpError {
+  return error instanceof Error && error.name === "HttpError";
 }
