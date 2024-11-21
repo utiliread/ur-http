@@ -39,15 +39,15 @@
     "build:jsonpatch": "rollup -c jsonpatch.rollup.config.mjs",
     "build:msgpack": "rollup -c msgpack.rollup.config.mjs",
     "prettier": "prettier --write *.mjs src/**/*.ts",
-    "test": "web-test-runner",
+    "test": "npm run build:core && web-test-runner",
     "clean": "rimraf dist"
   },
   "publishConfig": {
     "access": "public"
   },
   "devDependencies": {
-    "@rollup/plugin-typescript": "^11.1.6",
-    "@types/chai": "^4.3.11",
+    "@rollup/plugin-typescript": "^12.1.1",
+    "@types/chai": "^5.0.1",
     "@types/luxon": "^3.0.1",
     "@types/mocha": "^10.0.0",
     "@utiliread/json": "^1.3.0",
