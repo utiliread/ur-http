@@ -164,7 +164,15 @@ export class HttpBuilder {
     });
   }
 
-  expectCreated<T = string>(idParser?: (location: string) => T) {
+  /** Expect the 201 created response
+   * @returns a builder returning the value of the location header
+   */
+  expectCreated(): HttpBuilderOfT<string>;
+  /** Expect the 201 created response
+   * @returns a builder returning the parsed id from the location header
+   */
+  expectCreated<T>(idParser: (location: string) => T): HttpBuilderOfT<T>;
+  expectCreated<T>(idParser?: (location: string) => T) {
     return this.useHandler((response) => {
       if (response.statusCode !== statusCodes.status201Created) {
         throw new HttpError(response.statusCode, response);
