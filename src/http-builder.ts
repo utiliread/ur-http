@@ -1,3 +1,4 @@
+import { HttpError, headerNames, statusCodes } from "@utiliread/http";
 import { HttpResponse, HttpResponseOfT } from "./http-response";
 
 import { EventAggregator } from "./event-aggregator";
@@ -160,6 +161,21 @@ export class HttpBuilder {
   expectBinary() {
     return this.useHandler((response) => {
       return response.rawResponse.arrayBuffer();
+    });
+  }
+
+  expectCreated<T = string>(idParser?: (location: string) => T) {
+    return this.useHandler((response) => {
+      if (response.statusCode !== statusCodes.status201Created) {
+        throw new HttpError(response.statusCode, response);
+      }
+      const location = response.headers.get(headerNames.location);
+      if (!location) {
+        throw new HttpError(response.statusCode, response);
+      }
+
+      const id = idParser ? idParser(location) : location;
+      return Promise.resolve(id);
     });
   }
 }
