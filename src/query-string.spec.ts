@@ -1,4 +1,5 @@
-import { DateTime } from "luxon";
+import { DateTime, Duration } from "luxon";
+
 import { QueryString } from "./query-string";
 import { expect } from "chai";
 
@@ -40,7 +41,7 @@ describe("query-string", () => {
     });
 
     expect(qs).to.equal(
-      "?aDateTime=" + encodeURIComponent("2014-11-12T21:06:00.000+01:00"),
+      "?aDateTime=" + encodeURIComponent("2014-11-12T21:06:00.000+01:00")
     );
   });
 
@@ -57,8 +58,24 @@ describe("query-string", () => {
     });
 
     expect(qs).to.equal(
-      "?aDateTime=" + encodeURIComponent("2014-11-12T20:06:00.000Z"),
+      "?aDateTime=" + encodeURIComponent("2014-11-12T20:06:00.000Z")
     );
+  });
+
+  it("should handle luxon Duration", () => {
+    const duration = Duration.fromObject({
+      years: 1,
+      months: 2,
+      days: 3,
+      hours: 4,
+      minutes: 5,
+      seconds: 6,
+    });
+    const qs = QueryString.serialize({
+      aDuration: duration,
+    });
+
+    expect(qs).to.equal("?aDuration=" + encodeURIComponent("P1Y2M3DT4H5M6S"));
   });
 
   it("should handle null", () => {

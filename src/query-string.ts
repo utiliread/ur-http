@@ -1,4 +1,4 @@
-import { DateTime } from "luxon";
+import { DateTime, Duration } from "luxon";
 
 export class QueryString {
   static serialize(params: any) {
@@ -48,6 +48,10 @@ export class QueryString {
         const value = source[propertyName];
 
         if (value instanceof DateTime) {
+          if (value.isValid) {
+            parts.push(key + "=" + encodeURIComponent(value.toISO()!));
+          }
+        } else if (value instanceof Duration) {
           if (value.isValid) {
             parts.push(key + "=" + encodeURIComponent(value.toISO()!));
           }
