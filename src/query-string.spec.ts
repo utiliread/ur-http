@@ -41,7 +41,7 @@ describe("query-string", () => {
     });
 
     expect(qs).to.equal(
-      "?aDateTime=" + encodeURIComponent("2014-11-12T21:06:00.000+01:00")
+      "?aDateTime=" + encodeURIComponent("2014-11-12T21:06:00.000+01:00"),
     );
   });
 
@@ -58,7 +58,7 @@ describe("query-string", () => {
     });
 
     expect(qs).to.equal(
-      "?aDateTime=" + encodeURIComponent("2014-11-12T20:06:00.000Z")
+      "?aDateTime=" + encodeURIComponent("2014-11-12T20:06:00.000Z"),
     );
   });
 
