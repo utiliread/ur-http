@@ -2,7 +2,7 @@ import { HttpResponse } from "../http-response";
 import { ProblemDetails } from "../problem-details";
 
 export class HttpError extends Error {
-  private detailsPromise?: Promise<ProblemDetails>;
+  private jsonPromise?: Promise<any>;
 
   readonly name: "HttpError" = "HttpError";
 
@@ -26,15 +26,24 @@ export class HttpError extends Error {
     const rawResponse = this.response?.rawResponse;
 
     if (rawResponse && this.hasDetails) {
-      this.detailsPromise ??= rawResponse
-        .json()
-        .then((details) => <ProblemDetails>details);
-      return this.detailsPromise.then((details) => <TDetails>details);
+      this.jsonPromise ??= rawResponse.json();
+      return this.jsonPromise.then((details) => <TDetails>details);
     }
 
     return Promise.reject(
       new Error("There are no problem details in the response"),
     );
+  }
+
+  json() {
+    const rawResponse = this.response?.rawResponse;
+
+    if (rawResponse) {
+      this.jsonPromise ??= rawResponse.json();
+      return this.jsonPromise;
+    }
+
+    return Promise.reject(new Error("There is no response"));
   }
 }
 
