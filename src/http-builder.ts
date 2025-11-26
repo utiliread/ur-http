@@ -107,7 +107,10 @@ export class HttpBuilder {
 
     if (this.message.url.startsWith("/")) {
       return baseUrl + this.message.url;
-    } else if (this.message.url.length > 0) {
+    } else if (
+      this.message.url.length > 0 &&
+      !this.message.url.startsWith("?")
+    ) {
       return baseUrl + "/" + this.message.url;
     } else {
       return baseUrl;
