@@ -113,7 +113,7 @@ export class HttpBuilder {
     ) {
       return baseUrl + "/" + this.message.url;
     } else {
-      return baseUrl;
+      return baseUrl + this.message.url;
     }
   }
 
