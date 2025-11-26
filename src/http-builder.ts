@@ -102,13 +102,15 @@ export class HttpBuilder {
     }
 
     if (baseUrl.endsWith("/")) {
-      baseUrl = baseUrl.substr(0, baseUrl.length - 1);
+      baseUrl = baseUrl.substring(0, baseUrl.length - 1);
     }
 
     if (this.message.url.startsWith("/")) {
       return baseUrl + this.message.url;
-    } else {
+    } else if (this.message.url.length > 0) {
       return baseUrl + "/" + this.message.url;
+    } else {
+      return baseUrl;
     }
   }
 
