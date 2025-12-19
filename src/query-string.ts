@@ -58,6 +58,9 @@ export class QueryString {
         } else if (value === null) {
           parts.push(key);
         } else if (value !== undefined) {
+          if ("function" === typeof value.toISOString) {
+            parts.push(key + "=" + encodeURIComponent(value.toISOString()));
+          }
           if (typeof value === "object") {
             parts.push(this._serializeQueryString(value, key));
           } else {
