@@ -25,19 +25,26 @@
       "types": "./dist/plugins/msgpack/index.d.ts",
       "import": "./dist/plugins/msgpack/index.mjs",
       "require": "./dist/plugins/msgpack/index.js"
+    },
+    "./cursor": {
+      "types": "./dist/plugins/cursor/index.d.ts",
+      "import": "./dist/plugins/cursor/index.mjs",
+      "require": "./dist/plugins/cursor/index.js"
     }
   },
   "sideEffects": [
     "./dist/plugins/json/index.{mjs,js}",
     "./dist/plugins/jsonpatch/index.{mjs,js}",
-    "./dist/plugins/msgpack/index.{mjs,js}"
+    "./dist/plugins/msgpack/index.{mjs,js}",
+    "./dist/plugins/cursor/index.{mjs,js}"
   ],
   "scripts": {
-    "build": "rollup -c && npm run build:json && npm run build:jsonpatch && npm run build:msgpack",
+    "build": "rollup -c && npm run build:json && npm run build:jsonpatch && npm run build:msgpack && npm run build:cursor",
     "build:core": "rollup -c",
     "build:json": "rollup -c json.rollup.config.mjs",
     "build:jsonpatch": "rollup -c jsonpatch.rollup.config.mjs",
     "build:msgpack": "rollup -c msgpack.rollup.config.mjs",
+    "build:cursor": "rollup -c cursor.rollup.config.mjs",
     "prettier": "prettier --write package.json tsconfig.json *.mjs src/**/*.ts",
     "test": "npm run build:core && web-test-runner",
     "clean": "rimraf dist"
