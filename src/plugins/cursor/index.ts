@@ -9,6 +9,7 @@ export interface ICursorPage<T> {
   items: T[];
   nextCursor: string | null;
   hasMore: boolean;
+  totalCount?: number;
 }
 
 // Force declarations to be module augmentations instead of ambient module declarations
@@ -38,6 +39,7 @@ HttpBuilder.prototype.expectCursorPage = function <T>(
           items: x.items.map(itemFactory),
           nextCursor: x.nextCursor,
           hasMore: x.hasMore,
+          totalCount: x.totalCount,
         };
       });
     return promise;
