@@ -4,10 +4,7 @@ import { HttpBuilder, HttpMethod, Message } from "./http-builder";
 import { HttpResponse, HttpResponseOfT } from "./http-response";
 import { QueryString } from "./query-string";
 
-export type Fetch = (
-  input: RequestInfo,
-  init?: RequestInit,
-) => Promise<Response>;
+export type Fetch = typeof fetch;
 
 export class Http {
   static defaults: HttpOptions = {

@@ -72,6 +72,6 @@ describe("instance http", () => {
   });
 });
 
-function fakeFetch(input: RequestInfo, init?: RequestInit): Promise<Response> {
+function fakeFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
   return Promise.resolve(new Response());
 }
