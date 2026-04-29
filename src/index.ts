@@ -1,4 +1,4 @@
-export { Http } from "./http";
+export { Http, type HttpOptions } from "./http";
 export type {
   Page,
   PaginationResult,
