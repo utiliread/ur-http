@@ -3,10 +3,7 @@ import typescript from "@rollup/plugin-typescript";
 /** @type {import('rollup').RollupOptions} */
 const options = {
   input: "src/plugins/cursor/index.ts",
-  external: [
-    "@utiliread/http",
-    "@utiliread/json",
-  ],
+  external: ["@utiliread/http", "@utiliread/json"],
   treeshake: false,
   plugins: [typescript({ declaration: false })],
 };

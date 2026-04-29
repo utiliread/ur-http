@@ -14,7 +14,7 @@ export class HttpBuilder<TResult = void> {
   constructor(
     public message: Message,
     public options: RequestOptions,
-    /** @internal */ public http: Http
+    /** @internal */ public http: Http,
   ) {}
 
   onSend(callback: (request: Message) => void | Promise<void>) {
@@ -23,7 +23,10 @@ export class HttpBuilder<TResult = void> {
   }
 
   onSent(
-    callback: (response: HttpResponse, request: Message) => void | Promise<void>
+    callback: (
+      response: HttpResponse,
+      request: Message,
+    ) => void | Promise<void>,
   ) {
     this._onSent.subscribe(callback);
     return this;
@@ -73,7 +76,7 @@ export class HttpBuilder<TResult = void> {
           setTimeout(() => {
             outerController.abort();
             reject(new TimeoutError());
-          }, this.options.timeout)
+          }, this.options.timeout),
         ),
       ]);
     } else {
@@ -200,7 +203,7 @@ export class HttpBuilderOfT<T> extends HttpBuilder<T> {
 
   constructor(
     private inner: HttpBuilder,
-    private handler: (response: HttpResponse) => Promise<T>
+    private handler: (response: HttpResponse) => Promise<T>,
   ) {
     super(inner.message, inner.options, inner.http);
   }
@@ -211,7 +214,10 @@ export class HttpBuilderOfT<T> extends HttpBuilder<T> {
   }
 
   onSent(
-    callback: (response: HttpResponse, request: Message) => void | Promise<void>
+    callback: (
+      response: HttpResponse,
+      request: Message,
+    ) => void | Promise<void>,
   ) {
     this.inner.onSent(callback);
     return this;
@@ -235,7 +241,7 @@ export class HttpBuilderOfT<T> extends HttpBuilder<T> {
   allowEmptyResponse() {
     if (this._onReceived.any) {
       throw new Error(
-        "onReceived() must be called after allowEmptyResponse() because the callback type changes"
+        "onReceived() must be called after allowEmptyResponse() because the callback type changes",
       );
     }
 
@@ -252,8 +258,8 @@ export class HttpBuilderOfT<T> extends HttpBuilder<T> {
     callback: (
       response: HttpResponseOfT<T>,
       request: Message,
-      value: T
-    ) => void | Promise<void>
+      value: T,
+    ) => void | Promise<void>,
   ) {
     this._onReceived.subscribe(callback);
     return this;
@@ -265,13 +271,13 @@ export class HttpBuilderOfT<T> extends HttpBuilder<T> {
       .then((x) => new HttpResponseOfT<T>(x.rawResponse, this.handler));
 
     return asSendPromise(responsePromise, () =>
-      responsePromise.then((response) => this.handleReceive(response))
+      responsePromise.then((response) => this.handleReceive(response)),
     );
   }
 
   transfer(abortSignal?: AbortSignal): Promise<T> {
     return this.send(abortSignal).then((response) =>
-      this.handleReceive(response)
+      this.handleReceive(response),
     );
   }
 
@@ -310,7 +316,7 @@ export interface SendPromise<T> extends Promise<HttpResponseOfT<T>> {
 
 function asSendPromise<T>(
   responsePromise: Promise<HttpResponse>,
-  thenReceive: () => Promise<T>
+  thenReceive: () => Promise<T>,
 ): SendPromise<T> {
   const sendPromise = responsePromise as SendPromise<T>;
   sendPromise.thenReceive = thenReceive;

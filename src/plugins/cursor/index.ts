@@ -1,8 +1,4 @@
-import {
-  HttpBuilder,
-  TypeOrMapper,
-  getMapper,
-} from "@utiliread/http";
+import { HttpBuilder, TypeOrMapper, getMapper } from "@utiliread/http";
 import { deserialize } from "@utiliread/json";
 
 export interface ICursorPage<T> {
