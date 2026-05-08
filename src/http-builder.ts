@@ -203,7 +203,7 @@ export class HttpBuilderOfT<T> extends HttpBuilder<T> {
 
   constructor(
     private inner: HttpBuilder,
-    private handler: (response: HttpResponse) => Promise<T>,
+    public handler: (response: HttpResponse) => Promise<T>,
   ) {
     super(inner.message, inner.options, inner.http);
   }
