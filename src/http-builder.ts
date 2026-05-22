@@ -162,6 +162,12 @@ export class HttpBuilder<TResult = void> {
 
   // Expect Extensions
 
+  expectNothing() {
+    return this.useHandler((response) => {
+      return Promise.resolve(undefined);
+    });
+  }
+
   expectString() {
     return this.useHandler((response) => {
       return response.rawResponse.text();
